@@ -1,0 +1,59 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "commonjs": true,
+    "node": true
+  },
+  "settings": {
+    "react": {
+      "version": "detect" // Tells eslint-plugin-react to automatically detect the version of React to use
+    }
+  },
+  "extends": [
+    "plugin:prettier/recommended" // Uses the recommended rules from prettier
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2019, // Allows for the parsing of modern ECMAScript features
+    "ecmaFeatures": {
+      "jsx": true // Allows for the parsing of JSX
+    },
+    "sourceType": "module" // Allows for the use of imports
+  },
+  "plugins": ["@typescript-eslint", "prettier"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": ["function"], "next": "*" } // Throws error when there is no black line after function
+    ]
+  },
+  "overrides": [
+    {
+      // Config only specified files for specified rule
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        "@typescript-eslint/explicit-function-return-type": [
+          // Functions must have a return type
+          "warn",
+          { "allowTypedFunctionExpressions": true }
+        ],
+        "@typescript-eslint/explicit-member-accessibility": ["error"], // Require access modifier
+        "@typescript-eslint/typedef": [
+          // Require types for parameters
+          "warn",
+          {
+            "arrowParameter": true,
+            "parameter": true
+          }
+        ]
+      }
+    }
+  ]
+}
