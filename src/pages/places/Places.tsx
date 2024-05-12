@@ -1,22 +1,41 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Card } from 'antd';
+import { firestore } from '../../firebase';
+import { Firestore, collection, getDocs } from 'firebase/firestore';
 
 const Places: FC<PlacesProps> = () => {
+  const [places, setPlaces] = useState<Place[]>([]);
+
   const { Meta } = Card;
+
+  useEffect(() => {
+    const getPlaces = async (firestore: Firestore) => {
+      const placesCol = collection(firestore, 'places');
+      const placeSnapshot = await getDocs(placesCol);
+      const placeList = placeSnapshot.docs.map((doc) => doc.data() as Place);
+      console.log(placeList);
+      setPlaces(placeList);
+    };
+
+    getPlaces(firestore);
+  }, []);
 
   return (
     <>
-      <div className="flex flex-wrap justify-center w-full gap-10">
-        {mock.map(({ title, address, workingTime, src }) => {
+      <div className="flex flex-wrap justify-center w-full gap-10 mt-10">
+        {places.map(({ name, address, description }: Place, index: number) => {
           return (
             <Card
-              key={title}
-              className="w-80"
+              key={name}
+              className="w-96 h-[450px] truncate text-wrap"
               hoverable
-              cover={<img className="h-60" alt="example" src={src} />}
+              cover={<img className="h-60" alt="example" src={mock[index].src} />}
             >
-              <Meta title={title} description={address} />
-              <div>{workingTime}</div>
+              <Meta title={name} description={address} />
+              <div>
+                <span>{description}</span>
+                <div className="absolute bottom-0 w-full h-12 bg-gradient-to-t from-white via-white to-transparent"></div>
+              </div>
             </Card>
           );
         })}
@@ -26,6 +45,12 @@ const Places: FC<PlacesProps> = () => {
 };
 
 interface PlacesProps {}
+
+interface Place {
+  name: string;
+  address: string;
+  description: string;
+}
 
 const mock = [
   {

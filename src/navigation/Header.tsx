@@ -1,12 +1,12 @@
-import { FC, useState } from 'react'
-import { Menu } from 'antd'
-import { AppstoreOutlined, MailOutlined } from '@ant-design/icons'
-import { MenuProps } from 'antd'
-import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface'
-import { Link } from 'react-router-dom'
+import { FC, useState } from 'react';
+import { Menu } from 'antd';
+import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
+import { MenuProps } from 'antd';
+import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
+import { Link } from 'react-router-dom';
 
 const Header: FC<HeaderProps> = () => {
-  const [current, setCurrent] = useState<MenuKey>('Home')
+  const [current, setCurrent] = useState<MenuKey>('Home');
 
   const menuConfig: MenuProps['items'] = [
     {
@@ -19,24 +19,17 @@ const Header: FC<HeaderProps> = () => {
       key: 'Account',
       icon: <AppstoreOutlined />,
     },
-  ]
+  ];
 
   const onClick: MenuClickEventHandler = (info: MenuInfo) => {
-    setCurrent(info.key as MenuKey)
-  }
+    setCurrent(info.key as MenuKey);
+  };
 
-  return (
-    <Menu
-      onClick={onClick}
-      selectedKeys={[current]}
-      mode="horizontal"
-      items={menuConfig}
-    />
-  )
-}
+  return <Menu onClick={onClick} selectedKeys={[current]} mode="horizontal" items={menuConfig} />;
+};
 
 interface HeaderProps {}
 
-type MenuKey = 'Home' | 'Account'
+type MenuKey = 'Home' | 'Account';
 
-export default Header
+export default Header;
