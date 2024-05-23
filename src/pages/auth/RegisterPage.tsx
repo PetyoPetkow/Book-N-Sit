@@ -1,102 +1,73 @@
-import { Button, Checkbox, Form, FormProps, Input } from 'antd';
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
-
 import { FC, useState } from 'react';
 import { doCreateUserWithEmailAndPassword } from '../../firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
+import { Button } from '@mui/material';
+import { NavLink } from 'react-router-dom';
+import PasswordTextField from './components/PasswordTextField';
+import EmailTextField from './components/EmailTextField';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [isPasswordMismatch, setIsPasswordMismatch] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
-    console.log(values);
-    const { email, password } = values;
-
-    if (email !== undefined && password !== undefined) {
-      try {
-        await doCreateUserWithEmailAndPassword(email, password);
-        setErrorMsg(null);
-      } catch (error) {
-        if (error instanceof FirebaseError) {
-          setErrorMsg(generateFirebaseAuthErrorMessage(error));
-        }
+  const onRegister = async () => {
+    try {
+      await doCreateUserWithEmailAndPassword(email, password);
+      setErrorMsg(null);
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        setErrorMsg(generateFirebaseAuthErrorMessage(error));
       }
     }
   };
 
   return (
     <div className="h-[calc(100vh-46px)] flex items-center justify-center">
-      <div className="my-28 mx-14 ">
-        <div className="flex justify-center items-center h-20 bg-[#561C24] ">
-          <div className="text-white text-5xl bold">Register</div>
+      <div className="w-[500px] rounded overflow-hidden bg-white">
+        <div className="h-20 bg-[#01204E] text-white text-5xl font-sans flex items-center justify-center">
+          Register
         </div>
-        <Form
-          name="normal_login"
-          className="w-[400px] my-28 mx-20"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-        >
-          <Form.Item name="email" rules={[{ required: true, message: 'Please input your Email!' }]}>
-            <Input size="large" prefix={<UserOutlined />} placeholder="Email" />
-          </Form.Item>
-          <Form.Item
-            name="password"
-            rules={[{ required: true, message: 'Please input your Password!' }]}
-          >
-            <Input.Password
-              size="large"
-              prefix={<LockOutlined />}
-              type="password"
-              placeholder="Password"
+        <div className="p-10 pt-20">
+          <div className="flex flex-col gap-10">
+            <EmailTextField onChange={(event) => setEmail(event.target.value)} />
+            <PasswordTextField onChange={(event) => setPassword(event.target.value)} />
+            <PasswordTextField
+              error={isPasswordMismatch}
+              onBlur={() => {
+                if (confirmPassword !== '' && password !== confirmPassword) {
+                  setIsPasswordMismatch(true);
+                } else {
+                  setIsPasswordMismatch(false);
+                }
+              }}
+              onChange={(event) => setConfirmPassword(event.target.value)}
             />
-          </Form.Item>
-          <Form.Item
-            name="confirm"
-            dependencies={['password']}
-            rules={[
-              {
-                required: true,
-                message: 'Please confirm your password!',
-              },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  if (!value || getFieldValue('password') === value) {
-                    return Promise.resolve();
-                  }
-                  return Promise.reject(
-                    new Error('The new password that you entered do not match!')
-                  );
-                },
-              }),
-            ]}
-          >
-            <Input.Password
-              size="large"
-              prefix={<LockOutlined />}
-              type="password"
-              placeholder="Confirm Password"
-            />
-          </Form.Item>
-
-          {errorMsg && (
-            <Form.Item>
-              <div className="text-red-600">{errorMsg}</div>
-            </Form.Item>
-          )}
-
-          <Form.Item>
+          </div>
+          <div className="flex flex-col">
+            <NavLink className="ml-auto text-[#028391] no-underline" to="">
+              Forgot password
+            </NavLink>
+            {errorMsg && <div className="text-red-500 text-center mt-4">{errorMsg}</div>}
             <Button
-              className="w-full bg-[#6D2932] hover:bg-[#561C24]!important"
+              className="mt-12 bg-[#028391] hover:bg-[#60b6c0]"
               size="large"
-              type="primary"
-              htmlType="submit"
+              variant="contained"
+              onClick={onRegister}
             >
               Sign up
             </Button>
-            Already have an account? <a href="">Login here</a>
-          </Form.Item>
-        </Form>
+            <div>
+              Already have an account?{' '}
+              <NavLink className="text-[#028391] no-underline" to="">
+                Login here
+              </NavLink>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

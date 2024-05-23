@@ -6,11 +6,11 @@ const PrivateOutlet = () => {
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth();
 
-  useEffect(() => {
-    if (userLoggedIn === false) {
-      navigate('/Login');
-    }
-  }, [userLoggedIn, navigate]);
+  // useEffect(() => {
+  //   if (userLoggedIn === false) {
+  //     navigate('/Login');
+  //   }
+  // }, [userLoggedIn, navigate]);
 
   return <Outlet />;
 };

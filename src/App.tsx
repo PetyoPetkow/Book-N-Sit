@@ -10,17 +10,18 @@ import PublicOutlet from './auth/PublicOutlet';
 
 const App = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-slate-200">
       <Header />
       <Routes>
         <Route path="/" element={<PrivateOutlet />}>
-          <Route path="/Places" element={<Places />} />
           <Route path="/Account" element={<UserAccountPage />} />
-
           <Route path="*" element={<Navigate to="Places" />} />
+          <Route path="/Login" element={<LoginPage />} />
+          <Route path="/Register" element={<RegisterPage />} />
         </Route>
 
         <Route path="/" element={<PublicOutlet />}>
+          <Route path="/Places" element={<Places />} />
           <Route path="/Login" element={<LoginPage />} />
           <Route path="/Register" element={<RegisterPage />} />
         </Route>

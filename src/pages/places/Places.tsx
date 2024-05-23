@@ -1,12 +1,10 @@
 import { FC, useEffect, useState } from 'react';
-import { Card } from 'antd';
 import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs } from 'firebase/firestore';
+import { Card, CardActionArea, CardMedia } from '@mui/material';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Place[]>([]);
-
-  const { Meta } = Card;
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
@@ -25,17 +23,16 @@ const Places: FC<PlacesProps> = () => {
       <div className="flex flex-wrap justify-center w-full gap-10 mt-10">
         {places.map(({ name, address, description }: Place, index: number) => {
           return (
-            <Card
-              key={name}
-              className="w-96 h-[450px] truncate text-wrap"
-              hoverable
-              cover={<img className="h-60" alt="example" src={mock[index].src} />}
-            >
-              <Meta title={name} description={address} />
-              <div>
-                <span>{description}</span>
-                <div className="absolute bottom-0 w-full h-12 bg-gradient-to-t from-white via-white to-transparent"></div>
-              </div>
+            <Card key={name} className="w-96 h-[450px] truncate text-wrap">
+              <CardActionArea>
+                <CardMedia sx={{ height: 140 }} image={mock[index].src} title="green iguana" />
+                <div>{name}</div>
+                <div>{address}</div>
+                <div>
+                  <span>{description}</span>
+                  <div className="absolute bottom-0 w-full h-12 bg-gradient-to-t from-white via-white to-transparent"></div>
+                </div>
+              </CardActionArea>
             </Card>
           );
         })}

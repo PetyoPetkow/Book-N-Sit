@@ -9,7 +9,7 @@ const PublicOutlet = () => {
 
   useEffect(() => {
     if (userLoggedIn === true) {
-      navigate('/Home');
+      navigate('/home');
     }
   }, [userLoggedIn, navigate]);
 

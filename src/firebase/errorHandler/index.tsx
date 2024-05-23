@@ -40,7 +40,7 @@ export const generateFirebaseAuthErrorMessage = (error: FirebaseError) => {
       errorMsg = 'User disabled. Please contact support.';
       break;
     case 'auth/invalid-credential':
-      errorMsg = 'Invalid credential. Please try again.';
+      errorMsg = 'Invalid credentials. Please try again.';
       break;
     case 'auth/invalid-continue-uri':
       errorMsg = 'Invalid continue URL. Please try again.';

@@ -1,55 +1,112 @@
-import { FC, useState } from 'react';
-import { Drawer, Menu } from 'antd';
-import { AppstoreOutlined, MailOutlined } from '@ant-design/icons';
-import { MenuProps } from 'antd';
-import { MenuClickEventHandler, MenuInfo } from 'rc-menu/lib/interface';
-import { Link } from 'react-router-dom';
-import { MenuOutlined } from '@ant-design/icons';
+import { FC, MouseEvent, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { doSingOut } from '../firebase/auth';
+import MenuIcon from '@mui/icons-material/Menu';
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 
 const Header: FC<HeaderProps> = () => {
-  const [current, setCurrent] = useState<MenuKey>('Home');
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [user, setUser] = useState<string | null>();
 
-  const menuConfig: MenuProps['items'] = [
-    {
-      label: <Link to="/">Home</Link>,
-      key: 'Home',
-      icon: <MailOutlined />,
-    },
-    {
-      label: <Link to="/Account">Account</Link>,
-      key: 'Account',
-      icon: <AppstoreOutlined />,
-    },
-  ];
+  useEffect(() => {
+    setUser(localStorage.getItem('email'));
+  }, [localStorage.getItem('email')]);
 
-  const onClick: MenuClickEventHandler = (info: MenuInfo) => {
-    setCurrent(info.key as MenuKey);
+  const navigate = useNavigate();
+
+  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
-    <>
-      <Menu
-        className="max-md:hidden"
-        onClick={onClick}
-        selectedKeys={[current]}
-        mode="horizontal"
-        items={menuConfig}
-      />
-      <div className="md:hidden">
-        <div className="w-full border-b" onClick={() => setOpenMenu(true)}>
-          <MenuOutlined className="text-4xl m-1" />
-        </div>
-        <Drawer size="large" open={openMenu} onClose={() => setOpenMenu(false)} placement="left">
-          <Menu onClick={onClick} selectedKeys={[current]} mode="vertical" items={menuConfig} />
-        </Drawer>
-      </div>
-    </>
+    <AppBar className="bg-[#0d9488]" position="static">
+      <Container>
+        <Toolbar className="flex flex-col">
+          <div className="w-full flex justify-between items-center mt-2">
+            <div className="text-2xl font-bold font-sans">Book N' Sit</div>
+            <div className="flex max-sm:hidden">
+              <Button
+                className="text-white font-bold font-sans"
+                onClick={() => {
+                  handleCloseNavMenu();
+                  navigate('/Login');
+                }}
+              >
+                Login
+              </Button>
+              <Button
+                className="text-white font-bold font-sans"
+                onClick={() => {
+                  handleCloseNavMenu();
+                  navigate('/Register');
+                }}
+              >
+                Register
+              </Button>
+            </div>
+          </div>
+          <div className="my-4 flex self-start gap-3">
+            <Button
+              className="rounded-full border-white text-white"
+              size="large"
+              variant="outlined"
+            >
+              Restaurants
+            </Button>
+            <Button
+              className="rounded-full border-white text-white"
+              size="large"
+              variant="outlined"
+            >
+              Bars
+            </Button>
+            <Button
+              className="rounded-full border-white text-white"
+              size="large"
+              variant="outlined"
+            >
+              Events
+            </Button>
+            <Button
+              className="rounded-full border-white text-white"
+              size="large"
+              variant="outlined"
+            >
+              Parties
+            </Button>
+          </div>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 
 interface HeaderProps {}
 
-type MenuKey = 'Home' | 'Account';
+type MenuKey = 'home' | 'account' | 'login' | 'register';
 
 export default Header;
