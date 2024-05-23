@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { Card } from 'antd';
-import { firestore } from '../../firebase';
+import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs } from 'firebase/firestore';
 
 const Places: FC<PlacesProps> = () => {
