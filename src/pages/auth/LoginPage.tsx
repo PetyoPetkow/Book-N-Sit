@@ -5,9 +5,12 @@ import { FC, useState } from 'react';
 import { doSignInWithEmailAndPassword } from '../../firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage: FC<LoginPageProps> = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     const { email, password } = values;
@@ -15,7 +18,7 @@ const LoginPage: FC<LoginPageProps> = () => {
     if (email !== undefined && password !== undefined) {
       try {
         await doSignInWithEmailAndPassword(email, password);
-        setErrorMsg(null);
+        navigate('/Places');
       } catch (error) {
         if (error instanceof FirebaseError) {
           setErrorMsg(generateFirebaseAuthErrorMessage(error));
