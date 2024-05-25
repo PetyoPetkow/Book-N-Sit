@@ -20,17 +20,20 @@ const Places: FC<PlacesProps> = () => {
 
   return (
     <>
-      <div className="flex flex-wrap justify-center w-full gap-10 mt-10">
+      <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
         {places.map(({ name, address, description }: Place, index: number) => {
           return (
-            <Card key={name} className="w-96 h-[450px] truncate text-wrap">
-              <CardActionArea>
-                <CardMedia sx={{ height: 140 }} image={mock[index].src} title="green iguana" />
+            <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
+              <CardActionArea className="h-full w-full flex flex-col justify-start items-start">
+                <div className="w-full">
+                  <CardMedia className="h-60 w-full" image={mock[index].src} title="green iguana" />
+                </div>
+
                 <div>{name}</div>
                 <div>{address}</div>
                 <div>
                   <span>{description}</span>
-                  <div className="absolute bottom-0 w-full h-12 bg-gradient-to-t from-white via-white to-transparent"></div>
+                  <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent"></div>
                 </div>
               </CardActionArea>
             </Card>

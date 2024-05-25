@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import i18n from './i18n/i18n';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase/firebase';
+import { Container } from '@mui/material';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -36,21 +37,23 @@ const App = () => {
   return (
     <div className="min-h-screen bg-slate-200">
       <Header />
-      <Routes>
-        <Route path="/" element={<PrivateOutlet />}>
-          <Route path="/Account" element={<UserAccountPage />} />
-          {/* <Route path="*" element={<Navigate to="Places" />} /> */}
-          <Route path="/Places" element={<Places />} />
-          <Route path="/Login" element={<LoginPage />} />
-          <Route path="/Register" element={<RegisterPage />} />
-        </Route>
+      <Container>
+        <Routes>
+          <Route path="/" element={<PrivateOutlet />}>
+            <Route path="/Account" element={<UserAccountPage />} />
+            {/* <Route path="*" element={<Navigate to="Places" />} /> */}
+            <Route path="/Places" element={<Places />} />
+            <Route path="/Login" element={<LoginPage />} />
+            <Route path="/Register" element={<RegisterPage />} />
+          </Route>
 
-        <Route path="/" element={<PublicOutlet />}>
-          <Route path="/Places" element={<Places />} />
-          <Route path="/Login" element={<LoginPage />} />
-          <Route path="/Register" element={<RegisterPage />} />
-        </Route>
-      </Routes>
+          <Route path="/" element={<PublicOutlet />}>
+            <Route path="/Places" element={<Places />} />
+            <Route path="/Login" element={<LoginPage />} />
+            <Route path="/Register" element={<RegisterPage />} />
+          </Route>
+        </Routes>
+      </Container>
     </div>
   );
 };
