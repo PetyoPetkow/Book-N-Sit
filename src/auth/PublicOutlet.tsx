@@ -7,11 +7,11 @@ const PublicOutlet = () => {
   const { userLoggedIn } = useAuth();
   console.log('public', userLoggedIn);
 
-  useEffect(() => {
-    if (userLoggedIn === true) {
-      navigate('/home');
-    }
-  }, [userLoggedIn, navigate]);
+  // useEffect(() => {
+  //   if (userLoggedIn === true) {
+  //     navigate('/home');
+  //   }
+  // }, [userLoggedIn, navigate]);
 
   return <Outlet />;
 };

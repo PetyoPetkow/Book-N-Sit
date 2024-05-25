@@ -1,45 +1,64 @@
-import { FC, MouseEvent, useEffect, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { FC, MouseEvent, useMemo, useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { doSingOut } from '../firebase/auth';
-import MenuIcon from '@mui/icons-material/Menu';
 import {
   AppBar,
   Avatar,
   Button,
   Container,
-  IconButton,
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import RestoreIcon from '@mui/icons-material/Restore';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useAuth } from '../contexts/authContext';
+import flagBG from './flagsImages/bulgaria.png';
+import flagUK from './flagsImages/united-kingdom.png';
+import { firestore } from '../firebase/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { useTranslation } from 'react-i18next';
+import Language from '../global/models/Language';
 
 const Header: FC<HeaderProps> = () => {
-  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [anchorElLanguage, setAnchorElLanguage] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
+  const { userLoggedIn, currentUser } = useAuth();
 
-  const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const prefferedLanguageFlag = useMemo(() => {
+    if (i18n.language === 'bg') {
+      return flagBG;
+    } else {
+      return flagUK;
+    }
+  }, [i18n.language]);
+
+  const changeLanguage = (lng: Language) => {
+    if (currentUser) {
+      setDoc(doc(firestore, 'users', currentUser.uid), { language: lng }, { merge: true });
+    }
   };
+
   const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
   };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  const pages = ['Products', 'Pricing', 'Blog'];
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+
+  const handleOpenLanguageMenu = (event: MouseEvent<HTMLElement>) => {
+    setAnchorElLanguage(event.currentTarget);
+  };
+
+  const handleCloseLanguageMenu = () => {
+    setAnchorElLanguage(null);
+  };
 
   return (
     <AppBar className="bg-[#0d9488]" position="static">
@@ -47,100 +66,115 @@ const Header: FC<HeaderProps> = () => {
         <div className="w-full flex justify-between items-center mt-2">
           <div className="text-2xl font-bold font-sans">Book N' Sit</div>
           <div className="flex">
-            <Button
-              className="text-white font-bold font-sans"
-              onClick={() => {
-                handleCloseNavMenu();
-                navigate('/Login');
-              }}
-            >
-              Login
-            </Button>
-            <Button
-              className="text-white font-bold font-sans"
-              onClick={() => {
-                handleCloseNavMenu();
-                navigate('/Register');
-              }}
-            >
-              Register
-            </Button>
-            <div>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                <MenuItem className="flex gap-2" key={'setting'} onClick={handleCloseUserMenu}>
-                  <FavoriteIcon />
-                  <Typography textAlign="center">Manage account</Typography>
-                </MenuItem>
-                <MenuItem className="flex gap-2" key={'s'} onClick={handleCloseUserMenu}>
-                  <FavoriteIcon />
-                  <Typography textAlign="center">Sign out</Typography>
-                </MenuItem>
-              </Menu>
-            </div>
+            {userLoggedIn && currentUser ? (
+              <div>
+                <Button
+                  className="h-full hover:backdrop-contrast-150"
+                  onClick={handleOpenLanguageMenu}
+                >
+                  <Avatar className="w-7 h-7" alt="Country flag" src={prefferedLanguageFlag} />
+                </Button>
+                <Menu
+                  anchorEl={anchorElLanguage}
+                  keepMounted
+                  open={Boolean(anchorElLanguage)}
+                  onClose={handleCloseLanguageMenu}
+                >
+                  <MenuItem
+                    className="flex gap-3"
+                    onClick={() => {
+                      handleCloseLanguageMenu();
+                      changeLanguage('bg');
+                      i18n.changeLanguage('bg');
+                    }}
+                  >
+                    <Avatar className="w-7 h-7" alt="Country flag" src={flagBG} />
+                    <div>Bulgarian</div>
+                  </MenuItem>
+
+                  <MenuItem
+                    className="flex gap-3"
+                    onClick={() => {
+                      handleCloseLanguageMenu();
+                      changeLanguage('en');
+                      i18n.changeLanguage('en');
+                    }}
+                  >
+                    <Avatar className="w-7 h-7" alt="Country flag" src={flagUK} />
+                    <div>English</div>
+                  </MenuItem>
+                </Menu>
+                <Button
+                  className="text-white font-bold hover:backdrop-contrast-150"
+                  onClick={handleOpenUserMenu}
+                >
+                  <div className="flex gap-3 items-center">
+                    <Avatar alt="User avatar" src="/static/images/avatar/2.jpg" />
+                    <div className="flex flex-col text-left">
+                      <div>Hello,</div>
+                      <div>{currentUser.email}</div>
+                    </div>
+                  </div>
+                </Button>
+                <Menu
+                  sx={{ mt: '60px' }}
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  <MenuItem className="flex gap-2" key={'setting'} onClick={handleCloseUserMenu}>
+                    <FavoriteIcon />
+                    <Typography textAlign="center">Manage account</Typography>
+                  </MenuItem>
+                  <MenuItem
+                    className="flex gap-2"
+                    key={'s'}
+                    onClick={() => {
+                      handleCloseUserMenu();
+                      doSingOut();
+                    }}
+                  >
+                    <FavoriteIcon />
+                    <Typography textAlign="center">Sign out</Typography>
+                  </MenuItem>
+                </Menu>
+              </div>
+            ) : (
+              <>
+                <Button
+                  className="text-white font-bold font-sans"
+                  onClick={() => {
+                    navigate('/Login');
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  className="text-white font-bold font-sans"
+                  onClick={() => {
+                    navigate('/Register');
+                  }}
+                >
+                  Register
+                </Button>
+              </>
+            )}
           </div>
         </div>
         <Toolbar disableGutters>
-          <div className="flex md:hidden">
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </div>
-          <div className="flex gap-3 max-md:hidden">
+          <div className="flex flex-wrap gap-3 my-2 whitespace-nowrap">
             {menuConfig.map(({ label, path, icon }) => (
               <Button
-                className="text-white my-2 px-4 rounded-full"
+                className="text-white rounded-full"
                 sx={{
                   '&.active': {
                     border: '1px solid',

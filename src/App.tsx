@@ -1,5 +1,5 @@
 import './App.css';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import UserAccountPage from './pages/users/UserAccountPage';
 import Header from './navigation/Header';
 import Places from './pages/places/Places';
@@ -7,8 +7,32 @@ import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import PrivateOutlet from './auth/PrivateOutlet';
 import PublicOutlet from './auth/PublicOutlet';
+import { useAuth } from './contexts/authContext';
+import { useEffect } from 'react';
+import i18n from './i18n';
+import { doc, getDoc } from 'firebase/firestore';
+import { firestore } from './firebase/firebase';
 
 const App = () => {
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    const setUserLanguage = async () => {
+      if (currentUser !== null) {
+        const userRef = doc(firestore, 'users', currentUser.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          if (userData.language) {
+            i18n.changeLanguage(userData.language);
+          }
+        }
+      }
+    };
+
+    setUserLanguage();
+  }, [currentUser, i18n]);
+
   return (
     <div className="min-h-screen bg-slate-200">
       <Header />
@@ -16,6 +40,7 @@ const App = () => {
         <Route path="/" element={<PrivateOutlet />}>
           <Route path="/Account" element={<UserAccountPage />} />
           {/* <Route path="*" element={<Navigate to="Places" />} /> */}
+          <Route path="/Places" element={<Places />} />
           <Route path="/Login" element={<LoginPage />} />
           <Route path="/Register" element={<RegisterPage />} />
         </Route>
