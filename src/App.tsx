@@ -9,7 +9,7 @@ import PrivateOutlet from './auth/PrivateOutlet';
 import PublicOutlet from './auth/PublicOutlet';
 import { useAuth } from './contexts/authContext';
 import { useEffect } from 'react';
-import i18n from './i18n';
+import i18n from './i18n/i18n';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase/firebase';
 

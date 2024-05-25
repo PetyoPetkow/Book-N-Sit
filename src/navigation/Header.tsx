@@ -27,7 +27,7 @@ const Header: FC<HeaderProps> = () => {
   const [anchorElLanguage, setAnchorElLanguage] = useState<null | HTMLElement>(null);
 
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { userLoggedIn, currentUser } = useAuth();
 
   const prefferedLanguageFlag = useMemo(() => {
@@ -59,6 +59,29 @@ const Header: FC<HeaderProps> = () => {
   const handleCloseLanguageMenu = () => {
     setAnchorElLanguage(null);
   };
+
+  const menuConfig = [
+    {
+      label: t('header_btn_places'),
+      path: '/Places',
+      icon: <FavoriteIcon />,
+    },
+    {
+      label: t('header_btn_restaurants'),
+      path: '/Restaurants',
+      icon: <RestoreIcon />,
+    },
+    {
+      label: t('header_btn_bars'),
+      path: '/Bars',
+      icon: <RestoreIcon />,
+    },
+    {
+      label: t('header_btn_night_clubs'),
+      path: '/NightClubs',
+      icon: <LocationOnIcon />,
+    },
+  ];
 
   return (
     <AppBar className="bg-[#0d9488]" position="static">
@@ -133,7 +156,9 @@ const Header: FC<HeaderProps> = () => {
                 >
                   <MenuItem className="flex gap-2" key={'setting'} onClick={handleCloseUserMenu}>
                     <FavoriteIcon />
-                    <Typography textAlign="center">Manage account</Typography>
+                    <Typography textAlign="center">
+                      {t('header_profile_menu_action_manage_account')}
+                    </Typography>
                   </MenuItem>
                   <MenuItem
                     className="flex gap-2"
@@ -144,7 +169,9 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <FavoriteIcon />
-                    <Typography textAlign="center">Sign out</Typography>
+                    <Typography textAlign="center">
+                      {t('header_profile_menu_action_sign_out')}
+                    </Typography>
                   </MenuItem>
                 </Menu>
               </div>
@@ -198,43 +225,5 @@ const Header: FC<HeaderProps> = () => {
 };
 
 interface HeaderProps {}
-
-const menuConfig = [
-  {
-    label: 'Places',
-    path: '/Places',
-    icon: <FavoriteIcon />,
-  },
-  {
-    label: 'Restaurants',
-    path: '/Restaurants',
-    icon: <RestoreIcon />,
-  },
-  {
-    label: 'Bars',
-    path: '/Bars',
-    icon: <RestoreIcon />,
-  },
-  {
-    label: 'Night clubs',
-    path: '/NightClubs',
-    icon: <LocationOnIcon />,
-  },
-];
-
-const userMenuConfig = [
-  {
-    label: 'Manage account',
-    path: '/Restaurants',
-    icon: <RestoreIcon />,
-  },
-  {
-    label: 'Sign out',
-    path: '/NightClubs',
-    icon: <LocationOnIcon />,
-  },
-];
-
-type MenuKey = 'home' | 'account' | 'login' | 'register';
 
 export default Header;
