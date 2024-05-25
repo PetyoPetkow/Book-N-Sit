@@ -13,6 +13,7 @@ import i18n from './i18n/i18n';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase/firebase';
 import { Container } from '@mui/material';
+import OverviewPage from './pages/places/Overview/OverviewPage';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -43,6 +44,7 @@ const App = () => {
             <Route path="/Account" element={<UserAccountPage />} />
             {/* <Route path="*" element={<Navigate to="Places" />} /> */}
             <Route path="/Places" element={<Places />} />
+            <Route path="/Overview" element={<OverviewPage />} />
             <Route path="/Login" element={<LoginPage />} />
             <Route path="/Register" element={<RegisterPage />} />
           </Route>
