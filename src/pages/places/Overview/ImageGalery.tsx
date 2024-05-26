@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { ImageList, ImageListItem } from '@mui/material';
 import ImageDialog from './ImageDialog';
+import clsx from 'clsx';
 
 const ImageGallery = ({ images }: any) => {
   const [open, setOpen] = useState(false);
@@ -31,49 +32,32 @@ const ImageGallery = ({ images }: any) => {
         cols={12}
         rowHeight={90}
       >
-        {images.map(
-          (item: string, index: number) =>
-            index < 6 && (
-              <ImageListItem
-                className="hover:opacity-90 cursor-pointer"
-                key={item}
-                cols={gridPattern[index].cols}
-                rows={gridPattern[index].rows}
-                onClick={() => {
-                  handleClickOpen(index);
-                }}
-              >
-                <img
-                  {...srcset(item, 90, gridPattern[index].cols, gridPattern[index].rows)}
-                  alt={'image'}
-                  loading="lazy"
-                />
-              </ImageListItem>
-            )
-        )}
-
-        {images[6] && (
-          <ImageListItem
-            className="hover:opacity-90 brightness-75 cursor-pointer"
-            key={images[6]}
-            cols={gridPattern[6].cols}
-            rows={gridPattern[6].rows}
-            onClick={() => {
-              handleClickOpen(6);
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center z-10">
-              <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
-                +{images.length - 6} photos
-              </span>
-            </div>
-            <img
-              {...srcset(images[6], 90, gridPattern[6].cols, gridPattern[6].rows)}
-              alt={'image'}
-              loading="lazy"
-            />
-          </ImageListItem>
-        )}
+        {gridPattern.map((gridEntry, index) => {
+          const { rows, cols } = gridEntry;
+          return (
+            <ImageListItem
+              className={clsx(
+                'hover:opacity-90 cursor-pointer',
+                index === gridPattern.length - 1 && 'brightness-75'
+              )}
+              key={images[index]}
+              cols={cols}
+              rows={rows}
+              onClick={() => {
+                handleClickOpen(index);
+              }}
+            >
+              {index === gridPattern.length - 1 && (
+                <div className="absolute inset-0 flex items-center justify-center z-10">
+                  <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
+                    +{images.length - index} photos
+                  </span>
+                </div>
+              )}
+              <img {...srcset(images[index], 90, cols, rows)} alt={'image'} loading="lazy" />
+            </ImageListItem>
+          );
+        })}
       </ImageList>
       <ImageDialog
         open={open}
@@ -88,7 +72,7 @@ const ImageGallery = ({ images }: any) => {
 
 export default ImageGallery;
 
-const gridPattern = [
+const gridPattern: GridDimensions[] = [
   { rows: 2, cols: 4 },
   { rows: 4, cols: 8 },
   { rows: 2, cols: 4 },
@@ -97,3 +81,8 @@ const gridPattern = [
   { rows: 1.5, cols: 3 },
   { rows: 1.5, cols: 3 },
 ];
+
+interface GridDimensions {
+  rows: number;
+  cols: number;
+}

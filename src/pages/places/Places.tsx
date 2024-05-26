@@ -11,7 +11,6 @@ const Places: FC<PlacesProps> = () => {
       const placesCol = collection(firestore, 'places');
       const placeSnapshot = await getDocs(placesCol);
       const placeList = placeSnapshot.docs.map((doc) => doc.data() as Place);
-      console.log(placeList);
       setPlaces(placeList);
     };
 

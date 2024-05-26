@@ -5,9 +5,7 @@ const ImagesList: FC<ImagesListProps> = ({ images, currentImageIndex, handleThum
 
   const scrollToCenter = (index: number) => {
     const container = containerRef.current;
-    console.log(container);
     if (!container) return;
-
     const thumbnailWidth = 130; // Width of each thumbnail
     const containerWidth = container.clientWidth; // Width of the thumbnails container
     const scrollLeft = thumbnailWidth * index - containerWidth / 2 + thumbnailWidth / 2;
