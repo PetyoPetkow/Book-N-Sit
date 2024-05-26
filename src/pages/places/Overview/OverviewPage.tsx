@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
 import Location from './Location';
-import { ImageList, ImageListItem } from '@mui/material';
-import ImagesModal from './ImagesModal';
-import ImageGallery from './ImageGalery';
+import ImagesModal from './ImagesOverview/ImagesModal';
+import ImageGallery from './ImagesOverview/ImageGalery';
+import RatingDisplay from './Rating/RatingDisplay';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [imagesModalOpen, setImagesModalOpen] = useState<boolean>(false);
@@ -19,13 +19,17 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       <ImagesModal open={imagesModalOpen} handleClose={() => setImagesModalOpen(false)} />
       <div className="font-bold font-sans text-2xl">The Property Name Is Here</div>
       <Location />
-      <div className="flex h-fit w-full bg-blue-50">
-        <div className="w-3/4 m-2">
+      <div className="flex gap-2 p-2 h-[530px] w-full  bg-blue-50">
+        <div className="w-3/4">
           <ImageGallery images={imageSources}></ImageGallery>
         </div>
-        <div className="flex flex-col w-1/4">
-          <div className="w-full flex-1 bg-red-300">asd</div>
-          <div className="w-full flex-1 bg-red-300">asd</div>
+        <div className="flex flex-col gap-2 w-1/4 h-full">
+          <div className="w-full flex-1">
+            <RatingDisplay />
+          </div>
+          <div className="w-full flex-1">
+            <RatingDisplay />
+          </div>
         </div>
       </div>
     </div>
