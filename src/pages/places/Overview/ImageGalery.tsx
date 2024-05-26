@@ -1,16 +1,6 @@
-import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Box,
-  ImageList,
-  ImageListItem,
-} from '@mui/material';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import CloseIcon from '@mui/icons-material/Close';
+import { useRef, useState } from 'react';
+import { ImageList, ImageListItem } from '@mui/material';
+import ImageDialog from './ImageDialog';
 
 const ImageGallery = ({ images }: any) => {
   const [open, setOpen] = useState(false);
@@ -23,14 +13,6 @@ const ImageGallery = ({ images }: any) => {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handlePrev = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-  };
-
-  const handleNext = () => {
-    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
   function srcset(image: string, size: number, rows = 1, cols = 1) {
@@ -53,6 +35,7 @@ const ImageGallery = ({ images }: any) => {
           (item: string, index: number) =>
             index < 6 && (
               <ImageListItem
+                className="hover:opacity-90 cursor-pointer"
                 key={item}
                 cols={gridPattern[index].cols}
                 rows={gridPattern[index].rows}
@@ -61,7 +44,6 @@ const ImageGallery = ({ images }: any) => {
                 }}
               >
                 <img
-                  className="hover:opacity-90"
                   {...srcset(item, 90, gridPattern[index].cols, gridPattern[index].rows)}
                   alt={'image'}
                   loading="lazy"
@@ -72,7 +54,7 @@ const ImageGallery = ({ images }: any) => {
 
         {images[6] && (
           <ImageListItem
-            className="hover:opacity-90 brightness-75"
+            className="hover:opacity-90 brightness-75 cursor-pointer"
             key={images[6]}
             cols={gridPattern[6].cols}
             rows={gridPattern[6].rows}
@@ -93,36 +75,13 @@ const ImageGallery = ({ images }: any) => {
           </ImageListItem>
         )}
       </ImageList>
-
-      <Dialog className="text-red-50" open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle className="flex justify-end ">
-          <IconButton color="inherit" onClick={handleClose} aria-label="close">
-            <CloseIcon />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent>
-          <Box display="flex" justifyContent="space-between" alignItems="center">
-            <IconButton onClick={handlePrev} aria-label="previous">
-              <ArrowBackIosIcon />
-            </IconButton>
-            <div className="flex flex-col justify-center">
-              <Box display="flex" justifyContent="center" alignItems="center" flex="1">
-                <img
-                  src={images[currentImageIndex]}
-                  alt={`img-${currentImageIndex}`}
-                  style={{ maxWidth: '100%', maxHeight: '80vh' }}
-                />
-              </Box>
-              <div className="mt-5 text-center">
-                {currentImageIndex + 1}/{images.length}
-              </div>
-            </div>
-            <IconButton onClick={handleNext} aria-label="next">
-              <ArrowForwardIosIcon />
-            </IconButton>
-          </Box>
-        </DialogContent>
-      </Dialog>
+      <ImageDialog
+        open={open}
+        handleClose={handleClose}
+        currentImageIndex={currentImageIndex}
+        images={images}
+        setCurrentImageIndex={setCurrentImageIndex}
+      />
     </div>
   );
 };
