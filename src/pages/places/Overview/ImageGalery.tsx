@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, IconButton, Box } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  IconButton,
+  Box,
+  ImageList,
+  ImageListItem,
+} from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CloseIcon from '@mui/icons-material/Close';
@@ -25,41 +33,90 @@ const ImageGallery = ({ images }: any) => {
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
-  return (
-    <div>
-      {
-        <Box display="flex" flexWrap="wrap">
-          {images.map((image: any, index: number) => (
-            <img
-              key={index}
-              src={image}
-              alt={`img-${index}`}
-              style={{ width: '100px', margin: '5px', cursor: 'pointer' }}
-              onClick={() => handleClickOpen(index)}
-            />
-          ))}
-        </Box>
-      }
-      {/* put images here from overview */}
+  function srcset(image: string, size: number, rows = 1, cols = 1) {
+    return {
+      src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
+      srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
+    };
+  }
 
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>
-          <IconButton edge="end" color="inherit" onClick={handleClose} aria-label="close">
+  return (
+    <div className="flex flex-col">
+      <ImageList
+        gap={8}
+        className="w-full h-fit flex-shrink m-0 -mb-2"
+        variant="quilted"
+        cols={12}
+        rowHeight={90}
+      >
+        {images.map(
+          (item: string, index: number) =>
+            index < 6 && (
+              <ImageListItem
+                key={item}
+                cols={gridPattern[index].cols}
+                rows={gridPattern[index].rows}
+                onClick={() => {
+                  handleClickOpen(index);
+                }}
+              >
+                <img
+                  className="hover:opacity-90"
+                  {...srcset(item, 90, gridPattern[index].cols, gridPattern[index].rows)}
+                  alt={'image'}
+                  loading="lazy"
+                />
+              </ImageListItem>
+            )
+        )}
+
+        {images[6] && (
+          <ImageListItem
+            className="hover:opacity-90 brightness-75"
+            key={images[6]}
+            cols={gridPattern[6].cols}
+            rows={gridPattern[6].rows}
+            onClick={() => {
+              handleClickOpen(6);
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
+                +{images.length - 6} photos
+              </span>
+            </div>
+            <img
+              {...srcset(images[6], 90, gridPattern[6].cols, gridPattern[6].rows)}
+              alt={'image'}
+              loading="lazy"
+            />
+          </ImageListItem>
+        )}
+      </ImageList>
+
+      <Dialog className="text-red-50" open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle className="flex justify-end ">
+          <IconButton color="inherit" onClick={handleClose} aria-label="close">
             <CloseIcon />
           </IconButton>
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent>
           <Box display="flex" justifyContent="space-between" alignItems="center">
             <IconButton onClick={handlePrev} aria-label="previous">
               <ArrowBackIosIcon />
             </IconButton>
-            <Box display="flex" justifyContent="center" alignItems="center" flex="1">
-              <img
-                src={images[currentImageIndex]}
-                alt={`img-${currentImageIndex}`}
-                style={{ maxWidth: '100%', maxHeight: '80vh' }}
-              />
-            </Box>
+            <div className="flex flex-col justify-center">
+              <Box display="flex" justifyContent="center" alignItems="center" flex="1">
+                <img
+                  src={images[currentImageIndex]}
+                  alt={`img-${currentImageIndex}`}
+                  style={{ maxWidth: '100%', maxHeight: '80vh' }}
+                />
+              </Box>
+              <div className="mt-5 text-center">
+                {currentImageIndex + 1}/{images.length}
+              </div>
+            </div>
             <IconButton onClick={handleNext} aria-label="next">
               <ArrowForwardIosIcon />
             </IconButton>
@@ -71,3 +128,13 @@ const ImageGallery = ({ images }: any) => {
 };
 
 export default ImageGallery;
+
+const gridPattern = [
+  { rows: 2, cols: 4 },
+  { rows: 4, cols: 8 },
+  { rows: 2, cols: 4 },
+  { rows: 1.5, cols: 3 },
+  { rows: 1.5, cols: 3 },
+  { rows: 1.5, cols: 3 },
+  { rows: 1.5, cols: 3 },
+];
