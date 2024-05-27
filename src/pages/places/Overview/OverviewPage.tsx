@@ -4,6 +4,7 @@ import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
 import { Divider } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
+import PerksList from './Perks/PerksList';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   return (
@@ -25,6 +26,8 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </div>
         </div>
       </div>
+      <Divider />
+      <PerksList />
       <Divider />
       <ReviewsSection />
     </div>
