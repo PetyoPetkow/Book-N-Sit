@@ -1,46 +1,35 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import Location from './Location';
-import ImagesModal from './ImagesOverview/ImagesModal';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
+import { Divider } from '@mui/material';
+import ReviewsSection from './Reviews/ReviewsSection';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
-  const [imagesModalOpen, setImagesModalOpen] = useState<boolean>(false);
-
-  function srcset(image: string, size: number, rows = 1, cols = 1) {
-    return {
-      src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-      srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
-    };
-  }
-
   return (
-    <div>
-      <ImagesModal open={imagesModalOpen} handleClose={() => setImagesModalOpen(false)} />
-      <div className="font-bold font-sans text-2xl">The Property Name Is Here</div>
-      <Location />
-      <div className="flex gap-2 p-2 h-[530px] w-full  bg-blue-50">
-        <div className="w-3/4">
-          <ImageGallery images={imageSources}></ImageGallery>
-        </div>
-        <div className="flex flex-col gap-2 w-1/4 h-full">
-          <div className="w-full flex-1">
-            <RatingDisplay />
+    <div className="flex flex-col gap-3 pb-10">
+      <div>
+        <div className="font-bold font-sans text-2xl">The Property Name Is Here</div>
+        <Location />
+        <div className="flex gap-2 h-[530px] w-full  bg-blue-50">
+          <div className="w-3/4">
+            <ImageGallery images={imageSources}></ImageGallery>
           </div>
-          <div className="w-full flex-1">
-            <RatingDisplay />
+          <div className="flex flex-col gap-2 w-1/4 h-full">
+            <div className="w-full flex-1">
+              <RatingDisplay />
+            </div>
+            <div className="w-full flex-1">
+              <RatingDisplay />
+            </div>
           </div>
         </div>
       </div>
+      <Divider />
+      <ReviewsSection />
     </div>
   );
 };
-
-const gridPattern = [
-  { rows: 2, cols: 2 },
-  { rows: 4, cols: 5 },
-  { rows: 2, cols: 2 },
-];
 
 const imageSources = [
   'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
