@@ -6,10 +6,11 @@ import { Divider } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
+import WriteReviewSection from './Reviews/WriteReviewSection';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   return (
-    <div className="flex flex-col gap-3 pb-10">
+    <div className="flex flex-col gap-3 pb-10 mt-10">
       <div>
         <div className="font-bold font-sans text-2xl">The Property Name Is Here</div>
         <Location />
@@ -33,6 +34,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         <PropertyDescription />
       </div>
       <Divider className="mb-5" />
+      <WriteReviewSection />
       <ReviewsSection />
     </div>
   );
