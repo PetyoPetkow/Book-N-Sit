@@ -3,7 +3,7 @@ import { FC } from 'react';
 
 const Review: FC<ReviewProps> = ({ name, rating, comment }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col border border-solid border-gray-300 rounded-md">
       <div className="flex flex-col h-fit bg-white p-4 rounded-lg">
         <div className="flex justify-between">
           <div className="flex gap-4 w-full font-bold">

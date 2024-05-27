@@ -5,6 +5,7 @@ import RatingDisplay from './Rating/RatingDisplay';
 import { Divider } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
+import PropertyDescription from './PropertyDescription/PropertyDescription';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   return (
@@ -28,7 +29,10 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       </div>
       <Divider />
       <PerksList />
-      <Divider />
+      <div className="my-5">
+        <PropertyDescription />
+      </div>
+      <Divider className="mb-5" />
       <ReviewsSection />
     </div>
   );

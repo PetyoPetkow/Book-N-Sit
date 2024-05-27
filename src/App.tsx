@@ -36,7 +36,7 @@ const App = () => {
   }, [currentUser, i18n]);
 
   return (
-    <div className="min-h-screen bg-slate-200">
+    <div className="min-h-screen">
       <Header />
       <Container>
         <Routes>
