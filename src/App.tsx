@@ -14,6 +14,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase/firebase';
 import { Container } from '@mui/material';
 import OverviewPage from './pages/places/Overview/OverviewPage';
+import AddVenue from './pages/places/Venue/AddVenue';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -38,11 +39,11 @@ const App = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <Container>
+      <Container className="h-[calc(100vh-109px)]">
         <Routes>
           <Route path="/" element={<PrivateOutlet />}>
             <Route path="/Account" element={<UserAccountPage />} />
-            {/* <Route path="*" element={<Navigate to="Places" />} /> */}
+            <Route path="/AddVenue" element={<AddVenue />} />
             <Route path="/Places" element={<Places />} />
             <Route path="/Overview" element={<OverviewPage />} />
             <Route path="/Login" element={<LoginPage />} />

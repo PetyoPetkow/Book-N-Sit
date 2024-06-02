@@ -26,7 +26,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-46px)] flex items-center justify-center">
+    <div className="h-full bg-red-200 flex items-center justify-center">
       <div className="w-[500px] rounded overflow-hidden bg-white">
         <div className="h-20 bg-[#01204E] text-white text-5xl font-sans flex items-center justify-center">
           Register
