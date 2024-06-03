@@ -1,12 +1,12 @@
-import { Autocomplete, Button, InputLabel, TextField } from '@mui/material';
+import { Autocomplete, InputLabel, TextField } from '@mui/material';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
+import Address from '../../../global/models/Address';
 
-const AddressAutocomplete: FC<AddressAutocompleteProps> = () => {
+const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ onAddressChanged }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
-  const [selectedOption, setSelectedOption] = useState<LocationOption | null>(null);
 
   const loadOptions = async (input: string): Promise<any[]> => {
     let searchResults: any[] = [];
@@ -14,13 +14,16 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = () => {
     if (input.length > 2) {
       const resp = await fetchPlaces(input);
       searchResults = resp.results.map((result: any) => {
-        const { country, freeformAddress } = result.address;
-        const position = result.position;
-        const label = `${freeformAddress}, ${country}`;
-        return { label: label, coordinates: [position.lat, position.lon] };
+        const { freeformAddress, countrySubdivision } = result.address;
+        const { lat, lon } = result.position;
+        const address: Address = { freeformAddress, countrySubdivision };
+        return {
+          label: `${freeformAddress}, ${countrySubdivision}`,
+          address: address,
+          coordinates: [lat, lon],
+        };
       });
     }
-    console.log('sr', searchResults);
     return searchResults;
   };
 
@@ -39,7 +42,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = () => {
   const fetchPlaces = async (query: string) => {
     const apiKey = 'hFLA6aqhOK334yS63ZzslexGAhWomWrA';
     const response: AxiosResponse<any, AxiosError> = await axios.get(
-      `https://api.tomtom.com/search/2/geocode/${query}.json?key=${apiKey}`
+      `https://api.tomtom.com/search/2/geocode/${query}.json&countrySet=BG?key=${apiKey}`
     );
     return response.data;
   };
@@ -58,7 +61,9 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = () => {
           }
         }}
         onChange={(event, newValue) => {
-          setSelectedOption(newValue);
+          const address = newValue?.address || null;
+          const coordinates = newValue?.coordinates || null;
+          onAddressChanged(address, coordinates);
         }}
         filterOptions={(options, state) => options}
         renderInput={(params) => <TextField {...params} variant="outlined" />}
@@ -69,9 +74,12 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = () => {
 
 interface LocationOption {
   label: string;
+  address: Address;
   coordinates: [number, number];
 }
 
-interface AddressAutocompleteProps {}
+interface AddressAutocompleteProps {
+  onAddressChanged: (address: Address | null, coordinates: [number, number] | null) => void;
+}
 
 export default AddressAutocomplete;
