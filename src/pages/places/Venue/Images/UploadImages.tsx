@@ -18,29 +18,31 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-export default function InputFileUpload() {
-  const [selectedFiles, setSelectedFiles] = useState<any[]>([]);
+export default function InputFileUpload({ images, onImagesChanged }: UploadImagesProps) {
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
 
   const handleFileChange = (event: any) => {
     const files = Array.from(event.target.files).map((file, index) => ({
       id: index,
       file,
     }));
-    setSelectedFiles(files);
+    onImagesChanged(files);
   };
 
   const removeFile = (idToRemove: string) => {
-    setSelectedFiles(selectedFiles.filter((file) => file.id !== idToRemove));
+    onImagesChanged(images.filter((file: any) => file.id !== idToRemove));
   };
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
 
-    const reorderedFiles = Array.from(selectedFiles);
+    const reorderedFiles = Array.from(images);
     const [removed] = reorderedFiles.splice(result.source.index, 1);
     reorderedFiles.splice(result.destination.index, 0, removed);
 
-    setSelectedFiles(reorderedFiles);
+    onImagesChanged(reorderedFiles);
   };
 
   return (
@@ -64,7 +66,7 @@ export default function InputFileUpload() {
                 ref={provided.innerRef}
                 style={{ display: 'flex', flexWrap: 'wrap' }}
               >
-                {selectedFiles.map((file, index) => (
+                {images.map((file: any, index: number) => (
                   <Draggable key={file.id} draggableId={file.id.toString()} index={index}>
                     {(provided) => (
                       <div
@@ -122,3 +124,8 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
   }
   return <Droppable {...props}>{children}</Droppable>;
 };
+
+interface UploadImagesProps {
+  images: any;
+  onImagesChanged: (value: any) => void;
+}

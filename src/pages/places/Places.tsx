@@ -2,15 +2,17 @@ import { FC, useEffect, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs } from 'firebase/firestore';
 import { Card, CardActionArea, CardMedia } from '@mui/material';
+import Venue from '../../global/models/Venue';
+import { getVenueImage, getVenueImages } from '../../firebase/queries/AddVenueQueries';
 
 const Places: FC<PlacesProps> = () => {
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [places, setPlaces] = useState<Venue[]>([]);
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
-      const placesCol = collection(firestore, 'places');
+      const placesCol = collection(firestore, 'venues');
       const placeSnapshot = await getDocs(placesCol);
-      const placeList = placeSnapshot.docs.map((doc) => doc.data() as Place);
+      const placeList = placeSnapshot.docs.map((doc) => doc.data() as Venue);
       setPlaces(placeList);
     };
 
@@ -20,16 +22,18 @@ const Places: FC<PlacesProps> = () => {
   return (
     <>
       <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
-        {places.map(({ name, address, description }: Place, index: number) => {
+        {places.map(({ name, address, description, images }: Venue, index: number) => {
           return (
             <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
               <CardActionArea className="h-full w-full flex flex-col justify-start items-start">
                 <div className="w-full">
-                  <CardMedia className="h-60 w-full" image={mock[index].src} title="green iguana" />
+                  <CardMedia className="h-60 w-full" image={images[0] as string} />
                 </div>
 
                 <div>{name}</div>
-                <div>{address}</div>
+                <div>
+                  {address.freeformAddress} {address.countrySubdivision}
+                </div>
                 <div>
                   <span>{description}</span>
                   <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent"></div>

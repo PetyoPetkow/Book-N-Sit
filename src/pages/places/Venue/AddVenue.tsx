@@ -8,11 +8,14 @@ import Address from '../../../global/models/Address';
 import WorkingHours from '../../../global/models/WorkingHours';
 import DayOfWeek from '../../../global/models/DaysOfWeek';
 import { getTime } from 'date-fns';
+import { saveVenue } from '../../../firebase/queries/AddVenueQueries';
+import { useAuth } from '../../../contexts/authContext';
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
   const [address, setAddress] = useState<Address | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
+  const [images, setImages] = useState<any[]>([]);
   const [description, setDescription] = useState<string>('');
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     Monday: { openAt: null, closeAt: null },
@@ -23,6 +26,8 @@ const AddVenue: FC<AddVenueProps> = () => {
     Saturday: { openAt: null, closeAt: null },
     Sunday: { openAt: null, closeAt: null },
   });
+
+  const { currentUser } = useAuth();
 
   useEffect(() => {
     console.log(workingHours);
@@ -60,7 +65,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             </div>
           </div>
           <div>
-            <InputFileUpload />
+            <InputFileUpload images={images} onImagesChanged={setImages} />
           </div>
           <div>
             <InputLabel>Description</InputLabel>
@@ -95,7 +100,23 @@ const AddVenue: FC<AddVenueProps> = () => {
             />
           </div>
           <div className="flex justify-end gap-5">
-            <Button color="success" variant="contained">
+            <Button
+              color="success"
+              variant="contained"
+              onClick={() => {
+                if (address && coordinates && images && currentUser && currentUser.uid) {
+                  saveVenue({
+                    address: address,
+                    coordinates: coordinates,
+                    description: description,
+                    name: name,
+                    images: images,
+                    userId: currentUser.uid,
+                    workingHours: workingHours,
+                  });
+                }
+              }}
+            >
               Publish
             </Button>
             <Button color="error" variant="contained">

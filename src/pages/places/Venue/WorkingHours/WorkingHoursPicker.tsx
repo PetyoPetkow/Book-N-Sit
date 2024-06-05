@@ -1,10 +1,5 @@
-import { TimePicker } from '@mui/x-date-pickers';
 import WorkigHoursDay from './WorkingHoursDay';
-import { Button, IconButton } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { FC, useState } from 'react';
-import clsx from 'clsx';
+import { FC } from 'react';
 import DayOfWeek from '../../../../global/models/DaysOfWeek';
 
 const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({ onOpenAtChanged, onCloseAtChanged }) => {
