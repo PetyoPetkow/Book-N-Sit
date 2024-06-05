@@ -8,9 +8,17 @@ import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
 import WriteReviewSection from './Reviews/WriteReviewSection';
 import { getVenueImages } from '../../../firebase/queries/AddVenueQueries';
+import { db, firebase, firestore } from '../../../firebase/firebase';
+import { useParams } from 'react-router-dom';
+import { onValue, ref } from 'firebase/database';
+import Venue from '../../../global/models/Venue';
+import { Firestore, collection, doc, getDoc, getDocs } from 'firebase/firestore';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [img, setImg] = useState<any>();
+  const [venue, setVenue] = useState<Venue | null>(null);
+
+  const { venueName } = useParams();
 
   useEffect(() => {
     const a = async () => {
@@ -26,34 +34,53 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   }, []);
 
   useEffect(() => {
-    console.log(img);
-  }, [img]);
+    if (venueName) {
+      const a = async () => {
+        const docRef = doc(firestore, 'venues', venueName);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setVenue(docSnap.data() as Venue);
+        } else {
+          console.log('venue with name ... does not exist');
+        }
+      };
+
+      a();
+    }
+  }, [venueName]);
+
   return (
-    <div className="flex flex-col gap-3 pb-10 mt-10">
-      <div>
-        <div className="font-bold font-sans text-2xl">The Property Name Is Here</div>
-        <Location />
-        <div className="flex gap-2 h-[530px] w-full  bg-blue-50">
-          <div className="w-3/4">{img && <ImageGallery images={img}></ImageGallery>}</div>
-          <div className="flex flex-col gap-2 w-1/4 h-full">
-            <div className="w-full flex-1">
-              <RatingDisplay />
-            </div>
-            <div className="w-full flex-1">
-              <RatingDisplay />
+    <>
+      {venue && (
+        <div className="flex flex-col gap-3 pb-10 mt-10">
+          <div>
+            <div className="font-bold font-sans text-2xl">{venue.name}</div>
+            <Location />
+            <div className="flex gap-2 h-[530px] w-full  bg-blue-50">
+              <div className="w-3/4">
+                <ImageGallery images={venue.images}></ImageGallery>
+              </div>
+              <div className="flex flex-col gap-2 w-1/4 h-full">
+                <div className="w-full flex-1">
+                  <RatingDisplay />
+                </div>
+                <div className="w-full flex-1">
+                  <RatingDisplay />
+                </div>
+              </div>
             </div>
           </div>
+          <Divider />
+          <PerksList />
+          <div className="my-5">
+            <PropertyDescription />
+          </div>
+          <Divider className="mb-5" />
+          <WriteReviewSection />
+          <ReviewsSection />
         </div>
-      </div>
-      <Divider />
-      <PerksList />
-      <div className="my-5">
-        <PropertyDescription />
-      </div>
-      <Divider className="mb-5" />
-      <WriteReviewSection />
-      <ReviewsSection />
-    </div>
+      )}
+    </>
   );
 };
 

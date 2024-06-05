@@ -4,9 +4,12 @@ import { Firestore, collection, getDocs } from 'firebase/firestore';
 import { Card, CardActionArea, CardMedia } from '@mui/material';
 import Venue from '../../global/models/Venue';
 import { getVenueImage, getVenueImages } from '../../firebase/queries/AddVenueQueries';
+import { useNavigate } from 'react-router-dom';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
@@ -25,7 +28,12 @@ const Places: FC<PlacesProps> = () => {
         {places.map(({ name, address, description, images }: Venue, index: number) => {
           return (
             <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
-              <CardActionArea className="h-full w-full flex flex-col justify-start items-start">
+              <CardActionArea
+                className="h-full w-full flex flex-col justify-start items-start"
+                onClick={(event) => {
+                  navigate(`${encodeURI(name)}`);
+                }}
+              >
                 <div className="w-full">
                   <CardMedia className="h-60 w-full" image={images[0] as string} />
                 </div>

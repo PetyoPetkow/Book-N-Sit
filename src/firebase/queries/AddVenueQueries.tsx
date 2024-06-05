@@ -3,17 +3,14 @@ import { firestore, storage } from '../firebase';
 import Venue from '../../global/models/Venue';
 import { collection, doc, setDoc } from 'firebase/firestore';
 
-export const uploadImages = async (files: any[]) => {
+export const uploadImages = async (files: any[], venueName: string) => {
   const metadata = {
     contentType: 'image/jpeg',
   };
 
   const uploadPromises = files.map((file) => {
-    console.log(file);
-    const uniqueId = doc(collection(firestore, 'images')).id;
-    const storageRef = ref(storage, `images/${uniqueId}`);
+    const storageRef = ref(storage, `images/${encodeURI(venueName)}/${file.file.name}`);
     return uploadBytes(storageRef, file.file, metadata).then((value: UploadResult) => {
-      console.log(value);
       return getDownloadURL(storageRef);
     });
   });
@@ -24,7 +21,7 @@ export const uploadImages = async (files: any[]) => {
 export const saveVenue = async (venue: Venue): Promise<void> => {
   try {
     // Upload images
-    const imageUrls = await uploadImages(venue.images);
+    const imageUrls = await uploadImages(venue.images, venue.name);
 
     // Prepare venue data
     const venueData = {
