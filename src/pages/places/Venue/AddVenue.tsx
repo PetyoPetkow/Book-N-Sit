@@ -113,6 +113,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                     images: images,
                     userId: currentUser.uid,
                     workingHours: workingHours,
+                    reviews: [],
                   });
                 }
               }}

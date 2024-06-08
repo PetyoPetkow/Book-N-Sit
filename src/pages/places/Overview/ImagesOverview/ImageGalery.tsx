@@ -24,7 +24,7 @@ const ImageGallery = ({ images }: any) => {
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-white">
       <ImageList
         gap={8}
         className="w-full h-fit flex-shrink m-0"

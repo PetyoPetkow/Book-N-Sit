@@ -1,4 +1,6 @@
-export const reviewsMockData = [
+import Review from '../../../../global/models/Review';
+
+export const reviewsMockData: Review[] = [
   {
     name: 'John Smith',
     rating: 4,

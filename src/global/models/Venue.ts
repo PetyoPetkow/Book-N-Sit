@@ -1,4 +1,5 @@
 import Address from './Address';
+import Review from './Review';
 import WorkingHours from './WorkingHours';
 
 export default interface Venue {
@@ -8,5 +9,6 @@ export default interface Venue {
   images: File[] | string[];
   description: string;
   workingHours: WorkingHours;
+  reviews: Review[];
   userId: string;
 }

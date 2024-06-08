@@ -13,25 +13,13 @@ import { useParams } from 'react-router-dom';
 import { onValue, ref } from 'firebase/database';
 import Venue from '../../../global/models/Venue';
 import { Firestore, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import OwnerInfo from './Owner/OwnerInfo';
+import { reviewsMockData } from './Reviews/ReviewsMockData';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
-  const [img, setImg] = useState<any>();
   const [venue, setVenue] = useState<Venue | null>(null);
 
   const { venueName } = useParams();
-
-  useEffect(() => {
-    const a = async () => {
-      const b = await getVenueImages([
-        'images/cCF1KexJ8Fxl3BxDT0r5',
-        'images/PE670Tg76kw4h2sY1Un3',
-        'images/y4eo8nqNfu7J4MhLv0RA',
-      ]);
-      setImg(b);
-    };
-
-    a();
-  }, []);
 
   useEffect(() => {
     if (venueName) {
@@ -56,16 +44,16 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           <div>
             <div className="font-bold font-sans text-2xl">{venue.name}</div>
             <Location />
-            <div className="flex gap-2 h-[530px] w-full  bg-blue-50">
+            <div className="flex gap-2 h-[530px] w-full  ">
               <div className="w-3/4">
                 <ImageGallery images={venue.images}></ImageGallery>
               </div>
               <div className="flex flex-col gap-2 w-1/4 h-full">
                 <div className="w-full flex-1">
-                  <RatingDisplay />
+                  <RatingDisplay reviews={reviewsMockData} />
                 </div>
                 <div className="w-full flex-1">
-                  <RatingDisplay />
+                  <OwnerInfo />
                 </div>
               </div>
             </div>

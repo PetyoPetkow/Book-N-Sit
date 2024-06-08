@@ -1,59 +1,101 @@
-import { Avatar, Divider } from '@mui/material';
-import { FC } from 'react';
+import { Avatar, Divider, Rating, IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { FC, useEffect, useRef, useState } from 'react';
+import Review from '../../../../global/models/Review';
 
-const RatingDisplay: FC<RatingDisplayProps> = () => {
+const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % reviews.length);
+    }, 5000);
+
+    return () => clearInterval(intervalRef.current!);
+  }, [reviews.length]);
+
+  const stopAutoCycle = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const handlePrevious = () => {
+    stopAutoCycle();
+    setCurrentReviewIndex((prevIndex) => (prevIndex === 0 ? reviews.length - 1 : prevIndex - 1));
+  };
+
+  const handleNext = () => {
+    stopAutoCycle();
+    setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % reviews.length);
+  };
+
+  const currentReview = reviews[currentReviewIndex];
   const rating = generateRandomFloat();
   const ratingValue = getRatingValue(Number(rating));
 
   return (
-    <div className="flex flex-col h-full border border-1 border-solid border-gray-300 ">
-      <div className="flex justify-end gap-3 h-12 p-2">
+    <div className="flex flex-col h-full overflow-hidden border border-solid border-[#005C78]">
+      <div className="flex justify-end gap-3 h-12 p-2 bg-[#006989]">
         <div className="flex flex-col items-start">
-          <div className="flex justify-end items-center font-bold text-xl">{ratingValue}</div>
-          <div className="text-gray-500 text-xs">51 reviews</div>
+          <div className="flex justify-end items-center font-bold text-xl text-white">
+            {ratingValue}
+          </div>
+          <div className="text-xs text-white">51 reviews</div>
         </div>
-        <div className="flex justify-center items-center h-10 w-10 bg-[#0d9488] rounded-tl-2xl rounded-br-2xl text-white text-xl font-bold">
+        <div className="flex justify-center items-center h-10 w-10 bg-white rounded-tl-2xl rounded-br-2xl text-[#005C78] text-xl font-bold">
           {rating}
         </div>
       </div>
       <Divider />
-      <div className="p-3">
-        <div className="flex items-start gap-2">
-          <Avatar />
-          <div className="font-bold">John Smith</div>
+      <div className="p-3 flex items-center">
+        <div className="flex-1">
+          <div className="flex items-start gap-2">
+            <Avatar />
+            <div>
+              <div className="font-bold">{currentReview.name}</div>
+              <Rating value={currentReview.rating} readOnly />
+            </div>
+          </div>
+          <div className="mt-2 line-clamp-5">{currentReview.comment}</div>
         </div>
-        <div className="mt-2 line-clamp-5">
-          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium
-          voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati
-          cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id
-          est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam
-          libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod
-          maxime placeat facere possimus.
-        </div>
+      </div>
+      <div className="flex justify-center">
+        <IconButton onClick={handlePrevious}>
+          <ArrowBackIcon />
+        </IconButton>
+        <IconButton onClick={handleNext}>
+          <ArrowForwardIcon />
+        </IconButton>
       </div>
     </div>
   );
 };
 
-interface RatingDisplayProps {}
+interface RatingDisplayProps {
+  reviews: Review[];
+}
 
 const generateRandomFloat = () => {
   const min = 0;
-  const max = 10;
+  const max = 5;
   const randomValue = Math.random() * (max - min) + min;
   return randomValue.toFixed(1);
 };
 
 const getRatingValue = (rating: number) => {
-  if (rating < 3) {
+  if (rating < 2) {
     return Ratings[0];
-  } else if (rating < 6) {
+  } else if (rating < 3) {
     return Ratings[1];
-  } else if (rating < 8) {
+  } else if (rating < 4) {
     return Ratings[2];
-  } else if (rating < 9) {
+  } else if (rating < 4.5) {
     return Ratings[3];
-  } else if (rating > 9) {
+  } else if (rating < 5) {
     return Ratings[4];
   }
 };

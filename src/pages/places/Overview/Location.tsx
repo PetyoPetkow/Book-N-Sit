@@ -4,8 +4,8 @@ import { IconButton } from '@mui/material';
 
 const Location: FC<LocationProps> = () => {
   return (
-    <div>
-      <IconButton>
+    <div className="bg-[#F3F7EC] w-fit pr-3 my-2 py-0 rounded-full">
+      <IconButton size="small">
         <LocationOnIcon />
       </IconButton>
       Some location,asdasd

@@ -17,6 +17,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useAuth } from '../contexts/authContext';
 import flagBG from './flagsImages/bulgaria.png';
 import flagUK from './flagsImages/united-kingdom.png';
+import logo from './logos/logo.png';
 import { firestore } from '../firebase/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
@@ -84,10 +85,10 @@ const Header: FC<HeaderProps> = () => {
   ];
 
   return (
-    <AppBar className="bg-[#0d9488]" position="static">
+    <AppBar className="bg-[#006989]" position="static">
       <Container>
         <div className="w-full flex justify-between items-center mt-2">
-          <div className="text-2xl font-bold font-sans">Book N' Sit</div>
+          <img className="h-14" src={logo} />
           <div className="flex">
             {userLoggedIn && currentUser ? (
               <div>
