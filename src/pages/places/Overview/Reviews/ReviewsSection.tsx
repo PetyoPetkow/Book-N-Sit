@@ -1,28 +1,25 @@
 import { FC, useState } from 'react';
-import Review from './Review';
+import ReviewDisplay from './ReviewDisplay';
 import { Pagination } from '@mui/material';
-import { reviewsMockData } from './ReviewsMockData';
+import Review from '../../../../global/models/Review';
 
-const ReviewsSection: FC<ReviewsSectionProps> = ({}) => {
+const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
   const [page, setPage] = useState<number>(1);
   const commentsPerPage = 5;
-  const pageCount = Math.ceil(reviewsMockData.length / commentsPerPage);
+  const pageCount = Math.ceil(reviews.length / commentsPerPage);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
 
-  const displayedComments = reviewsMockData.slice(
-    (page - 1) * commentsPerPage,
-    page * commentsPerPage
-  );
+  const displayedComments = reviews.slice((page - 1) * commentsPerPage, page * commentsPerPage);
 
   return (
     <>
       {displayedComments.map((commentEntry, index) => (
-        <Review
+        <ReviewDisplay
           key={index}
-          name={commentEntry.name}
+          name={commentEntry.userId}
           rating={commentEntry.rating}
           comment={commentEntry.comment}
         />
@@ -32,6 +29,8 @@ const ReviewsSection: FC<ReviewsSectionProps> = ({}) => {
   );
 };
 
-interface ReviewsSectionProps {}
+interface ReviewsSectionProps {
+  reviews: Review[];
+}
 
 export default ReviewsSection;

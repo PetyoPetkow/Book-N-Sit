@@ -1,7 +1,7 @@
 import { Badge, Button, Rating, TextField } from '@mui/material';
 import { FC, useState } from 'react';
 
-const WriteReviewSection: FC<WriteReviewSectionProps> = () => {
+const WriteReviewSection: FC<WriteReviewSectionProps> = ({ postReview }) => {
   const [comment, setComment] = useState<string>('');
   const maxCommentLength = 255;
 
@@ -22,7 +22,11 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = () => {
         />
       </Badge>
       <div className="flex gap-3 justify-end">
-        <Button variant="contained" className="bg-[#028391] hover:bg-[#60b6c0]">
+        <Button
+          variant="contained"
+          className="bg-[#028391] hover:bg-[#60b6c0]"
+          onClick={() => postReview(4, comment)}
+        >
           Finish Review
         </Button>
         <Button variant="contained" className="bg-[#ff4b4b] hover:bg-[#ff6e6e]">
@@ -33,6 +37,8 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = () => {
   );
 };
 
-interface WriteReviewSectionProps {}
+interface WriteReviewSectionProps {
+  postReview: (rating: number, comment: string) => void;
+}
 
 export default WriteReviewSection;

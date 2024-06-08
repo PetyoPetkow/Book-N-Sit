@@ -7,6 +7,7 @@ import Review from '../../../../global/models/Review';
 const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentReview, setCurrentReview] = useState<Review | null>();
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
@@ -15,6 +16,16 @@ const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
 
     return () => clearInterval(intervalRef.current!);
   }, [reviews.length]);
+
+  useEffect(() => {
+    const review = reviews[currentReviewIndex];
+
+    if (review) {
+      setCurrentReview(review);
+    } else {
+      setCurrentReview(null);
+    }
+  }, [currentReviewIndex, reviews]);
 
   const stopAutoCycle = () => {
     if (intervalRef.current) {
@@ -33,7 +44,6 @@ const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
     setCurrentReviewIndex((prevIndex) => (prevIndex + 1) % reviews.length);
   };
 
-  const currentReview = reviews[currentReviewIndex];
   const rating = generateRandomFloat();
   const ratingValue = getRatingValue(Number(rating));
 
@@ -51,18 +61,21 @@ const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
         </div>
       </div>
       <Divider />
-      <div className="p-3 flex items-center">
-        <div className="flex-1">
-          <div className="flex items-start gap-2">
-            <Avatar />
-            <div>
-              <div className="font-bold">{currentReview.name}</div>
-              <Rating value={currentReview.rating} readOnly />
+
+      {currentReview && (
+        <div className="p-3 flex items-center">
+          <div className="flex-1">
+            <div className="flex items-start gap-2">
+              <Avatar />
+              <div>
+                <div className="font-bold">{currentReview.userId}</div>
+                <Rating value={currentReview.rating} readOnly />
+              </div>
             </div>
+            <div className="mt-2 line-clamp-5">{currentReview.comment}</div>
           </div>
-          <div className="mt-2 line-clamp-5">{currentReview.comment}</div>
         </div>
-      </div>
+      )}
       <div className="flex justify-center">
         <IconButton onClick={handlePrevious}>
           <ArrowBackIcon />

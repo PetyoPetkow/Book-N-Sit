@@ -1,7 +1,7 @@
 import { Avatar, Rating } from '@mui/material';
 import { FC } from 'react';
 
-const Review: FC<ReviewProps> = ({ name, rating, comment }) => {
+const ReviewDisplay: FC<ReviewDisplayProps> = ({ name, rating, comment }) => {
   return (
     <div className="flex flex-col border border-solid border-gray-300 rounded-md">
       <div className="flex flex-col h-fit bg-white p-4 rounded-lg">
@@ -21,10 +21,10 @@ const Review: FC<ReviewProps> = ({ name, rating, comment }) => {
   );
 };
 
-interface ReviewProps {
+interface ReviewDisplayProps {
   name: string;
   rating: number;
   comment: string;
 }
 
-export default Review;
+export default ReviewDisplay;

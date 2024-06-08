@@ -1,5 +1,6 @@
 export default interface Review {
-  name: string;
+  userId: string;
+  venueId: string;
   rating: number;
   comment: string;
 }

@@ -7,19 +7,27 @@ import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
 import WriteReviewSection from './Reviews/WriteReviewSection';
-import { getVenueImages } from '../../../firebase/queries/AddVenueQueries';
-import { db, firebase, firestore } from '../../../firebase/firebase';
+import { firestore } from '../../../firebase/firebase';
 import { useParams } from 'react-router-dom';
-import { onValue, ref } from 'firebase/database';
 import Venue from '../../../global/models/Venue';
-import { Firestore, collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import OwnerInfo from './Owner/OwnerInfo';
-import { reviewsMockData } from './Reviews/ReviewsMockData';
+import Review from '../../../global/models/Review';
+import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
+import { useAuth } from '../../../contexts/authContext';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
+  const { currentUser } = useAuth();
   const { venueName } = useParams();
+
+  const onFinishReviewClick = (rating: number, comment: string) => {
+    if (currentUser && venue) {
+      setReview(currentUser.uid, venue.name, rating, comment);
+    }
+  };
 
   useEffect(() => {
     if (venueName) {
@@ -37,6 +45,18 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   }, [venueName]);
 
+  useEffect(() => {
+    const a = async () => {
+      let reviews: Review[] = [];
+      if (venue) {
+        reviews = await getVenueReviews(venue.name);
+      }
+      setReviews(reviews);
+    };
+
+    a();
+  }, [venue]);
+
   return (
     <>
       {venue && (
@@ -50,7 +70,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               </div>
               <div className="flex flex-col gap-2 w-1/4 h-full">
                 <div className="w-full flex-1">
-                  <RatingDisplay reviews={reviewsMockData} />
+                  <RatingDisplay reviews={reviews} />
                 </div>
                 <div className="w-full flex-1">
                   <OwnerInfo />
@@ -64,28 +84,13 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
-          <WriteReviewSection />
-          <ReviewsSection />
+          <WriteReviewSection postReview={onFinishReviewClick} />
+          <ReviewsSection reviews={reviews} />
         </div>
       )}
     </>
   );
 };
-
-const imageSources = [
-  'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-  'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-  'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-  'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-  'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-  'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-  'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-];
 
 interface OverviewPageProps {}
 
