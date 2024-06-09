@@ -135,8 +135,9 @@ const AddVenue: FC<AddVenueProps> = () => {
                     name: name,
                     images: images,
                     userId: currentUser.uid,
+                    perks: selectedPerks.map((perk) => perk.name),
+                    venueTypes: selectedVenueTypes,
                     workingHours: workingHours,
-                    reviews: [],
                   });
                 }
               }}

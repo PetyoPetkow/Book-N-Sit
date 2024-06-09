@@ -69,23 +69,22 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         <div className="flex flex-col gap-3 pb-10 mt-10">
           <div>
             <div className="font-bold font-sans text-2xl">{venue.name}</div>
-            <Location />
+            <Location
+              address={`${venue.address.freeformAddress}, ${venue.address.countrySubdivision}`}
+            />
+            <div className="mb-4">{venue.venueTypes.join(', ')}</div>
             <div className="flex gap-2 h-[530px] w-full  ">
               <div className="w-3/4">
                 <ImageGallery images={venue.images}></ImageGallery>
               </div>
-              <div className="flex flex-col gap-2 w-1/4 h-full">
-                <div className="w-full flex-1">
-                  <RatingDisplay reviews={reviews} />
-                </div>
-                <div className="w-full flex-1">
-                  <OwnerInfo />
-                </div>
+              <div className="grid grid-rows-2 gap-2 w-1/4 h-full">
+                <RatingDisplay reviews={reviews} />
+                <OwnerInfo />
               </div>
             </div>
           </div>
           <Divider />
-          <PerksList />
+          <PerksList perksList={venue.perks} />
           <div className="my-5">
             <PropertyDescription />
           </div>

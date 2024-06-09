@@ -19,23 +19,36 @@ export const uploadImages = async (files: any[], venueName: string) => {
 };
 
 export const saveVenue = async (venue: Venue): Promise<void> => {
+  const {
+    address,
+    coordinates,
+    description,
+    images,
+    name,
+    userId,
+    perks,
+    venueTypes,
+    workingHours,
+  } = venue;
   try {
     // Upload images
-    const imageUrls = await uploadImages(venue.images, venue.name);
+    const imageUrls = await uploadImages(images, name);
 
     // Prepare venue data
     const venueData = {
-      name: venue.name,
-      address: venue.address,
-      coordinates: venue.coordinates,
+      name: name,
+      address: address,
+      coordinates: coordinates,
       images: imageUrls,
-      description: venue.description,
-      workingHours: venue.workingHours,
-      userId: venue.userId,
+      description: description,
+      perks: perks,
+      venueTypes: venueTypes,
+      workingHours: workingHours,
+      userId: userId,
     };
 
     // Save to Firestore
-    await setDoc(doc(firestore, 'venues', venue.name), venueData);
+    await setDoc(doc(firestore, 'venues', name), venueData);
     console.log('Venue successfully saved to Firestore');
   } catch (error) {
     console.error('Error saving venue:', error);
