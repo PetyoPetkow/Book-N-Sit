@@ -12,9 +12,9 @@ import { useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
 import { doc, getDoc } from 'firebase/firestore';
 import OwnerInfo from './Owner/OwnerInfo';
-import Review from '../../../global/models/Review';
 import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
 import { useAuth } from '../../../contexts/authContext';
+import Review from '../../../global/models/Review';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);

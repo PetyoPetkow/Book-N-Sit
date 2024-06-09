@@ -1,5 +1,5 @@
 import Address from './Address';
-import Review from './Review';
+import ReviewDto from './ReviewDto';
 import WorkingHours from './WorkingHours';
 
 export default interface Venue {
@@ -9,6 +9,6 @@ export default interface Venue {
   images: File[] | string[];
   description: string;
   workingHours: WorkingHours;
-  reviews: Review[];
+  reviews: ReviewDto[];
   userId: string;
 }

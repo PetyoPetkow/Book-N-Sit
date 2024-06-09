@@ -1,5 +1,5 @@
-export default interface Review {
-  username: string;
+export default interface ReviewDto {
+  userId: string;
   venueId: string;
   rating: number;
   comment: string;

@@ -1,7 +1,7 @@
 import { UploadResult, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
 import { firestore, storage } from '../firebase';
 import Venue from '../../global/models/Venue';
-import { collection, doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 
 export const uploadImages = async (files: any[], venueName: string) => {
   const metadata = {

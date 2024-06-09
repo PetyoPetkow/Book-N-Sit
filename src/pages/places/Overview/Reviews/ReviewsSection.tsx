@@ -19,7 +19,7 @@ const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
       {displayedComments.map((commentEntry, index) => (
         <ReviewDisplay
           key={index}
-          name={commentEntry.userId}
+          name={commentEntry.username}
           rating={commentEntry.rating}
           comment={commentEntry.comment}
         />
