@@ -1,0 +1,3 @@
+const MAX_COMMENT_LENGTH = 500;
+
+export { MAX_COMMENT_LENGTH };

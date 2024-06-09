@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import i18n from './i18n/i18n';
 import { doc, getDoc } from 'firebase/firestore';
 import { firestore } from './firebase/firebase';
-import { Container } from '@mui/material';
+import { Container, ThemeProvider, createTheme } from '@mui/material';
 import OverviewPage from './pages/places/Overview/OverviewPage';
 import AddVenue from './pages/places/Venue/AddVenue';
 
@@ -36,29 +36,48 @@ const App = () => {
     setUserLanguage();
   }, [currentUser, i18n]);
 
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <Container className="h-[calc(100vh-109px)]">
-        <Routes>
-          <Route path="/" element={<PrivateOutlet />}>
-            <Route path="/Account" element={<UserAccountPage />} />
-            <Route path="/AddVenue" element={<AddVenue />} />
-            <Route path="/Places" element={<Places />} />
-            <Route path="/Places/:venueName" element={<OverviewPage />} />
-            <Route path="/Overview" element={<OverviewPage />} />
-            <Route path="/Login" element={<LoginPage />} />
-            <Route path="/Register" element={<RegisterPage />} />
-          </Route>
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#006989',
+      },
+      error: {
+        main: '#E88D67',
+      },
+      secondary: {
+        main: '#F3F7EC',
+      },
+      success: {
+        main: '#0D9276',
+      },
+    },
+  });
 
-          <Route path="/" element={<PublicOutlet />}>
-            <Route path="/Places" element={<Places />} />
-            <Route path="/Login" element={<LoginPage />} />
-            <Route path="/Register" element={<RegisterPage />} />
-          </Route>
-        </Routes>
-      </Container>
-    </div>
+  return (
+    <ThemeProvider theme={theme}>
+      <div className="min-h-screen">
+        <Header />
+        <Container className="h-[calc(100vh-109px)]">
+          <Routes>
+            <Route path="/" element={<PrivateOutlet />}>
+              <Route path="/Account" element={<UserAccountPage />} />
+              <Route path="/AddVenue" element={<AddVenue />} />
+              <Route path="/Places" element={<Places />} />
+              <Route path="/Places/:venueName" element={<OverviewPage />} />
+              <Route path="/Overview" element={<OverviewPage />} />
+              <Route path="/Login" element={<LoginPage />} />
+              <Route path="/Register" element={<RegisterPage />} />
+            </Route>
+
+            <Route path="/" element={<PublicOutlet />}>
+              <Route path="/Places" element={<Places />} />
+              <Route path="/Login" element={<LoginPage />} />
+              <Route path="/Register" element={<RegisterPage />} />
+            </Route>
+          </Routes>
+        </Container>
+      </div>
+    </ThemeProvider>
   );
 };
 

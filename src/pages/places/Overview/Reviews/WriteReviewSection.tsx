@@ -1,31 +1,41 @@
 import { Badge, Button, Rating, TextField } from '@mui/material';
-import { FC, useState } from 'react';
+import { FC, SyntheticEvent } from 'react';
+import { MAX_COMMENT_LENGTH } from './ReviewConstants';
 
-const WriteReviewSection: FC<WriteReviewSectionProps> = ({ postReview }) => {
-  const [comment, setComment] = useState<string>('');
-  const maxCommentLength = 255;
-
+const WriteReviewSection: FC<WriteReviewSectionProps> = ({
+  rating,
+  comment,
+  onRatingChanged,
+  onCommentChange,
+  postReview,
+}) => {
   return (
     <div className="flex flex-col gap-3">
       <div className="text-lg font-bold">Leave a review</div>
       <div className="flex gap-3">
-        Rate: <Rating />
+        Rate: <Rating value={rating} onChange={onRatingChanged} />
       </div>
-      <Badge color="primary" badgeContent={`${comment.length}/${maxCommentLength}`}>
+      <Badge color="primary" badgeContent={`${comment.length}/${MAX_COMMENT_LENGTH}`}>
         <TextField
           className="w-full"
           rows={5}
           multiline
-          inputProps={{ maxLength: maxCommentLength }}
+          inputProps={{ maxLength: MAX_COMMENT_LENGTH }}
           value={comment}
-          onChange={(event) => setComment(event.target.value)}
+          onChange={(event) => onCommentChange(event.target.value)}
         />
       </Badge>
       <div className="flex gap-3 justify-end">
         <Button
           variant="contained"
           className="bg-[#028391] hover:bg-[#60b6c0]"
-          onClick={() => postReview(4, comment)}
+          onClick={() => {
+            if (rating) {
+              postReview(rating, comment);
+            } else {
+              console.log('Please rate the venue before submitting');
+            }
+          }}
         >
           Finish Review
         </Button>
@@ -38,6 +48,10 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({ postReview }) => {
 };
 
 interface WriteReviewSectionProps {
+  rating: number | null;
+  comment: string;
+  onRatingChanged: (event: SyntheticEvent<Element, Event>, rating: number | null) => void;
+  onCommentChange: (comment: string) => void;
   postReview: (rating: number, comment: string) => void;
 }
 

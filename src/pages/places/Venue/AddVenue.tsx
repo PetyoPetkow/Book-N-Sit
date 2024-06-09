@@ -10,6 +10,8 @@ import DayOfWeek from '../../../global/models/DaysOfWeek';
 import { getTime } from 'date-fns';
 import { saveVenue } from '../../../firebase/queries/AddVenueQueries';
 import { useAuth } from '../../../contexts/authContext';
+import VenueTypeSelector from './VenueTypeSelector/VenueTypeSelector';
+import VenuePerksSelector from './VenuePerksSelector/VenuePerksSelector';
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
@@ -17,6 +19,8 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [images, setImages] = useState<any[]>([]);
   const [description, setDescription] = useState<string>('');
+  const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([]);
+  const [selectedPerks, setSelectedPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     Monday: { openAt: null, closeAt: null },
     Tuesday: { openAt: null, closeAt: null },
@@ -77,6 +81,26 @@ const AddVenue: FC<AddVenueProps> = () => {
               onChange={(event) => setDescription(event.target.value)}
             />
           </div>
+          <div className="my-4">
+            <VenueTypeSelector
+              selectedVenueTypes={selectedVenueTypes}
+              onselectedVenueTypesChanged={(event, checked) => {
+                setSelectedVenueTypes((prevState) => {
+                  if (checked) {
+                    return [...prevState, event.target.value];
+                  } else {
+                    return prevState.filter((type) => type !== event.target.value);
+                  }
+                });
+              }}
+            />
+          </div>
+          <div>
+            <VenuePerksSelector
+              selectedPerks={selectedPerks}
+              onSelectedPerksChanged={(event, perks) => setSelectedPerks(perks)}
+            />
+          </div>
           <div>
             <WorkigHoursPicker
               onOpenAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
@@ -101,7 +125,6 @@ const AddVenue: FC<AddVenueProps> = () => {
           </div>
           <div className="flex justify-end gap-5">
             <Button
-              color="success"
               variant="contained"
               onClick={() => {
                 if (address && coordinates && images && currentUser && currentUser.uid) {

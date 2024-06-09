@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
@@ -19,13 +19,27 @@ import Review from '../../../global/models/Review';
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [rating, setRating] = useState<number | null>(null);
+  const [comment, setComment] = useState<string>('');
 
   const { currentUser } = useAuth();
   const { venueName } = useParams();
 
+  const refetchReviews = useCallback(async () => {
+    let reviews: Review[] = [];
+    if (venue) {
+      reviews = await getVenueReviews(venue.name);
+    }
+    setReviews(reviews);
+  }, [venue]);
+
   const onFinishReviewClick = (rating: number, comment: string) => {
     if (currentUser && venue) {
-      setReview(currentUser.uid, venue.name, rating, comment);
+      setReview(currentUser.uid, venue.name, rating, comment).then(() => {
+        setRating(null);
+        setComment('');
+        refetchReviews();
+      });
     }
   };
 
@@ -46,15 +60,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   }, [venueName]);
 
   useEffect(() => {
-    const a = async () => {
-      let reviews: Review[] = [];
-      if (venue) {
-        reviews = await getVenueReviews(venue.name);
-      }
-      setReviews(reviews);
-    };
-
-    a();
+    refetchReviews();
   }, [venue]);
 
   return (
@@ -84,7 +90,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
-          <WriteReviewSection postReview={onFinishReviewClick} />
+          <WriteReviewSection
+            rating={rating}
+            comment={comment}
+            onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
+              setRating(rating)
+            }
+            onCommentChange={setComment}
+            postReview={onFinishReviewClick}
+          />
           <ReviewsSection reviews={reviews} />
         </div>
       )}
