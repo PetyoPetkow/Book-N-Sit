@@ -9,8 +9,8 @@ export const uploadImages = async (files: any[], venueName: string) => {
   };
 
   const uploadPromises = files.map((file) => {
-    const storageRef = ref(storage, `images/${encodeURI(venueName)}/${file.file.name}`);
-    return uploadBytes(storageRef, file.file, metadata).then((value: UploadResult) => {
+    const storageRef = ref(storage, `images/${encodeURI(venueName)}/${file.name}`);
+    return uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
       return getDownloadURL(storageRef);
     });
   });

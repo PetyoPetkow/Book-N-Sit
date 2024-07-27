@@ -17,7 +17,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
   const [address, setAddress] = useState<Address | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<{ id: number; file: File }[]>([]);
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([]);
   const [selectedPerks, setSelectedPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
@@ -127,13 +127,13 @@ const AddVenue: FC<AddVenueProps> = () => {
             <Button
               variant="contained"
               onClick={() => {
-                if (address && coordinates && images && currentUser && currentUser.uid) {
+                if (address && coordinates && currentUser && currentUser.uid) {
                   saveVenue({
                     address: address,
                     coordinates: coordinates,
                     description: description,
                     name: name,
-                    images: images,
+                    images: images.map((image) => image.file),
                     userId: currentUser.uid,
                     perks: selectedPerks.map((perk) => perk.name),
                     venueTypes: selectedVenueTypes,

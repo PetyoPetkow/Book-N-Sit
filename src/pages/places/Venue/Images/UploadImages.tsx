@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -26,8 +26,9 @@ export default function InputFileUpload({ images, onImagesChanged }: UploadImage
   const handleFileChange = (event: any) => {
     const files = Array.from(event.target.files).map((file, index) => ({
       id: index,
-      file,
+      file: file as File,
     }));
+    console.log(files);
     onImagesChanged(files);
   };
 
@@ -43,6 +44,26 @@ export default function InputFileUpload({ images, onImagesChanged }: UploadImage
     reorderedFiles.splice(result.destination.index, 0, removed);
 
     onImagesChanged(reorderedFiles);
+  };
+
+  const compressImage = async (file: File, { quality = 1, type = file.type }) => {
+    // Get as image data
+    const imageBitmap = await createImageBitmap(file);
+
+    // Draw to canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = imageBitmap.width;
+    canvas.height = imageBitmap.height;
+    const ctx = canvas.getContext('2d');
+    ctx?.drawImage(imageBitmap, 0, 0);
+
+    // Turn into Blob
+    const blob: any = await new Promise((resolve) => canvas.toBlob(resolve, type, quality));
+
+    // Turn Blob into File
+    return new File([blob], file.name, {
+      type: blob.type,
+    });
   };
 
   return (
@@ -126,6 +147,6 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
 };
 
 interface UploadImagesProps {
-  images: any;
-  onImagesChanged: (value: any) => void;
+  images: { id: number; file: File }[];
+  onImagesChanged: (images: { id: number; file: File }[]) => void;
 }

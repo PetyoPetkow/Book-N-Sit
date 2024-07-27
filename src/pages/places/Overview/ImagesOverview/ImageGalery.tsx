@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ImageList, ImageListItem } from '@mui/material';
 import ImageDialog from './ImageDialog';
 import clsx from 'clsx';
@@ -16,46 +16,44 @@ const ImageGallery = ({ images }: any) => {
     setOpen(false);
   };
 
-  function srcset(image: string, size: number, rows = 1, cols = 1) {
-    return {
-      src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-      srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
-    };
-  }
-
   return (
     <div className="flex flex-col bg-white">
       <ImageList
         gap={8}
         className="w-full h-fit flex-shrink m-0"
         variant="quilted"
-        cols={12}
+        cols={9}
         rowHeight={90}
       >
-        {gridPattern.map((gridEntry, index) => {
+        {gridPatternn.map((gridEntry, index) => {
+          console.log(images[index]);
           const { rows, cols } = gridEntry;
           return (
-            <ImageListItem
-              className={clsx(
-                'hover:opacity-90 cursor-pointer',
-                index === gridPattern.length - 1 && 'brightness-75'
-              )}
-              key={images[index]}
-              cols={cols}
-              rows={rows}
-              onClick={() => {
-                handleClickOpen(index);
-              }}
-            >
-              {index === gridPattern.length - 1 && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
-                    +{images.length - index} photos
-                  </span>
-                </div>
-              )}
-              <img {...srcset(images[index], 90, cols, rows)} alt={'image'} loading="lazy" />
-            </ImageListItem>
+            images[index] && (
+              <ImageListItem
+                className={clsx(
+                  'hover:opacity-90 cursor-pointer',
+                  index === gridPattern.length - 1 &&
+                    images.length > gridPattern.length &&
+                    'brightness-75'
+                )}
+                key={images[index]}
+                cols={cols}
+                rows={rows}
+                onClick={() => {
+                  handleClickOpen(index);
+                }}
+              >
+                {index === gridPattern.length - 1 && images.length > gridPattern.length && (
+                  <div className="absolute inset-0 flex items-center justify-center z-10">
+                    <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
+                      +{images.length - index - 1} photos
+                    </span>
+                  </div>
+                )}
+                <img src={images[index]} />
+              </ImageListItem>
+            )
           );
         })}
       </ImageList>
@@ -80,6 +78,13 @@ const gridPattern: GridDimensions[] = [
   { rows: 1.5, cols: 3 },
   { rows: 1.5, cols: 3 },
   { rows: 1.5, cols: 3 },
+];
+
+const gridPatternn: GridDimensions[] = [
+  { rows: 5.5, cols: 6 },
+  { rows: 2, cols: 3 },
+  { rows: 2, cols: 3 },
+  { rows: 2, cols: 3 },
 ];
 
 interface GridDimensions {
