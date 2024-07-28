@@ -75,7 +75,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <div className="mb-4">{venue.venueTypes.join(', ')}</div>
             <div className="flex gap-2 h-[530px] w-full  ">
               <div className="w-3/4">
-                <ImageGallery images={venue.images}></ImageGallery>
+                <ImageGallery images={venue.images as string[]}></ImageGallery>
               </div>
               <div className="grid grid-rows-2 gap-2 w-1/4 h-full">
                 <RatingDisplay reviews={reviews} />

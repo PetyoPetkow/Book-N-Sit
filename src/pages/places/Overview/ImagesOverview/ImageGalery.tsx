@@ -1,93 +1,54 @@
-import { useState } from 'react';
-import { ImageList, ImageListItem } from '@mui/material';
-import ImageDialog from './ImageDialog';
+import { FC, useState } from 'react';
 import clsx from 'clsx';
+import FsLightbox from 'fslightbox-react';
 
-const ImageGallery = ({ images }: any) => {
-  const [open, setOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  const handleClickOpen = (index: number) => {
-    setCurrentImageIndex(index);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
+const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
+  const [currentImageIndex, setCurrentImageIndex] = useState(2);
+  const [toggler, setToggler] = useState(false);
+  const maxDisplayImages = 6;
+  const displayImages = images.slice(0, maxDisplayImages);
+  const moreImagesCount = images.length - maxDisplayImages;
 
   return (
-    <div className="flex flex-col bg-white">
-      <ImageList
-        gap={8}
-        className="w-full h-fit flex-shrink m-0"
-        variant="quilted"
-        cols={9}
-        rowHeight={90}
-      >
-        {gridPatternn.map((gridEntry, index) => {
-          console.log(images[index]);
-          const { rows, cols } = gridEntry;
-          return (
-            images[index] && (
-              <ImageListItem
-                className={clsx(
-                  'hover:opacity-90 cursor-pointer',
-                  index === gridPattern.length - 1 &&
-                    images.length > gridPattern.length &&
-                    'brightness-75'
-                )}
-                key={images[index]}
-                cols={cols}
-                rows={rows}
-                onClick={() => {
-                  handleClickOpen(index);
-                }}
-              >
-                {index === gridPattern.length - 1 && images.length > gridPattern.length && (
-                  <div className="absolute inset-0 flex items-center justify-center z-10">
-                    <span className="text-white text-xl bg-black bg-opacity-50 px-2 py-1 rounded">
-                      +{images.length - index - 1} photos
-                    </span>
-                  </div>
-                )}
-                <img src={images[index]} />
-              </ImageListItem>
-            )
-          );
-        })}
-      </ImageList>
-      <ImageDialog
-        open={open}
-        handleClose={handleClose}
-        currentImageIndex={currentImageIndex}
-        images={images}
-        setCurrentImageIndex={setCurrentImageIndex}
+    <>
+      <div className="w-full max-w-7xl mx-auto  aspect-[16/10]">
+        <div className="grid grid-cols-3 grid-rows-2 gap-2 h-full">
+          {displayImages.map((image, index) => (
+            <div
+              key={index}
+              className={clsx(
+                'relative overflow-hidden rounded-lg shadow-lg',
+                'hover:opacity-90 cursor-pointer',
+                index === 0 ? 'col-span-2 row-span-2' : '',
+                images.length === 1 ? 'col-span-3' : ''
+              )}
+              onClick={() => {
+                setCurrentImageIndex(index);
+                setToggler(!toggler);
+              }}
+            >
+              <img className="object-cover w-full h-full" src={image} alt={`image-${index}`} />
+              {index === maxDisplayImages - 1 && moreImagesCount > 0 && (
+                <div className="absolute inset-0 bg-black bg-opacity-60 flex justify-center items-center text-white text-2xl font-bold">
+                  +{moreImagesCount}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <FsLightbox
+        toggler={toggler}
+        sourceIndex={currentImageIndex}
+        sources={images}
+        type={'image'}
       />
-    </div>
+    </>
   );
 };
 
 export default ImageGallery;
 
-const gridPattern: GridDimensions[] = [
-  { rows: 2, cols: 4 },
-  { rows: 4, cols: 8 },
-  { rows: 2, cols: 4 },
-  { rows: 1.5, cols: 3 },
-  { rows: 1.5, cols: 3 },
-  { rows: 1.5, cols: 3 },
-  { rows: 1.5, cols: 3 },
-];
-
-const gridPatternn: GridDimensions[] = [
-  { rows: 5.5, cols: 6 },
-  { rows: 2, cols: 3 },
-  { rows: 2, cols: 3 },
-  { rows: 2, cols: 3 },
-];
-
-interface GridDimensions {
-  rows: number;
-  cols: number;
+interface ImageGalleryProps {
+  images: string[];
 }
