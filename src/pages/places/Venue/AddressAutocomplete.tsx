@@ -4,10 +4,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
 import Address from '../../../global/models/Address';
 
-const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
-  address,
-  onAddressChanged,
-}) => {
+const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ address, onAddressChanged }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
 

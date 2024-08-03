@@ -39,9 +39,6 @@ const AddVenue: FC<AddVenueProps> = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
-  }, [workingHours]);
-
-  useEffect(() => {
     const setData = async () => {
       if (venueId !== undefined) {
         const docRef = doc(firestore, 'venues', venueId);

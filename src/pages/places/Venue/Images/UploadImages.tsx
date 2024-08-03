@@ -19,9 +19,6 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 export default function InputFileUpload({ images, onImagesChanged }: UploadImagesProps) {
-  useEffect(() => {
-  }, [images]);
-
   const handleFileChange = (event: any) => {
     const files = Array.from(event.target.files).map((file, index) => ({
       id: index,
