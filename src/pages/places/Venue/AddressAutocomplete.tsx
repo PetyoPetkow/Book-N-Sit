@@ -4,9 +4,18 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
 import Address from '../../../global/models/Address';
 
-const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ onAddressChanged }) => {
+const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
+  address,
+  onAddressChanged,
+}) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
+
+  useEffect(() => {
+    if (address) {
+      setInputValue(`${address.freeformAddress}, ${address.countrySubdivision}`);
+    }
+  }, [address]);
 
   const loadOptions = async (input: string): Promise<any[]> => {
     let searchResults: any[] = [];
@@ -65,6 +74,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ onAddressChanged })
           const coordinates = newValue?.coordinates || null;
           onAddressChanged(address, coordinates);
         }}
+        inputValue={inputValue}
         filterOptions={(options, state) => options}
         renderInput={(params) => <TextField {...params} variant="outlined" />}
       />
@@ -79,6 +89,7 @@ interface LocationOption {
 }
 
 interface AddressAutocompleteProps {
+  address: Address | null;
   onAddressChanged: (address: Address | null, coordinates: [number, number] | null) => void;
 }
 

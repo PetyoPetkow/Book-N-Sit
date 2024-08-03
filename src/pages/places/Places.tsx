@@ -15,7 +15,9 @@ const Places: FC<PlacesProps> = () => {
     const getPlaces = async (firestore: Firestore) => {
       const placesCol = collection(firestore, 'venues');
       const placeSnapshot = await getDocs(placesCol);
-      const placeList = placeSnapshot.docs.map((doc) => doc.data() as Venue);
+      const placeList = placeSnapshot.docs.map((doc) => {
+        return { id: doc.id, ...(doc.data() as Venue) };
+      });
       setPlaces(placeList);
     };
 
@@ -25,13 +27,13 @@ const Places: FC<PlacesProps> = () => {
   return (
     <>
       <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
-        {places.map(({ name, address, description, images }: Venue, index: number) => {
+        {places.map(({ name, address, description, images, id }: Venue, index: number) => {
           return (
             <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
               <CardActionArea
                 className="h-full w-full flex flex-col justify-start items-start"
                 onClick={(event) => {
-                  navigate(`${encodeURI(name)}`);
+                  navigate(`${encodeURI(id!)}`);
                 }}
               >
                 <div className="w-full">

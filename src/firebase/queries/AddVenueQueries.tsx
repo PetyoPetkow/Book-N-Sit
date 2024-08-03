@@ -1,7 +1,8 @@
 import { UploadResult, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
-import { firestore, storage } from '../firebase';
+import { db, firebase, firestore, storage } from '../firebase';
 import Venue from '../../global/models/Venue';
-import { doc, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { push } from 'firebase/database';
 
 export const uploadImages = async (files: any[], venueName: string) => {
   const metadata = {
@@ -47,8 +48,45 @@ export const saveVenue = async (venue: Venue): Promise<void> => {
       userId: userId,
     };
 
-    // Save to Firestore
-    await setDoc(doc(firestore, 'venues', name), venueData);
+    const docRef = await addDoc(collection(firestore, 'venues'), venueData);
+
+    console.log('Venue successfully saved to Firestore');
+  } catch (error) {
+    console.error('Error saving venue:', error);
+  }
+};
+
+export const updateVenue = async (venue: Venue): Promise<void> => {
+  const {
+    address,
+    coordinates,
+    description,
+    images,
+    name,
+    userId,
+    perks,
+    venueTypes,
+    workingHours,
+    id,
+  } = venue;
+  try {
+    // Upload images
+
+    // Prepare venue data
+    const venueData = {
+      name: name,
+      address: address,
+      coordinates: coordinates,
+      description: description,
+      images: [],
+      perks: perks,
+      venueTypes: venueTypes,
+      workingHours: workingHours,
+      userId: userId,
+    };
+
+    const docRef = await updateDoc(doc(firestore, 'venues', id!), venueData);
+
     console.log('Venue successfully saved to Firestore');
   } catch (error) {
     console.error('Error saving venue:', error);

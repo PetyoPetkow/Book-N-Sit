@@ -2,13 +2,13 @@ import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
-import { Divider } from '@mui/material';
+import { Button, Divider } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
 import WriteReviewSection from './Reviews/WriteReviewSection';
 import { firestore } from '../../../firebase/firebase';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
 import { doc, getDoc } from 'firebase/firestore';
 import OwnerInfo from './Owner/OwnerInfo';
@@ -24,6 +24,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
   const { currentUser } = useAuth();
   const { venueName } = useParams();
+  const navigate = useNavigate();
 
   const refetchReviews = useCallback(async () => {
     let reviews: Review[] = [];
@@ -49,7 +50,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         const docRef = doc(firestore, 'venues', venueName);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setVenue(docSnap.data() as Venue);
+          setVenue({ id: docSnap.id, ...(docSnap.data() as Venue) });
         } else {
           console.log('venue with name ... does not exist');
         }
@@ -68,7 +69,19 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       {venue && (
         <div className="flex flex-col gap-3 pb-10 mt-10">
           <div>
-            <div className="font-bold font-sans text-2xl">{venue.name}</div>
+            <div className="flex justify-between">
+              <div className="font-bold font-sans text-2xl">{venue.name}</div>
+              {currentUser?.uid === venue.userId && (
+                <Button
+                  variant="contained"
+                  onClick={(event) => {
+                    navigate(`/addVenue/${encodeURI(venue.id!)}`);
+                  }}
+                >
+                  Edit
+                </Button>
+              )}
+            </div>
             <Location
               address={`${venue.address.freeformAddress}, ${venue.address.countrySubdivision}`}
             />

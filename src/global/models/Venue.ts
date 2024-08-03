@@ -11,4 +11,5 @@ export default interface Venue {
   venueTypes: string[];
   workingHours: WorkingHours;
   userId: string;
+  id?: string;
 }

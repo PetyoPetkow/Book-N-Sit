@@ -61,7 +61,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="/Account" element={<UserAccountPage />} />
-              <Route path="/AddVenue" element={<AddVenue />} />
+              <Route path="/AddVenue/:venueId" element={<AddVenue />} />
               <Route path="/Places" element={<Places />} />
               <Route path="/Places/:venueName" element={<OverviewPage />} />
               <Route path="/Overview" element={<OverviewPage />} />

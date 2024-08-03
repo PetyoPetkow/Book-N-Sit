@@ -20,7 +20,6 @@ const VisuallyHiddenInput = styled('input')({
 
 export default function InputFileUpload({ images, onImagesChanged }: UploadImagesProps) {
   useEffect(() => {
-    console.log(images);
   }, [images]);
 
   const handleFileChange = (event: any) => {
@@ -28,7 +27,6 @@ export default function InputFileUpload({ images, onImagesChanged }: UploadImage
       id: index,
       file: file as File,
     }));
-    console.log(files);
     onImagesChanged(files);
   };
 

@@ -8,10 +8,14 @@ import Address from '../../../global/models/Address';
 import WorkingHours from '../../../global/models/WorkingHours';
 import DayOfWeek from '../../../global/models/DaysOfWeek';
 import { getTime } from 'date-fns';
-import { saveVenue } from '../../../firebase/queries/AddVenueQueries';
+import { saveVenue, updateVenue } from '../../../firebase/queries/AddVenueQueries';
 import { useAuth } from '../../../contexts/authContext';
 import VenueTypeSelector from './VenueTypeSelector/VenueTypeSelector';
 import VenuePerksSelector from './VenuePerksSelector/VenuePerksSelector';
+import { useParams } from 'react-router-dom';
+import { firestore } from '../../../firebase/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import Venue from '../../../global/models/Venue';
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
@@ -31,11 +35,31 @@ const AddVenue: FC<AddVenueProps> = () => {
     Sunday: { openAt: null, closeAt: null },
   });
 
+  const { venueId } = useParams();
   const { currentUser } = useAuth();
 
   useEffect(() => {
-    console.log(workingHours);
   }, [workingHours]);
+
+  useEffect(() => {
+    const setData = async () => {
+      if (venueId !== undefined) {
+        const docRef = doc(firestore, 'venues', venueId);
+        const docSnap = await getDoc(docRef);
+        const venue = docSnap.data() as Venue;
+        const { name, address, coordinates, images, description, venueTypes, perks, workingHours } =
+          venue;
+        setName(name);
+        setAddress(address);
+        setCoordinates(coordinates);
+        setDescription(description);
+        setSelectedVenueTypes(venueTypes);
+        setWorkingHours(workingHours);
+      }
+    };
+
+    setData();
+  }, []);
 
   return (
     <div className="flex align-middle justify-center items-center w-full">
@@ -58,6 +82,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             </div>
             <div className="flex-1 ">
               <AddressAutocomplete
+                address={address}
                 onAddressChanged={(
                   address: Address | null,
                   coordinates: [number, number] | null
@@ -128,17 +153,34 @@ const AddVenue: FC<AddVenueProps> = () => {
               variant="contained"
               onClick={() => {
                 if (address && coordinates && currentUser && currentUser.uid) {
-                  saveVenue({
-                    address: address,
-                    coordinates: coordinates,
-                    description: description,
-                    name: name,
-                    images: images.map((image) => image.file),
-                    userId: currentUser.uid,
-                    perks: selectedPerks.map((perk) => perk.name),
-                    venueTypes: selectedVenueTypes,
-                    workingHours: workingHours,
-                  });
+                  if (venueId) {
+                    updateVenue({
+                      address: address,
+                      coordinates: coordinates,
+                      description: description,
+                      name: name,
+                      images: images.map((image) => image.file),
+                      userId: currentUser.uid,
+                      perks: selectedPerks.map((perk) => perk.name),
+                      venueTypes: selectedVenueTypes,
+                      workingHours: workingHours,
+                      id: venueId,
+                    });
+                  } else {
+                    saveVenue({
+                      address: address,
+                      coordinates: coordinates,
+                      description: description,
+                      name: name,
+                      images: images.map((image) => image.file),
+                      userId: currentUser.uid,
+                      perks: selectedPerks.map((perk) => perk.name),
+                      venueTypes: selectedVenueTypes,
+                      workingHours: workingHours,
+                    });
+                  }
+                } else {
+                  //console.log(address, coordinates, currentUser, currentUser?.uid);
                 }
               }}
             >
