@@ -1,9 +1,12 @@
 import { InputLabel } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import DayOfWeek from '../../../../global/models/DaysOfWeek';
+import WorkingHours from '../../../../global/models/WorkingHours';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
+  openAt,
+  closeAt,
   dayOfWeek,
   onOpenAtChanged,
   onCloseAtChanged,
@@ -16,12 +19,14 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
           className="flex-1"
           views={['hours', 'minutes']}
           slotProps={{ textField: { size: 'small' } }}
+          value={openAt}
           onChange={onOpenAtChanged}
         />
         <TimePicker
           className="flex-1"
           views={['hours', 'minutes']}
           slotProps={{ textField: { size: 'small' } }}
+          value={closeAt}
           onChange={onCloseAtChanged}
         />
       </div>
@@ -31,6 +36,8 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
 
 interface WorkigHoursDayProps {
   dayOfWeek: DayOfWeek;
+  openAt: Date | null;
+  closeAt: Date | null;
   onOpenAtChanged: (date: Date | null) => void;
   onCloseAtChanged: (date: Date | null) => void;
 }

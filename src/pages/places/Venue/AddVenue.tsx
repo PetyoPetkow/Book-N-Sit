@@ -24,7 +24,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [images, setImages] = useState<{ id: number; file: File }[]>([]);
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([]);
-  const [selectedPerks, setSelectedPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
+  const [selectedPerks, setSelectedPerks] = useState<string[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     Monday: { openAt: null, closeAt: null },
     Tuesday: { openAt: null, closeAt: null },
@@ -51,6 +51,7 @@ const AddVenue: FC<AddVenueProps> = () => {
         setCoordinates(coordinates);
         setDescription(description);
         setSelectedVenueTypes(venueTypes);
+        setSelectedPerks(perks);
         setWorkingHours(workingHours);
       }
     };
@@ -125,6 +126,7 @@ const AddVenue: FC<AddVenueProps> = () => {
           </div>
           <div>
             <WorkigHoursPicker
+              workingHours={workingHours}
               onOpenAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
                 setWorkingHours((prevState) => ({
                   ...prevState,
@@ -158,7 +160,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                       name: name,
                       images: images.map((image) => image.file),
                       userId: currentUser.uid,
-                      perks: selectedPerks.map((perk) => perk.name),
+                      perks: selectedPerks,
                       venueTypes: selectedVenueTypes,
                       workingHours: workingHours,
                       id: venueId,
@@ -171,7 +173,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                       name: name,
                       images: images.map((image) => image.file),
                       userId: currentUser.uid,
-                      perks: selectedPerks.map((perk) => perk.name),
+                      perks: selectedPerks,
                       venueTypes: selectedVenueTypes,
                       workingHours: workingHours,
                     });

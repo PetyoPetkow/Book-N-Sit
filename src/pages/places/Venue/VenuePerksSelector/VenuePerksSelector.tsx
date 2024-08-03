@@ -18,7 +18,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
         {perksMock.map((perk) => (
           <ToggleButton
             key={perk.name}
-            value={perk}
+            value={perk.name}
             color="success"
             className="flex items-center p-3 border border-solid border-gray-300 rounded gap-3"
             sx={{
@@ -38,11 +38,8 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
 };
 
 interface VenuePerksSelectorProps {
-  selectedPerks: { icon: JSX.Element; name: string }[];
-  onSelectedPerksChanged: (
-    event: MouseEvent<HTMLElement>,
-    perks: { icon: JSX.Element; name: string }[]
-  ) => void;
+  selectedPerks: string[];
+  onSelectedPerksChanged: (event: MouseEvent<HTMLElement>, perks: string[]) => void;
 }
 
 export default VenuePerksSelector;
