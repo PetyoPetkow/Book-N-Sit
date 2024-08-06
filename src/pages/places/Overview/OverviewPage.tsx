@@ -177,37 +177,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
-          <div className="border border-solid border-black h-[530px] w-[855px] grid grid-cols-12 grid-rows-12 gap-1">
-            <div className="border border-solid border-green-300 col-span-8 row-span-8"></div>
-            <div className="border border-solid border-green-300 col-span-4 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-4 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-4"></div>
-          </div>
-          <div className="border border-solid border-black h-[530px] w-[855px] grid grid-cols-12 grid-rows-8 gap-1">
-            <div className="border border-solid border-green-300 col-span-8 row-span-8"></div>
-            <div className="border border-solid border-green-300 col-span-4 row-span-4"></div>
-            <div className="border border-solid border-green-300 col-span-4 row-span-4"></div>
-          </div>
-          <div className="border border-solid border-black h-[530px] w-[855px] grid grid-cols-12 grid-rows-12 gap-1">
-            <div className="border border-solid border-green-300 col-span-9 row-span-9"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-          </div>
-          <div className="border border-solid border-black h-[530px] w-[855px] grid grid-cols-12 grid-rows-12 gap-1">
-            <div className="border border-solid border-green-300 col-span-9 row-span-12"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-            <div className="border border-solid border-green-300 col-span-3 row-span-3"></div>
-          </div>
           <WriteReviewSection
             rating={rating}
             comment={comment}
