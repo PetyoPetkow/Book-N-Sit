@@ -16,11 +16,10 @@ import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsSe
 import { useAuth } from '../../../contexts/authContext';
 import Review from '../../../global/models/Review';
 import CloseIcon from '@mui/icons-material/Close';
-import InputFileUpload from '../Venue/Images/UploadImages';
 import { uploadImages } from '../../../firebase/queries/AddVenueQueries';
-import { ref } from 'firebase/storage';
 import styled from '@emotion/styled';
 import EditImages from '../Venue/Images/EditImages';
+import MapComponent from '../Venue/MapComponent';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -167,6 +166,16 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               </div>
               <div className="grid grid-rows-2 gap-2 w-1/4 h-full">
                 <RatingDisplay reviews={reviews} />
+                {venue.coordinates && (
+                  <div className="overflow-hidden border border-solid border-[#005C78]">
+                    <MapComponent
+                      lat={venue.coordinates[0]}
+                      lng={venue.coordinates[1]}
+                      setCoordinates={() => {}}
+                      draggable={false}
+                    />
+                  </div>
+                )}
                 <OwnerInfo />
               </div>
             </div>

@@ -16,6 +16,7 @@ import { useParams } from 'react-router-dom';
 import { firestore } from '../../../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Venue from '../../../global/models/Venue';
+import MapComponent from './MapComponent';
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
@@ -91,6 +92,16 @@ const AddVenue: FC<AddVenueProps> = () => {
                 }}
               />
             </div>
+          </div>
+          <div>
+            {coordinates && (
+              <MapComponent
+                lat={coordinates[0]}
+                lng={coordinates[1]}
+                setCoordinates={setCoordinates}
+                draggable={true}
+              />
+            )}
           </div>
           <div>
             <InputFileUpload
