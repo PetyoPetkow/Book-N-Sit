@@ -5,6 +5,10 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { DragDropContext, Droppable, Draggable, DroppableProps } from 'react-beautiful-dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { uploadImages } from '../../../../firebase/queries/AddVenueQueries';
+import { storage } from '../../../../firebase/firebase';
+import { deleteObject, ref } from 'firebase/storage';
+import { useParams } from 'react-router-dom';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -18,17 +22,45 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-export default function InputFileUpload({ images, onImagesChanged }: UploadImagesProps) {
-  const handleFileChange = (event: any) => {
-    const files = Array.from(event.target.files).map((file, index) => ({
-      id: index,
-      file: file as File,
-    }));
-    onImagesChanged(files);
-  };
+export default function InputFileUpload({
+  images,
+  onImagesChanged,
+  files,
+  onAddFiles,
+}: UploadImagesProps) {
+  // const handleFileChange = async (event: any) => {
+  //   const files = Array.from(event.target.files).map((file, index) => ({
+  //     id: index,
+  //     file: file as File,
+  //   }));
+  //   console.log(files);
+  //   const imageUrls = await uploadImages(files, 'name');
+
+  //   onImagesChanged(imageUrls);
+  // };
+
+  // const handleFileChange = async (event: any) => {
+  //   const files = Array.from(event.target.files).map((file, index) => ({
+  //     id: index,
+  //     file: file as File,
+  //   }));
+  //   console.log(files);
+  //   const imageUrls = await uploadImages(files, 'name');
+
+  //   onImagesChanged(imageUrls);
+  // };
 
   const removeFile = (idToRemove: string) => {
-    onImagesChanged(images.filter((file: any) => file.id !== idToRemove));
+    onImagesChanged(images.filter((file: string) => file !== idToRemove));
+    const fileToDeleteRef = ref(storage, idToRemove);
+
+    deleteObject(fileToDeleteRef)
+      .then(() => {
+        console.log('file deleted successfully');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const onDragEnd = (result: any) => {
@@ -71,7 +103,13 @@ export default function InputFileUpload({ images, onImagesChanged }: UploadImage
         startIcon={<CloudUploadIcon />}
       >
         Upload Images
-        <VisuallyHiddenInput type="file" multiple onChange={handleFileChange} />
+        <VisuallyHiddenInput
+          type="file"
+          multiple
+          onChange={(event) => {
+            onAddFiles(event.target.files);
+          }}
+        />
       </Button>
       <div style={{ marginTop: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
@@ -82,40 +120,41 @@ export default function InputFileUpload({ images, onImagesChanged }: UploadImage
                 ref={provided.innerRef}
                 style={{ display: 'flex', flexWrap: 'wrap' }}
               >
-                {images.map((file: any, index: number) => (
-                  <Draggable key={file.id} draggableId={file.id.toString()} index={index}>
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        style={{
-                          userSelect: 'none',
-                          padding: '10px',
-                          margin: '10px',
-                          ...provided.draggableProps.style,
-                        }}
-                      >
-                        <Badge
-                          badgeContent={
-                            <IconButton
-                              className="bg-white p-0"
-                              onClick={() => removeFile(file.id)}
-                            >
-                              <HighlightOffIcon />
-                            </IconButton>
-                          }
+                {files &&
+                  Array.from(files).map((file: File, index: number) => (
+                    <Draggable key={'image' + index} draggableId={file.name} index={index}>
+                      {(provided) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
+                          style={{
+                            userSelect: 'none',
+                            padding: '10px',
+                            margin: '10px',
+                            ...provided.draggableProps.style,
+                          }}
                         >
-                          <img
-                            src={URL.createObjectURL(file.file)}
-                            alt={`file-preview-${index}`}
-                            style={{ maxWidth: '100px', maxHeight: '100px' }}
-                          />
-                        </Badge>
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
+                          <Badge
+                            badgeContent={
+                              <IconButton
+                                className="bg-white p-0"
+                                onClick={() => removeFile(file.name)}
+                              >
+                                <HighlightOffIcon />
+                              </IconButton>
+                            }
+                          >
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`file-preview-${index}`}
+                              style={{ maxWidth: '100px', maxHeight: '100px' }}
+                            />
+                          </Badge>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
                 {provided.placeholder}
               </div>
             )}
@@ -142,6 +181,8 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
 };
 
 interface UploadImagesProps {
-  images: { id: number; file: File }[];
-  onImagesChanged: (images: { id: number; file: File }[]) => void;
+  images: string[];
+  onImagesChanged: (images: string[]) => void;
+  files: FileList | null;
+  onAddFiles: (files: FileList | null) => void;
 }

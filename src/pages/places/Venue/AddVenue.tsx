@@ -21,7 +21,8 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
   const [address, setAddress] = useState<Address | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
-  const [images, setImages] = useState<{ id: number; file: File }[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [files, setFiles] = useState<FileList | null>(null);
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([]);
   const [selectedPerks, setSelectedPerks] = useState<string[]>([]);
@@ -92,7 +93,12 @@ const AddVenue: FC<AddVenueProps> = () => {
             </div>
           </div>
           <div>
-            <InputFileUpload images={images} onImagesChanged={setImages} />
+            <InputFileUpload
+              images={images}
+              onImagesChanged={setImages}
+              files={files}
+              onAddFiles={setFiles}
+            />
           </div>
           <div>
             <InputLabel>Description</InputLabel>
@@ -158,7 +164,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                       coordinates: coordinates,
                       description: description,
                       name: name,
-                      images: images.map((image) => image.file),
+                      images: images,
                       userId: currentUser.uid,
                       perks: selectedPerks,
                       venueTypes: selectedVenueTypes,
@@ -166,17 +172,19 @@ const AddVenue: FC<AddVenueProps> = () => {
                       id: venueId,
                     });
                   } else {
-                    saveVenue({
-                      address: address,
-                      coordinates: coordinates,
-                      description: description,
-                      name: name,
-                      images: images.map((image) => image.file),
-                      userId: currentUser.uid,
-                      perks: selectedPerks,
-                      venueTypes: selectedVenueTypes,
-                      workingHours: workingHours,
-                    });
+                    saveVenue(
+                      {
+                        address: address,
+                        coordinates: coordinates,
+                        description: description,
+                        name: name,
+                        userId: currentUser.uid,
+                        perks: selectedPerks,
+                        venueTypes: selectedVenueTypes,
+                        workingHours: workingHours,
+                      },
+                      files
+                    );
                   }
                 } else {
                   //console.log(address, coordinates, currentUser, currentUser?.uid);

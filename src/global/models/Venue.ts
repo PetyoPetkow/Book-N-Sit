@@ -5,7 +5,7 @@ export default interface Venue {
   name: string;
   address: Address;
   coordinates: [number, number];
-  images: File[] | string[];
+  images: FileList | string[];
   description: string;
   perks: string[];
   venueTypes: string[];
