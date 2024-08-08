@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 // Remove default icon settings
@@ -18,6 +18,7 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
 
   // Effect to update position when props change
   useEffect(() => {
+    setPosition([lat, lng]);
     setCoordinates([lat, lng]);
   }, [lat, lng]);
 
@@ -36,10 +37,19 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
     }
   };
 
+  const RecenterAutomatically = ({ lat, lng }) => {
+    const map = useMap();
+    useEffect(() => {
+      map.setView([lat, lng]);
+    }, [lat, lng]);
+    return null;
+  };
+
   return (
     <div>
       {/* MapContainer to render the map */}
       <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
+        <RecenterAutomatically lat={lat} lng={lng} />
         {/* TileLayer for map background */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
