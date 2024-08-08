@@ -15,6 +15,7 @@ import { firestore } from './firebase/firebase';
 import { Container, ThemeProvider, createTheme } from '@mui/material';
 import OverviewPage from './pages/places/Overview/OverviewPage';
 import AddVenue from './pages/places/Venue/AddVenue';
+import ScrollToTop from './navigation/ScrollToTop';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -55,6 +56,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <ScrollToTop />
       <div className="min-h-screen">
         <Header />
         <Container className="h-[calc(100vh-109px)]">

@@ -175,18 +175,21 @@ const AddVenue: FC<AddVenueProps> = () => {
                 setIsLoading(true);
                 if (city && coordinates && currentUser && currentUser.uid) {
                   if (venueId) {
-                    updateVenue({
+                    const result = await updateVenue({
                       city: city,
                       coordinates: coordinates,
                       description: description,
                       name: name,
-                      images: images,
                       userId: currentUser.uid,
                       perks: selectedPerks,
                       venueTypes: selectedVenueTypes,
                       workingHours: workingHours,
                       id: venueId,
                     });
+
+                    if (result.status === 'success') {
+                      navigate(`/Places/${venueId}`);
+                    }
                   } else {
                     const result = await saveVenue(
                       {

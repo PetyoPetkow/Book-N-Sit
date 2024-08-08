@@ -63,36 +63,26 @@ export const saveVenue = async (
     const docRef = await addDoc(collection(firestore, 'venues'), venueData);
 
     console.log('Venue successfully saved to Firestore');
-    return { status: 'success' as 'success', data: docRef };
+    return { status: 'success', data: docRef };
   } catch (error) {
     console.error('Error saving venue:', error);
     return { status: 'error' };
   }
 };
 
-export const updateVenue = async (venue: Venue): Promise<void> => {
-  const {
-    city,
-    coordinates,
-    description,
-    images,
-    name,
-    userId,
-    perks,
-    venueTypes,
-    workingHours,
-    id,
-  } = venue;
+export const updateVenue = async (
+  venue: Omit<Venue, 'images'>
+): Promise<{
+  status: 'success' | 'error';
+}> => {
+  const { city, coordinates, description, name, userId, perks, venueTypes, workingHours, id } =
+    venue;
   try {
-    // Upload images
-
-    // Prepare venue data
     const venueData = {
       name: name,
       city: city,
       coordinates: coordinates,
       description: description,
-      images: [],
       perks: perks,
       venueTypes: venueTypes,
       workingHours: workingHours,
@@ -101,9 +91,10 @@ export const updateVenue = async (venue: Venue): Promise<void> => {
 
     const docRef = await updateDoc(doc(firestore, 'venues', id!), venueData);
 
-    console.log('Venue successfully saved to Firestore');
+    return { status: 'success' };
   } catch (error) {
     console.error('Error saving venue:', error);
+    return { status: 'error' };
   }
 };
 
