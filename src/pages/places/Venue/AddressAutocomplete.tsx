@@ -8,14 +8,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
   onCityChanged,
   disabled = false,
 }) => {
-  const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
-
-  useEffect(() => {
-    if (city) {
-      setInputValue(city);
-    }
-  }, [city]);
 
   const loadOptions = async (input: string): Promise<any[]> => {
     let searchResults: any[] = [];
@@ -47,8 +40,8 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
   );
 
   useEffect(() => {
-    debouncedAddressesLoad(inputValue);
-  }, [inputValue]);
+    if (city) debouncedAddressesLoad(city);
+  }, [city]);
 
   const fetchPlaces = async (query: string) => {
     const apiKey = 'hFLA6aqhOK334yS63ZzslexGAhWomWrA';
@@ -65,19 +58,14 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
         disabled={disabled}
         clearOnBlur={false}
         options={options}
-        onInputChange={(event, newValue) => {
-          if (event && event.type === 'change') {
-            setInputValue(newValue);
-          } else {
-            setOptions([]);
-          }
+        onInputChange={(sss, value) => {
+          value ? debouncedAddressesLoad(value) : setOptions([]);
         }}
         onChange={(event, newValue) => {
           const city = newValue?.label || null;
           const coordinates = newValue?.coordinates || null;
           onCityChanged(city, coordinates);
         }}
-        inputValue={inputValue}
         filterOptions={(options, state) => options}
         renderInput={(params) => <TextField {...params} variant="outlined" />}
       />
