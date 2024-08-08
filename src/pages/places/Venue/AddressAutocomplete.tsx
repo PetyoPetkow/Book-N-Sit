@@ -2,34 +2,35 @@ import { Autocomplete, InputLabel, TextField } from '@mui/material';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
-import Address from '../../../global/models/Address';
 
-const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ address, onAddressChanged }) => {
+const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ city, onCityChanged }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
 
   useEffect(() => {
-    if (address) {
-      setInputValue(`${address.freeformAddress}, ${address.countrySubdivision}`);
+    if (city) {
+      setInputValue(city);
     }
-  }, [address]);
+  }, [city]);
 
   const loadOptions = async (input: string): Promise<any[]> => {
     let searchResults: any[] = [];
 
     if (input.length > 2) {
       const resp = await fetchPlaces(input);
-      searchResults = resp.results.map((result: any) => {
-        const { freeformAddress, countrySubdivision } = result.address;
-        const { lat, lon } = result.position;
-        const address: Address = { freeformAddress, countrySubdivision };
-        return {
-          label: `${freeformAddress}, ${countrySubdivision}`,
-          address: address,
-          coordinates: [lat, lon],
-        };
-      });
+      searchResults = resp.results
+        .filter((a: any) => a.type === 'Geography')
+        .map((result: any) => {
+          const { freeformAddress } = result.address;
+          const { lat, lon } = result.position;
+          const city = freeformAddress;
+          return {
+            label: city,
+            coordinates: [lat, lon],
+          };
+        });
     }
+
     return searchResults;
   };
 
@@ -48,7 +49,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ address, onAddressC
   const fetchPlaces = async (query: string) => {
     const apiKey = 'hFLA6aqhOK334yS63ZzslexGAhWomWrA';
     const response: AxiosResponse<any, AxiosError> = await axios.get(
-      `https://api.tomtom.com/search/2/geocode/${query}.json&countrySet=BG?key=${apiKey}`
+      `https://api.tomtom.com/search/2/geocode/${query}.json?storeResult=false&countrySet=BG&view=Unified&key=${apiKey}`
     );
     return response.data;
   };
@@ -67,9 +68,9 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ address, onAddressC
           }
         }}
         onChange={(event, newValue) => {
-          const address = newValue?.address || null;
+          const city = newValue?.label || null;
           const coordinates = newValue?.coordinates || null;
-          onAddressChanged(address, coordinates);
+          onCityChanged(city, coordinates);
         }}
         inputValue={inputValue}
         filterOptions={(options, state) => options}
@@ -81,13 +82,12 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ address, onAddressC
 
 interface LocationOption {
   label: string;
-  address: Address;
   coordinates: [number, number];
 }
 
 interface AddressAutocompleteProps {
-  address: Address | null;
-  onAddressChanged: (address: Address | null, coordinates: [number, number] | null) => void;
+  city: string | null;
+  onCityChanged: (city: string | null, coordinates: [number, number] | null) => void;
 }
 
 export default AddressAutocomplete;

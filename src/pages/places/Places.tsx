@@ -1,13 +1,15 @@
-import { FC, useEffect, useState } from 'react';
+import { cloneElement, FC, useEffect, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs } from 'firebase/firestore';
-import { Card, CardActionArea, CardMedia } from '@mui/material';
+import { Autocomplete, Card, CardActionArea, CardMedia, Chip, TextField } from '@mui/material';
 import Venue from '../../global/models/Venue';
-import { getVenueImage, getVenueImages } from '../../firebase/queries/AddVenueQueries';
 import { useNavigate } from 'react-router-dom';
+import CityAutocomplete from './CityAutocomplete';
+import { perksMock } from './Overview/Perks/PerksMock';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
+  const [city, setCity] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -26,8 +28,40 @@ const Places: FC<PlacesProps> = () => {
 
   return (
     <>
+      <div className=" flex w-4/5 m-auto gap-4 mt-8">
+        <div className="flex-1">
+          <CityAutocomplete city={city} onCityChanged={setCity} />
+        </div>
+        <div className="flex-1">
+          <Autocomplete
+            className="flex-nowrap text-nowrap"
+            limitTags={2}
+            multiple
+            options={perksMock}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                {cloneElement(option.icon, { style: { fontSize: 18, marginRight: 8 } })}
+                {option.name}
+              </li>
+            )}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  size="small"
+                  label={option.name}
+                  icon={option.icon}
+                  {...getTagProps({ index })}
+                />
+              ))
+            }
+            renderInput={(params) => <TextField {...params} variant="outlined" label="Filters" />}
+          />
+        </div>
+      </div>
       <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
-        {places.map(({ name, address, description, images, id }: Venue, index: number) => {
+        {places.map(({ name, city, description, images, id }: Venue, index: number) => {
           return (
             <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
               <CardActionArea
@@ -41,9 +75,7 @@ const Places: FC<PlacesProps> = () => {
                 </div>
 
                 <div>{name}</div>
-                <div>
-                  {address.freeformAddress} {address.countrySubdivision}
-                </div>
+                <div>{city}</div>
                 <div>
                   <span>{description}</span>
                   <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent"></div>

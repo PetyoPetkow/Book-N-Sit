@@ -1,6 +1,7 @@
 import { Checkbox, Divider, FormControlLabel } from '@mui/material';
 import { ChangeEvent, FC } from 'react';
 import { venueTypes } from './VenueTypeMock';
+import { VenueType } from '../../../../global/models/Venue';
 
 const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
   selectedVenueTypes,
@@ -32,7 +33,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
 };
 
 interface VenueTypeSelectorProps {
-  selectedVenueTypes: string[];
+  selectedVenueTypes: VenueType[];
   onselectedVenueTypesChanged: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 }
 

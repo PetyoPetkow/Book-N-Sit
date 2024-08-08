@@ -156,9 +156,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                 </div>
               )}
             </div>
-            <Location
-              address={`${venue.address.freeformAddress}, ${venue.address.countrySubdivision}`}
-            />
+            <Location address={venue.city} />
             <div className="mb-4">{venue.venueTypes.join(', ')}</div>
             <div className="flex gap-2 h-[530px] w-full  ">
               <div className="w-3/4">

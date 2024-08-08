@@ -1,4 +1,6 @@
-export const venueTypes = [
+import { VenueType } from '../../../../global/models/Venue';
+
+export const venueTypes: VenueType[] = [
   'Bar',
   'Restaurant',
   'Club',

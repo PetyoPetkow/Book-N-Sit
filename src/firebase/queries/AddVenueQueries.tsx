@@ -1,7 +1,15 @@
 import { UploadResult, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
 import { db, firebase, firestore, storage } from '../firebase';
 import Venue from '../../global/models/Venue';
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  DocumentData,
+  DocumentReference,
+  setDoc,
+  updateDoc,
+} from 'firebase/firestore';
 import { push } from 'firebase/database';
 
 export const uploadImages = async (files: FileList | null, venueName: string) => {
@@ -30,9 +38,11 @@ export const uploadImages = async (files: FileList | null, venueName: string) =>
 export const saveVenue = async (
   venue: Omit<Venue, 'images'>,
   files: FileList | null
-): Promise<void> => {
-  const { address, coordinates, description, name, userId, perks, venueTypes, workingHours } =
-    venue;
+): Promise<{
+  status: 'success' | 'error';
+  data?: DocumentReference<DocumentData, DocumentData>;
+}> => {
+  const { city, coordinates, description, name, userId, perks, venueTypes, workingHours } = venue;
   try {
     // Upload images
     const imageUrls = await uploadImages(files, name);
@@ -40,7 +50,7 @@ export const saveVenue = async (
     // Prepare venue data
     const venueData = {
       name: name,
-      address: address,
+      city: city,
       coordinates: coordinates,
       images: imageUrls,
       description: description,
@@ -53,14 +63,16 @@ export const saveVenue = async (
     const docRef = await addDoc(collection(firestore, 'venues'), venueData);
 
     console.log('Venue successfully saved to Firestore');
+    return { status: 'success' as 'success', data: docRef };
   } catch (error) {
     console.error('Error saving venue:', error);
+    return { status: 'error' };
   }
 };
 
 export const updateVenue = async (venue: Venue): Promise<void> => {
   const {
-    address,
+    city,
     coordinates,
     description,
     images,
@@ -77,7 +89,7 @@ export const updateVenue = async (venue: Venue): Promise<void> => {
     // Prepare venue data
     const venueData = {
       name: name,
-      address: address,
+      city: city,
       coordinates: coordinates,
       description: description,
       images: [],

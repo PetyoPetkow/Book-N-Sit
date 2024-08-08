@@ -12,20 +12,20 @@ import { saveVenue, updateVenue } from '../../../firebase/queries/AddVenueQuerie
 import { useAuth } from '../../../contexts/authContext';
 import VenueTypeSelector from './VenueTypeSelector/VenueTypeSelector';
 import VenuePerksSelector from './VenuePerksSelector/VenuePerksSelector';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { firestore } from '../../../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import Venue from '../../../global/models/Venue';
+import Venue, { VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [name, setName] = useState<string>('');
-  const [address, setAddress] = useState<Address | null>(null);
+  const [city, setCity] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [files, setFiles] = useState<FileList | null>(null);
   const [description, setDescription] = useState<string>('');
-  const [selectedVenueTypes, setSelectedVenueTypes] = useState<string[]>([]);
+  const [selectedVenueTypes, setSelectedVenueTypes] = useState<VenueType[]>([]);
   const [selectedPerks, setSelectedPerks] = useState<string[]>([]);
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     Monday: { openAt: null, closeAt: null },
@@ -39,6 +39,7 @@ const AddVenue: FC<AddVenueProps> = () => {
 
   const { venueId } = useParams();
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const setData = async () => {
@@ -46,10 +47,10 @@ const AddVenue: FC<AddVenueProps> = () => {
         const docRef = doc(firestore, 'venues', venueId);
         const docSnap = await getDoc(docRef);
         const venue = docSnap.data() as Venue;
-        const { name, address, coordinates, images, description, venueTypes, perks, workingHours } =
+        const { name, city, coordinates, images, description, venueTypes, perks, workingHours } =
           venue;
         setName(name);
-        setAddress(address);
+        setCity(city);
         setCoordinates(coordinates);
         setDescription(description);
         setSelectedVenueTypes(venueTypes);
@@ -82,12 +83,9 @@ const AddVenue: FC<AddVenueProps> = () => {
             </div>
             <div className="flex-1 ">
               <AddressAutocomplete
-                address={address}
-                onAddressChanged={(
-                  address: Address | null,
-                  coordinates: [number, number] | null
-                ) => {
-                  setAddress(address);
+                city={city}
+                onCityChanged={(city: string | null, coordinates: [number, number] | null) => {
+                  setCity(city);
                   setCoordinates(coordinates);
                 }}
               />
@@ -127,7 +125,7 @@ const AddVenue: FC<AddVenueProps> = () => {
               onselectedVenueTypesChanged={(event, checked) => {
                 setSelectedVenueTypes((prevState) => {
                   if (checked) {
-                    return [...prevState, event.target.value];
+                    return [...prevState, event.target.value as VenueType];
                   } else {
                     return prevState.filter((type) => type !== event.target.value);
                   }
@@ -167,11 +165,11 @@ const AddVenue: FC<AddVenueProps> = () => {
           <div className="flex justify-end gap-5">
             <Button
               variant="contained"
-              onClick={() => {
-                if (address && coordinates && currentUser && currentUser.uid) {
+              onClick={async () => {
+                if (city && coordinates && currentUser && currentUser.uid) {
                   if (venueId) {
                     updateVenue({
-                      address: address,
+                      city: city,
                       coordinates: coordinates,
                       description: description,
                       name: name,
@@ -183,9 +181,9 @@ const AddVenue: FC<AddVenueProps> = () => {
                       id: venueId,
                     });
                   } else {
-                    saveVenue(
+                    const result = await saveVenue(
                       {
-                        address: address,
+                        city: city,
                         coordinates: coordinates,
                         description: description,
                         name: name,
@@ -196,6 +194,10 @@ const AddVenue: FC<AddVenueProps> = () => {
                       },
                       files
                     );
+
+                    if (result.status === 'success') {
+                      navigate(`/Places/${result.data?.id}`);
+                    }
                   }
                 } else {
                   //console.log(address, coordinates, currentUser, currentUser?.uid);

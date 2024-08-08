@@ -46,7 +46,7 @@ const ImageDisplay = ({
 
 const Single = ({ image, onClick }: { image: string; onClick: () => void }) => {
   return (
-    <div className="rounded-lg shadow-lg" onClick={onClick}>
+    <div className="rounded-lg shadow-lg col-span-12 row-span-12" onClick={onClick}>
       <img className="object-cover w-full h-full" src={image} />
     </div>
   );
