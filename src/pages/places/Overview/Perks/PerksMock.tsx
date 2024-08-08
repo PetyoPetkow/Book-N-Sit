@@ -3,6 +3,7 @@ import SetMealIcon from '@mui/icons-material/SetMeal';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import WineBarIcon from '@mui/icons-material/WineBar';
 import CakeIcon from '@mui/icons-material/Cake';
+import { Perk } from '../../../../global/models/Venue';
 
 export const perksMock = [
   {
@@ -26,3 +27,11 @@ export const perksMock = [
     name: 'Personalized events',
   },
 ];
+
+export const perksIcons: Record<Perk, JSX.Element> = {
+  'No smoking': <SmokeFreeIcon fontSize="large" />,
+  'Personalized events': <CakeIcon fontSize="large" />,
+  'Sushi menu': <SetMealIcon fontSize="large" />,
+  'Wine list': <WineBarIcon fontSize="large" />,
+  Cocktail: <LocalBarIcon fontSize="large" />,
+};

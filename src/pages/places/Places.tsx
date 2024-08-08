@@ -1,6 +1,6 @@
 import { cloneElement, FC, useEffect, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
-import { Firestore, collection, getDocs } from 'firebase/firestore';
+import { Firestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { Autocomplete, Card, CardActionArea, CardMedia, Chip, TextField } from '@mui/material';
 import Venue from '../../global/models/Venue';
 import { useNavigate } from 'react-router-dom';
@@ -9,22 +9,38 @@ import { perksMock } from './Overview/Perks/PerksMock';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
-  const [city, setCity] = useState<any>(null);
+  const [city, setCity] = useState<string | null>(null);
+  const [perks, setPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
+      const conditions = [];
+
+      if (city !== null) {
+        conditions.push(where('city', '==', city));
+      }
+      if (perks.length !== 0) {
+        perks.map((p) => {
+          conditions.push(where(`perks.${p.name}`, '==', true));
+        });
+      }
+
+      console.log(conditions);
+
       const placesCol = collection(firestore, 'venues');
-      const placeSnapshot = await getDocs(placesCol);
+      const placesQuery = query(placesCol, ...conditions);
+      const placeSnapshot = await getDocs(placesQuery);
       const placeList = placeSnapshot.docs.map((doc) => {
         return { id: doc.id, ...(doc.data() as Venue) };
       });
+      console.log(placeList);
       setPlaces(placeList);
     };
 
     getPlaces(firestore);
-  }, []);
+  }, [city, perks]);
 
   return (
     <>
@@ -46,6 +62,10 @@ const Places: FC<PlacesProps> = () => {
                 {option.name}
               </li>
             )}
+            value={perks}
+            onChange={(event, value) => {
+              setPerks(value);
+            }}
             renderTags={(value, getTagProps) =>
               value.map((option, index) => (
                 <Chip

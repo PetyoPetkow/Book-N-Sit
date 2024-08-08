@@ -7,7 +7,7 @@ export default interface Venue {
   coordinates: [number, number];
   images: FileList | string[];
   description: string;
-  perks: string[];
+  perks: PerksMap;
   venueTypes: VenueType[];
   workingHours: WorkingHours;
   userId: string;
@@ -25,3 +25,6 @@ export type VenueType =
   | 'Lounge'
   | 'Sports Arena'
   | 'Conference Center';
+
+export type Perk = 'No smoking' | 'Cocktail' | 'Sushi menu' | 'Wine list' | 'Personalized events';
+export type PerksMap = Record<Perk, boolean>;

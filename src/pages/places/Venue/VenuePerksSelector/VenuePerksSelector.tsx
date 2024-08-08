@@ -1,12 +1,33 @@
 import { FC, MouseEvent } from 'react';
-import { perksMock } from '../../Overview/Perks/PerksMock';
+import { perksIcons } from '../../Overview/Perks/PerksMock';
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Perk, PerksMap } from '../../../../global/models/Venue';
 
 const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
   disabled = false,
   selectedPerks,
   onSelectedPerksChanged,
 }) => {
+  // Convert the selectedPerks map into an array of selected perk names
+  const selectedPerkNames = Object.entries(selectedPerks)
+    .filter(([, value]) => value)
+    .map(([perk]) => perk);
+
+  // Event handler for toggling perks
+  const handlePerkChange = (event: MouseEvent<HTMLElement>, newPerkNames: Perk[]) => {
+    // Build a new PerksMap based on toggled perks
+    const newPerksMap = Object.keys(selectedPerks).reduce<PerksMap>(
+      (acc, perk) => ({
+        ...acc,
+        [perk as Perk]: newPerkNames.includes(perk as Perk),
+      }),
+      {} as PerksMap
+    );
+
+    // Call the parent onSelectedPerksChanged handler with the updated map
+    onSelectedPerksChanged(event, newPerksMap);
+  };
+
   return (
     <div>
       <div className="text-lg font-bold">Venue Perks</div>
@@ -14,13 +35,14 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
       <ToggleButtonGroup
         disabled={disabled}
         className="flex flex-wrap gap-3 my-5"
-        value={selectedPerks}
-        onChange={onSelectedPerksChanged}
+        value={selectedPerkNames}
+        onChange={handlePerkChange} // Updated handler
       >
-        {perksMock.map((perk) => (
+        {Object.entries(selectedPerks).map(([perk, value]) => (
           <ToggleButton
-            key={perk.name}
-            value={perk.name}
+            key={perk}
+            value={perk} // Fixed: using `perk` as the value
+            selected={value}
             color="success"
             className="flex items-center p-3 border border-solid border-gray-300 rounded gap-3"
             sx={{
@@ -29,8 +51,8 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
               },
             }}
           >
-            <div>{perk.icon}</div>
-            <div>{perk.name}</div>
+            <div>{perksIcons[perk as Perk]}</div>
+            <div>{perk}</div>
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
@@ -41,8 +63,8 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
 
 interface VenuePerksSelectorProps {
   disabled?: boolean;
-  selectedPerks: string[];
-  onSelectedPerksChanged: (event: MouseEvent<HTMLElement>, perks: string[]) => void;
+  selectedPerks: PerksMap;
+  onSelectedPerksChanged: (event: MouseEvent<HTMLElement>, perks: PerksMap) => void;
 }
 
 export default VenuePerksSelector;

@@ -14,7 +14,7 @@ import VenuePerksSelector from './VenuePerksSelector/VenuePerksSelector';
 import { useNavigate, useParams } from 'react-router-dom';
 import { firestore } from '../../../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import Venue, { VenueType } from '../../../global/models/Venue';
+import Venue, { PerksMap, VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
 
 const AddVenue: FC<AddVenueProps> = () => {
@@ -26,7 +26,13 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [files, setFiles] = useState<FileList | null>(null);
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<VenueType[]>([]);
-  const [selectedPerks, setSelectedPerks] = useState<string[]>([]);
+  const [selectedPerks, setSelectedPerks] = useState<PerksMap>({
+    'No smoking': false,
+    'Personalized events': false,
+    'Sushi menu': false,
+    'Wine list': false,
+    Cocktail: false,
+  });
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     Monday: { openAt: null, closeAt: null },
     Tuesday: { openAt: null, closeAt: null },
@@ -141,7 +147,10 @@ const AddVenue: FC<AddVenueProps> = () => {
             <VenuePerksSelector
               disabled={isLoading}
               selectedPerks={selectedPerks}
-              onSelectedPerksChanged={(event, perks) => setSelectedPerks(perks)}
+              onSelectedPerksChanged={(event, perks) => {
+                setSelectedPerks(perks);
+                console.log(perks);
+              }}
             />
           </div>
           <div>
@@ -191,6 +200,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                       navigate(`/Places/${venueId}`);
                     }
                   } else {
+                    console.log(selectedPerks);
                     const result = await saveVenue(
                       {
                         city: city,

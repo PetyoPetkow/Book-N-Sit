@@ -1,15 +1,19 @@
 import { FC } from 'react';
-import { perksMock } from './PerksMock';
+import { perksIcons, perksMock } from './PerksMock';
+import { Perk, PerksMap } from '../../../../global/models/Venue';
 
 const PerksList: FC<PerksListProps> = ({ perksList }) => {
+  console.log(perksList);
   return (
     <div className="flex flex-wrap gap-3">
-      {perksList.map((perk) => {
+      {Object.entries(perksList).map(([perk, value]) => {
         return (
-          <div className="flex items-center p-3 bg-white border border-solid border-gray-300 rounded gap-3 ">
-            <div>{perksMock.find((perkMock) => perkMock.name === perk)?.icon}</div>
-            <div>{perk}</div>
-          </div>
+          value && (
+            <div className="flex items-center p-3 bg-white border border-solid border-gray-300 rounded gap-3 ">
+              <div>{perksIcons[perk as Perk]}</div>
+              <div>{perk}</div>
+            </div>
+          )
         );
       })}
     </div>
@@ -17,7 +21,7 @@ const PerksList: FC<PerksListProps> = ({ perksList }) => {
 };
 
 interface PerksListProps {
-  perksList: string[];
+  perksList: PerksMap;
 }
 
 export default PerksList;
