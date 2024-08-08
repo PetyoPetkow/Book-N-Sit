@@ -184,15 +184,17 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
-          <WriteReviewSection
-            rating={rating}
-            comment={comment}
-            onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
-              setRating(rating)
-            }
-            onCommentChange={setComment}
-            postReview={onFinishReviewClick}
-          />
+          {currentUser && venue.userId !== currentUser.uid && (
+            <WriteReviewSection
+              rating={rating}
+              comment={comment}
+              onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
+                setRating(rating)
+              }
+              onCommentChange={setComment}
+              postReview={onFinishReviewClick}
+            />
+          )}
           <ReviewsSection reviews={reviews} />
         </div>
       )}

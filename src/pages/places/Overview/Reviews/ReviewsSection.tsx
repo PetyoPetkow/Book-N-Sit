@@ -24,7 +24,9 @@ const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
           comment={commentEntry.comment}
         />
       ))}
-      <Pagination className="m-auto" count={pageCount} page={page} onChange={handleChange} />
+      {pageCount >= 1 && (
+        <Pagination className="m-auto" count={pageCount} page={page} onChange={handleChange} />
+      )}
     </>
   );
 };

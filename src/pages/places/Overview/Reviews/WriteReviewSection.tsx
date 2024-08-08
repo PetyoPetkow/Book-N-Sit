@@ -37,10 +37,7 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({
             }
           }}
         >
-          Finish Review
-        </Button>
-        <Button variant="contained" color="error">
-          Cancel
+          Leave review
         </Button>
       </div>
     </div>

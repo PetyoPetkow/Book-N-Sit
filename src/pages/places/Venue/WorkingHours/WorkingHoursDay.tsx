@@ -1,8 +1,7 @@
 import { InputLabel } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
-import { FC, useEffect, useState } from 'react';
+import { FC } from 'react';
 import DayOfWeek from '../../../../global/models/DaysOfWeek';
-import WorkingHours from '../../../../global/models/WorkingHours';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
   disabled,
