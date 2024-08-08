@@ -3,7 +3,11 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
 
-const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ city, onCityChanged }) => {
+const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
+  city,
+  onCityChanged,
+  disabled = false,
+}) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
 
@@ -58,6 +62,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({ city, onCityChanged
     <>
       <InputLabel>Address</InputLabel>
       <Autocomplete
+        disabled={disabled}
         clearOnBlur={false}
         options={options}
         onInputChange={(event, newValue) => {
@@ -88,6 +93,7 @@ interface LocationOption {
 interface AddressAutocompleteProps {
   city: string | null;
   onCityChanged: (city: string | null, coordinates: [number, number] | null) => void;
+  disabled?: boolean;
 }
 
 export default AddressAutocomplete;

@@ -1,10 +1,9 @@
-import { Button, Divider, InputLabel, TextField } from '@mui/material';
+import { Button, CircularProgress, Divider, InputLabel, TextField } from '@mui/material';
 import { FC, useEffect, useState } from 'react';
 
 import AddressAutocomplete from './AddressAutocomplete';
 import WorkigHoursPicker from './WorkingHours/WorkingHoursPicker';
 import InputFileUpload from './Images/UploadImages';
-import Address from '../../../global/models/Address';
 import WorkingHours from '../../../global/models/WorkingHours';
 import DayOfWeek from '../../../global/models/DaysOfWeek';
 import { getTime } from 'date-fns';
@@ -19,6 +18,7 @@ import Venue, { VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
 
 const AddVenue: FC<AddVenueProps> = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [city, setCity] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
@@ -83,6 +83,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             </div>
             <div className="flex-1 ">
               <AddressAutocomplete
+                disabled={isLoading}
                 city={city}
                 onCityChanged={(city: string | null, coordinates: [number, number] | null) => {
                   setCity(city);
@@ -97,12 +98,13 @@ const AddVenue: FC<AddVenueProps> = () => {
                 lat={coordinates[0]}
                 lng={coordinates[1]}
                 setCoordinates={setCoordinates}
-                draggable={true}
+                draggable={isLoading === false}
               />
             )}
           </div>
           <div>
             <InputFileUpload
+              disabled={isLoading}
               images={images}
               onImagesChanged={setImages}
               files={files}
@@ -113,6 +115,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             <InputLabel>Description</InputLabel>
             <TextField
               className="w-full"
+              disabled={isLoading}
               rows={5}
               multiline
               value={description}
@@ -121,6 +124,7 @@ const AddVenue: FC<AddVenueProps> = () => {
           </div>
           <div className="my-4">
             <VenueTypeSelector
+              disabled={isLoading}
               selectedVenueTypes={selectedVenueTypes}
               onselectedVenueTypesChanged={(event, checked) => {
                 setSelectedVenueTypes((prevState) => {
@@ -135,12 +139,14 @@ const AddVenue: FC<AddVenueProps> = () => {
           </div>
           <div>
             <VenuePerksSelector
+              disabled={isLoading}
               selectedPerks={selectedPerks}
               onSelectedPerksChanged={(event, perks) => setSelectedPerks(perks)}
             />
           </div>
           <div>
             <WorkigHoursPicker
+              disabled={isLoading}
               workingHours={workingHours}
               onOpenAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
                 setWorkingHours((prevState) => ({
@@ -166,6 +172,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             <Button
               variant="contained"
               onClick={async () => {
+                setIsLoading(true);
                 if (city && coordinates && currentUser && currentUser.uid) {
                   if (venueId) {
                     updateVenue({
@@ -202,9 +209,15 @@ const AddVenue: FC<AddVenueProps> = () => {
                 } else {
                   //console.log(address, coordinates, currentUser, currentUser?.uid);
                 }
+                setIsLoading(false);
               }}
             >
-              Publish
+              {
+                <div className="flex gap-3 items-center">
+                  {isLoading && <CircularProgress size={20} color="info" />}
+                  Publish
+                </div>
+              }
             </Button>
             <Button color="error" variant="contained">
               Cancel

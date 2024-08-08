@@ -3,6 +3,7 @@ import { perksMock } from '../../Overview/Perks/PerksMock';
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 
 const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
+  disabled = false,
   selectedPerks,
   onSelectedPerksChanged,
 }) => {
@@ -11,6 +12,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
       <div className="text-lg font-bold">Venue Perks</div>
       <Divider />
       <ToggleButtonGroup
+        disabled={disabled}
         className="flex flex-wrap gap-3 my-5"
         value={selectedPerks}
         onChange={onSelectedPerksChanged}
@@ -38,6 +40,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
 };
 
 interface VenuePerksSelectorProps {
+  disabled?: boolean;
   selectedPerks: string[];
   onSelectedPerksChanged: (event: MouseEvent<HTMLElement>, perks: string[]) => void;
 }

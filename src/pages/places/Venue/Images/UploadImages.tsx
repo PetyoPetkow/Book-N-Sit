@@ -23,6 +23,7 @@ const VisuallyHiddenInput = styled('input')({
 });
 
 export default function InputFileUpload({
+  disabled = false,
   images,
   onImagesChanged,
   files,
@@ -96,6 +97,7 @@ export default function InputFileUpload({
   return (
     <div>
       <Button
+        disabled={disabled}
         component="label"
         role={undefined}
         variant="contained"
@@ -181,6 +183,7 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
 };
 
 interface UploadImagesProps {
+  disabled?: boolean;
   images: string[];
   onImagesChanged: (images: string[]) => void;
   files: FileList | null;

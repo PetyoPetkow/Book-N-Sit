@@ -4,6 +4,7 @@ import { venueTypes } from './VenueTypeMock';
 import { VenueType } from '../../../../global/models/Venue';
 
 const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
+  disabled = false,
   selectedVenueTypes,
   onselectedVenueTypesChanged,
 }) => {
@@ -17,6 +18,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
             <FormControlLabel
               control={
                 <Checkbox
+                  disabled={disabled}
                   value={venueType}
                   checked={selectedVenueTypes.includes(venueType)}
                   onChange={onselectedVenueTypesChanged}
@@ -33,6 +35,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
 };
 
 interface VenueTypeSelectorProps {
+  disabled?: boolean;
   selectedVenueTypes: VenueType[];
   onselectedVenueTypesChanged: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 }

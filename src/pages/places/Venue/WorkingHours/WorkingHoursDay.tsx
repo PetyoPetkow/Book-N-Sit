@@ -5,6 +5,7 @@ import DayOfWeek from '../../../../global/models/DaysOfWeek';
 import WorkingHours from '../../../../global/models/WorkingHours';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
+  disabled,
   openAt,
   closeAt,
   dayOfWeek,
@@ -16,6 +17,7 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
       <InputLabel className="">{dayOfWeek}</InputLabel>
       <div className="flex gap-5 col-span-2">
         <TimePicker
+          disabled={disabled}
           className="flex-1"
           views={['hours', 'minutes']}
           slotProps={{ textField: { size: 'small' } }}
@@ -23,6 +25,7 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
           onChange={onOpenAtChanged}
         />
         <TimePicker
+          disabled={disabled}
           className="flex-1"
           views={['hours', 'minutes']}
           slotProps={{ textField: { size: 'small' } }}
@@ -35,6 +38,7 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
 };
 
 interface WorkigHoursDayProps {
+  disabled: boolean;
   dayOfWeek: DayOfWeek;
   openAt: Date | null;
   closeAt: Date | null;

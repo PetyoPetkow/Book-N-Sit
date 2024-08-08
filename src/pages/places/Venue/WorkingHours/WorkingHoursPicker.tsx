@@ -4,6 +4,7 @@ import DayOfWeek from '../../../../global/models/DaysOfWeek';
 import WorkingHours from '../../../../global/models/WorkingHours';
 
 const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
+  disabled = false,
   workingHours,
   onOpenAtChanged,
   onCloseAtChanged,
@@ -30,6 +31,7 @@ const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
 
           return (
             <WorkigHoursDay
+              disabled={disabled}
               openAt={openAt}
               closeAt={closeAt}
               dayOfWeek={day}
@@ -44,6 +46,7 @@ const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
 };
 
 interface WorkigHoursPickerProps {
+  disabled?: boolean;
   workingHours: WorkingHours;
   onOpenAtChanged: (dayOfWeek: DayOfWeek, date: Date | null) => void;
   onCloseAtChanged: (dayOfWeek: DayOfWeek, date: Date | null) => void;
