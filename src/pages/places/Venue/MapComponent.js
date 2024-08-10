@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
+import { TextField } from '@mui/material';
 
 // Remove default icon settings
 delete L.Icon.Default.prototype._getIconUrl;
@@ -46,8 +47,7 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
   };
 
   return (
-    <div>
-      {/* MapContainer to render the map */}
+    <div className="mt-5">
       <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
         <RecenterAutomatically lat={lat} lng={lng} />
         {/* TileLayer for map background */}
@@ -70,16 +70,21 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
           <Popup>Drag me to change position!</Popup>
         </Marker>
       </MapContainer>
-      <div style={{ marginTop: '20px' }}>
-        <label>
-          Latitude:
-          <input type="number" value={position[0]} onChange={handleLatChange} step="0.0001" />
-        </label>
-        <br />
-        <label>
-          Longitude:
-          <input type="number" value={position[1]} onChange={handleLngChange} step="0.0001" />
-        </label>
+      <div className="mt-5 flex justify-center gap-10">
+        <TextField
+          value={position[0]}
+          onChange={handleLatChange}
+          type="number"
+          label="Latitude"
+          size="small"
+        />
+        <TextField
+          value={position[1]}
+          onChange={handleLngChange}
+          type="number"
+          label="Longitude"
+          size="small"
+        />
       </div>
     </div>
   );

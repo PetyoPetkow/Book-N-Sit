@@ -6,6 +6,7 @@ import Venue from '../../global/models/Venue';
 import { useNavigate } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
 import { perksMock } from './Overview/Perks/PerksMock';
+import Location from './Overview/Location';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
@@ -81,7 +82,7 @@ const Places: FC<PlacesProps> = () => {
         </div>
       </div>
       <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
-        {places.map(({ name, city, description, images, id }: Venue, index: number) => {
+        {places.map(({ name, city, street, description, images, id }: Venue, index: number) => {
           return (
             <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
               <CardActionArea
@@ -94,12 +95,19 @@ const Places: FC<PlacesProps> = () => {
                   <CardMedia className="h-60 w-full" image={images[0] as string} />
                 </div>
 
-                <div>{name}</div>
-                <div>{city}</div>
-                <div>
-                  <span>{description}</span>
-                  <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent"></div>
-                </div>
+                <section className="p-2">
+                  <div className="text-xl font-bold indent-3">{name}</div>
+                  <Location
+                    className="bg-[#F3F7EC] w-fit pr-3 py-0 -ml-2 rounded-full scale-90"
+                    iconSize="small"
+                    city={city}
+                    street={street}
+                  />
+                  <div className="mt-1">
+                    <span>{description}</span>
+                    <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent" />
+                  </div>
+                </section>
               </CardActionArea>
             </Card>
           );

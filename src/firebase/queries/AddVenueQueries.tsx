@@ -42,7 +42,8 @@ export const saveVenue = async (
   status: 'success' | 'error';
   data?: DocumentReference<DocumentData, DocumentData>;
 }> => {
-  const { city, coordinates, description, name, userId, perks, venueTypes, workingHours } = venue;
+  const { city, street, coordinates, description, name, userId, perks, venueTypes, workingHours } =
+    venue;
   try {
     // Upload images
     const imageUrls = await uploadImages(files, name);
@@ -51,6 +52,7 @@ export const saveVenue = async (
     const venueData = {
       name: name,
       city: city,
+      street: street,
       coordinates: coordinates,
       images: imageUrls,
       description: description,
@@ -75,12 +77,23 @@ export const updateVenue = async (
 ): Promise<{
   status: 'success' | 'error';
 }> => {
-  const { city, coordinates, description, name, userId, perks, venueTypes, workingHours, id } =
-    venue;
+  const {
+    city,
+    street,
+    coordinates,
+    description,
+    name,
+    userId,
+    perks,
+    venueTypes,
+    workingHours,
+    id,
+  } = venue;
   try {
     const venueData = {
       name: name,
       city: city,
+      street: street,
       coordinates: coordinates,
       description: description,
       perks: perks,

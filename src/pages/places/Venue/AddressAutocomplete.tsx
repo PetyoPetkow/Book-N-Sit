@@ -8,7 +8,14 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
   onCityChanged,
   disabled = false,
 }) => {
+  const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
+
+  useEffect(() => {
+    if (city) {
+      setInputValue(city);
+    }
+  }, [city]);
 
   const loadOptions = async (input: string): Promise<any[]> => {
     let searchResults: any[] = [];
@@ -53,11 +60,12 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
 
   return (
     <>
-      <InputLabel>Address</InputLabel>
+      <InputLabel required>City</InputLabel>
       <Autocomplete
         disabled={disabled}
         clearOnBlur={false}
         options={options}
+        inputValue={inputValue}
         onInputChange={(sss, value) => {
           value ? debouncedAddressesLoad(value) : setOptions([]);
         }}

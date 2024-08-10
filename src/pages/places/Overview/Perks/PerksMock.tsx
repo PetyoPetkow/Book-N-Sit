@@ -1,37 +1,37 @@
-import SmokeFreeIcon from '@mui/icons-material/SmokeFree';
-import SetMealIcon from '@mui/icons-material/SetMeal';
-import LocalBarIcon from '@mui/icons-material/LocalBar';
-import WineBarIcon from '@mui/icons-material/WineBar';
-import CakeIcon from '@mui/icons-material/Cake';
+import SmokeFreeOutlinedIcon from '@mui/icons-material/SmokeFreeOutlined';
+import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
+import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import SetMealOutlinedIcon from '@mui/icons-material/SetMealOutlined';
 import { Perk } from '../../../../global/models/Venue';
 
 export const perksMock = [
   {
-    icon: <SmokeFreeIcon fontSize="large" />,
+    icon: <SmokeFreeOutlinedIcon fontSize="large" />,
     name: 'No smoking',
   },
   {
-    icon: <SetMealIcon fontSize="large" />,
+    icon: <SetMealOutlinedIcon fontSize="large" />,
     name: 'Sushi menu',
   },
   {
-    icon: <LocalBarIcon fontSize="large" />,
+    icon: <LocalBarOutlinedIcon fontSize="large" />,
     name: 'Cocktails',
   },
   {
-    icon: <WineBarIcon fontSize="large" />,
+    icon: <WineBarOutlinedIcon fontSize="large" />,
     name: 'Wine list',
   },
   {
-    icon: <CakeIcon fontSize="large" />,
+    icon: <CakeOutlinedIcon fontSize="large" />,
     name: 'Personalized events',
   },
 ];
 
 export const perksIcons: Record<Perk, JSX.Element> = {
-  'No smoking': <SmokeFreeIcon fontSize="large" />,
-  'Personalized events': <CakeIcon fontSize="large" />,
-  'Sushi menu': <SetMealIcon fontSize="large" />,
-  'Wine list': <WineBarIcon fontSize="large" />,
-  Cocktail: <LocalBarIcon fontSize="large" />,
+  'No smoking': <SmokeFreeOutlinedIcon />,
+  'Personalized events': <CakeOutlinedIcon />,
+  'Sushi menu': <SetMealOutlinedIcon />,
+  'Wine list': <WineBarOutlinedIcon />,
+  Cocktail: <LocalBarOutlinedIcon />,
 };

@@ -4,6 +4,7 @@ import WorkingHours from './WorkingHours';
 export default interface Venue {
   name: string;
   city: string;
+  street: string;
   coordinates: [number, number];
   images: FileList | string[];
   description: string;

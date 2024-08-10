@@ -21,6 +21,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
   const [city, setCity] = useState<string | null>(null);
+  const [street, setStreet] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [files, setFiles] = useState<FileList | null>(null);
@@ -53,10 +54,11 @@ const AddVenue: FC<AddVenueProps> = () => {
         const docRef = doc(firestore, 'venues', venueId);
         const docSnap = await getDoc(docRef);
         const venue = docSnap.data() as Venue;
-        const { name, city, coordinates, images, description, venueTypes, perks, workingHours } =
+        const { name, city, street, coordinates, description, venueTypes, perks, workingHours } =
           venue;
         setName(name);
         setCity(city);
+        setStreet(street);
         setCoordinates(coordinates);
         setDescription(description);
         setSelectedVenueTypes(venueTypes);
@@ -71,11 +73,15 @@ const AddVenue: FC<AddVenueProps> = () => {
   return (
     <div className="flex align-middle justify-center items-center w-full">
       <div className="w-11/12 h-fit my-16 bg-white border-2 border-solid border-gray-200 p-10">
-        <div className="flex flex-col gap-5 ">
-          <div className="text-5xl">Register you venue</div>
-          <div>Please fill out the form with relevant information about your venue.</div>
-        </div>
-        <Divider className="my-5" />
+        {venueId === undefined && (
+          <>
+            <div className="flex flex-col gap-5 ">
+              <div className="text-5xl">Register you venue</div>
+              <div>Please fill out the form with relevant information about your venue.</div>
+            </div>
+            <Divider className="my-5" />
+          </>
+        )}
         <div className="flex flex-col gap-5">
           <div className="flex gap-10">
             <div className="flex-1 ">
@@ -95,6 +101,14 @@ const AddVenue: FC<AddVenueProps> = () => {
                   setCity(city);
                   setCoordinates(coordinates);
                 }}
+              />
+            </div>
+            <div className="flex-1">
+              <InputLabel>Street</InputLabel>
+              <TextField
+                value={street}
+                onChange={(event) => setStreet(event.target.value || null)}
+                fullWidth
               />
             </div>
           </div>
@@ -118,7 +132,7 @@ const AddVenue: FC<AddVenueProps> = () => {
             />
           </div>
           <div>
-            <InputLabel>Description</InputLabel>
+            <InputLabel className="text-lg font-bold text-black">Description</InputLabel>
             <TextField
               className="w-full"
               disabled={isLoading}
@@ -182,10 +196,11 @@ const AddVenue: FC<AddVenueProps> = () => {
               variant="contained"
               onClick={async () => {
                 setIsLoading(true);
-                if (city && coordinates && currentUser && currentUser.uid) {
+                if (city && street && coordinates && currentUser && currentUser.uid) {
                   if (venueId) {
                     const result = await updateVenue({
                       city: city,
+                      street: street,
                       coordinates: coordinates,
                       description: description,
                       name: name,
@@ -204,6 +219,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                     const result = await saveVenue(
                       {
                         city: city,
+                        street: street,
                         coordinates: coordinates,
                         description: description,
                         name: name,
@@ -232,7 +248,13 @@ const AddVenue: FC<AddVenueProps> = () => {
                 </div>
               }
             </Button>
-            <Button color="error" variant="contained">
+            <Button
+              color="error"
+              variant="contained"
+              onClick={() => {
+                navigate(-1);
+              }}
+            >
               Cancel
             </Button>
           </div>
