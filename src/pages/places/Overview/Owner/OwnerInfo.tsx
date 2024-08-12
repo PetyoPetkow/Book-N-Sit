@@ -1,4 +1,4 @@
-import { Avatar, Divider } from '@mui/material';
+import { Avatar, Button, Divider } from '@mui/material';
 import { FC } from 'react';
 import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
 
@@ -20,6 +20,9 @@ const OwnerInfo: FC<OwnerInfoProps> = () => {
         <div>+359 882114269</div>
         <PhoneEnabledIcon className="text-3xl" />
       </div>
+      <Button className="w-fit m-auto" variant="outlined">
+        Open chat
+      </Button>
     </div>
   );
 };

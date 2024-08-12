@@ -6,6 +6,7 @@ import {
   Avatar,
   Button,
   Container,
+  IconButton,
   Menu,
   MenuItem,
   Toolbar,
@@ -22,6 +23,7 @@ import { firestore } from '../firebase/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import Language from '../global/models/Language';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 
 const Header: FC<HeaderProps> = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -128,6 +130,7 @@ const Header: FC<HeaderProps> = () => {
                     <div>English</div>
                   </MenuItem>
                 </Menu>
+
                 <Button
                   className="text-white font-bold hover:backdrop-contrast-150"
                   onClick={handleOpenUserMenu}
@@ -155,6 +158,15 @@ const Header: FC<HeaderProps> = () => {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
+                  <MenuItem
+                    className="flex gap-2"
+                    key={'setting'}
+                    onClick={() => navigate('/Messages')}
+                  >
+                    <ChatOutlinedIcon />
+                    <Typography textAlign="center">Messages</Typography>
+                  </MenuItem>
+
                   <MenuItem className="flex gap-2" key={'setting'} onClick={handleCloseUserMenu}>
                     <FavoriteIcon />
                     <Typography textAlign="center">

@@ -16,6 +16,7 @@ import { Container, ThemeProvider, createTheme } from '@mui/material';
 import OverviewPage from './pages/places/Overview/OverviewPage';
 import AddVenue from './pages/places/Venue/AddVenue';
 import ScrollToTop from './navigation/ScrollToTop';
+import Messages from './pages/messages/Messages';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -70,6 +71,7 @@ const App = () => {
               <Route path="/Overview" element={<OverviewPage />} />
               <Route path="/Login" element={<LoginPage />} />
               <Route path="/Register" element={<RegisterPage />} />
+              <Route path="/Messages" element={<Messages />} />
             </Route>
 
             <Route path="/" element={<PublicOutlet />}>

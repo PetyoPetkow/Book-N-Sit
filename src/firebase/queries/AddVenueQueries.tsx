@@ -16,12 +16,10 @@ export const uploadImages = async (files: FileList | null, venueName: string) =>
   const metadata = {
     contentType: 'image/jpeg',
   };
-  console.log(venueName, files);
 
   const uploadPromises =
     files &&
     Array.from(files).map((file) => {
-      console.log(file);
       const storageRef = ref(storage, `images/${venueName}/${file.name}`);
       return uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
         return getDownloadURL(storageRef);

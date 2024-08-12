@@ -1,8 +1,8 @@
-import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
-import { Button, Divider, IconButton, Modal } from '@mui/material';
+import { Avatar, Button, Divider, IconButton, Modal, TextField } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
@@ -10,7 +10,18 @@ import WriteReviewSection from './Reviews/WriteReviewSection';
 import { firestore } from '../../../firebase/firebase';
 import { useNavigate, useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import {
+  addDoc,
+  arrayUnion,
+  doc,
+  DocumentData,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  setDoc,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import OwnerInfo from './Owner/OwnerInfo';
 import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
 import { useAuth } from '../../../contexts/authContext';
@@ -20,6 +31,14 @@ import { uploadImages } from '../../../firebase/queries/AddVenueQueries';
 import styled from '@emotion/styled';
 import EditImages from '../Venue/Images/EditImages';
 import MapComponent from '../Venue/MapComponent';
+import Chat from '../../users/chat/Chat';
+import RemoveIcon from '@mui/icons-material/Remove';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import { getUserById } from '../../../firebase/services/UserService';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
+import { uniqueId } from 'lodash';
+import clsx from 'clsx';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -27,6 +46,12 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState<string>('');
   const [openImagesModal, setOpenImagesModal] = useState<boolean>(false);
+  const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
+  const [owner, setOwner] = useState<DocumentData>();
+  const [text, setText] = useState<string>('');
+  const [messages, setMessages] = useState<
+    { date: Date; id: string; senderId: string; text: string }[] | null
+  >(null);
 
   const { currentUser } = useAuth();
   const { venueName } = useParams();
@@ -82,6 +107,39 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     refetchReviews();
   }, [venue]);
 
+  useEffect(() => {
+    if (venue && currentUser) {
+      const unSub = onSnapshot(
+        doc(
+          firestore,
+          'messages',
+          currentUser.uid > venue.userId
+            ? currentUser.uid + venue.userId
+            : venue.userId + currentUser.uid
+        ),
+        (doc) => {
+          doc.exists() && setMessages(doc.data().messages);
+          console.log(doc.data(), 'asdasdas');
+        }
+      );
+
+      return () => {
+        unSub();
+      };
+    }
+  }, [venue, currentUser]);
+
+  useEffect(() => {
+    const fetchOwner = async () => {
+      if (venue) {
+        const user = await getUserById(venue.userId);
+        setOwner(user);
+      }
+    };
+
+    fetchOwner();
+  }, [venue]);
+
   async function addArrayToImages(docRef: any, newImagesArray: any) {
     try {
       // Use arrayUnion to add each element of newImagesArray to the 'images' array
@@ -94,8 +152,160 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   }
 
+  const handleOpenChat = async () => {
+    if (currentUser && venue) {
+      const combinedId =
+        currentUser.uid > venue.userId
+          ? currentUser.uid + venue.userId
+          : venue.userId + currentUser.uid;
+      try {
+        const messageRef = doc(firestore, 'messages', combinedId);
+        const res = await getDoc(messageRef);
+
+        if (!res.exists()) {
+          await setDoc(doc(firestore, 'messages', combinedId), { messages: [] });
+        }
+      } catch (error) {}
+    }
+    // add userChats update logic here
+  };
+
+  const handleSendMessage = async () => {
+    if (currentUser && venue) {
+      const combinedId =
+        currentUser.uid > venue.userId
+          ? currentUser.uid + venue.userId
+          : venue.userId + currentUser.uid;
+
+      const messageRes = await getDoc(doc(firestore, 'messages', combinedId));
+      const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
+      const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', venue.userId));
+
+      if (!messageRes.exists()) {
+        await setDoc(doc(firestore, 'messages', combinedId), { messages: [] });
+      }
+
+      if (!senderUserChatsRes.exists()) {
+        await setDoc(doc(firestore, 'userChats', currentUser.uid), {
+          chats: [{ chatId: combinedId, userId: venue.userId }],
+        });
+      } else {
+        await updateDoc(doc(firestore, 'userChats', currentUser.uid), {
+          chats: arrayUnion({ chatId: combinedId, userId: venue.userId }),
+        });
+      }
+
+      if (!receiverUserChatsRes.exists()) {
+        await setDoc(doc(firestore, 'userChats', venue.userId), {
+          chats: [{ chatId: combinedId, userId: currentUser.uid }],
+        });
+      } else {
+        await updateDoc(doc(firestore, 'userChats', venue.userId), {
+          chats: arrayUnion({ chatId: combinedId, userId: currentUser.uid }),
+        });
+      }
+
+      await updateDoc(doc(firestore, 'messages', combinedId), {
+        messages: arrayUnion({
+          id: uniqueId(),
+          text,
+          senderId: currentUser!.uid,
+          date: Timestamp.now(),
+        }),
+      });
+    }
+  };
+
   return (
     <>
+      <div className="fixed bottom-6 right-20 max-w-full" style={{ zIndex: 9999 }}>
+        {isChatOpen ? (
+          <div className="w-80 h-[400px] rounded-lg border border-solid border-gray-200 shadow-lg flex flex-col">
+            <div
+              className="h-12 bg-[#4F709C] text-white text-lg flex items-center justify-center relative rounded-t-lg rounded-x-lg"
+              onClick={() => {
+                setIsChatOpen(!isChatOpen);
+              }}
+            >
+              <ChatOutlinedIcon className="absolute left-0 ml-3" />
+              <span className="absolute left-1/2 transform -translate-x-1/2">
+                {owner?.username}
+              </span>
+              <IconButton
+                className="absolute right-0 mr-2"
+                onClick={() => {
+                  setIsChatOpen(!isChatOpen);
+                }}
+              >
+                {isChatOpen && <RemoveIcon className="text-white" />}
+              </IconButton>
+            </div>
+            <div className="flex-1 p-2 overflow-auto justify-end bg-white">
+              {messages === null ? (
+                <div>There are still no messages.</div>
+              ) : (
+                messages.map((m) => (
+                  <div
+                    className={clsx(
+                      'flex gap-5 items-end',
+                      m.senderId === currentUser?.uid
+                        ? 'justify-start mr-20 '
+                        : 'justify-end ml-20 '
+                    )}
+                  >
+                    <Avatar
+                      className={clsx(
+                        m.senderId === currentUser?.uid
+                          ? 'order-first left-0'
+                          : 'order-last right-0'
+                      )}
+                    />
+                    <div
+                      className={clsx(
+                        m.senderId === currentUser?.uid
+                          ? 'bg-blue-200 rounded-br-xl'
+                          : 'bg-red-200 rounded-bl-xl',
+                        'p-2 rounded-t-xl'
+                      )}
+                    >
+                      {m.text}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+            <Divider />
+            <div className="p-2 h-fit flex items-center gap-2 bg-white">
+              <TextField
+                className="flex-1"
+                InputProps={{
+                  disableUnderline: true,
+                }}
+                variant="standard"
+                multiline
+                maxRows={3}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+              />
+              <IconButton className="aspect-square" onClick={handleSendMessage}>
+                <SendOutlinedIcon />
+              </IconButton>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="h-12 w-12 rounded-full rounded-bl-none bg-[#A2D5F2] text-white font-bold flex items-center justify-center relative"
+            onClick={() => {
+              setIsChatOpen(!isChatOpen);
+              handleOpenChat();
+            }}
+          >
+            <ChatOutlinedIcon />
+          </div>
+        )}
+      </div>
+
+      {venue?.userId && <Chat receiverId={venue.userId} />}
       {venue && (
         <div className="flex flex-col gap-3 pb-10 mt-10">
           <Modal
@@ -126,8 +336,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                 <div className="flex gap-2">
                   <Button
                     component="label"
-                    role={undefined}
-                    variant="contained"
+                    variant="outlined"
                     tabIndex={-1}
                     //startIcon={<CloudUploadIcon />}
                   >
@@ -142,11 +351,11 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                       }}
                     />
                   </Button>
-                  <Button variant="contained" onClick={() => setOpenImagesModal(true)}>
+                  <Button variant="outlined" onClick={() => setOpenImagesModal(true)}>
                     Edit images
                   </Button>
                   <Button
-                    variant="contained"
+                    variant="outlined"
                     onClick={(event) => {
                       navigate(`/addVenue/${encodeURI(venue.id!)}`);
                     }}
