@@ -18,23 +18,41 @@ import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 
 const Messages: FC<MessagesProps> = () => {
-  const [search, setSearch] = useState<string>('');
-  const [user, setUser] = useState<any>(null);
   const [text, setText] = useState('');
-  const [img, setImg] = useState(null);
   const [chats, setChats] = useState<
     {
       chatId: string;
       userId: string;
+      lastSenderId: string;
+      lastMessage: string;
+      date: Timestamp;
     }[]
   >([]);
   const [chatsWithUsers, setChatsWithUsers] = useState<
-    { chatId: string; user: { username: string; photoURL: string } }[]
+    {
+      chatId: string;
+      lastSenderId: string;
+      lastMessage: string;
+      date: Timestamp;
+      user: {
+        username: string;
+        photoURL: string;
+      };
+    }[]
   >([]);
   const [filteredChats, setFilteredChats] = useState<
-    { chatId: string; user: { username: string; photoURL: string } }[]
+    {
+      chatId: string;
+      lastSenderId: string;
+      lastMessage: string;
+      date: Timestamp;
+      user: {
+        username: string;
+        photoURL: string;
+      };
+    }[]
   >([]);
-  const [selectedChat, setSelectedChat] = useState<string | null>(null);
+  const [selectedChat, setSelectedChat] = useState<{ chatId: string; userId: string } | null>(null);
   const [messages, setMessages] = useState<
     { date: Date; id: string; senderId: string; text: string }[]
   >([]);
@@ -48,6 +66,9 @@ const Messages: FC<MessagesProps> = () => {
           const user = await getUserById(chat.userId);
           return {
             chatId: chat.chatId,
+            lastSenderId: chat.lastSenderId,
+            lastMessage: chat.lastMessage,
+            date: chat.date,
             user: { username: user?.username, photoURL: user?.photoURL },
           };
         })
@@ -68,6 +89,9 @@ const Messages: FC<MessagesProps> = () => {
             doc.data().chats as {
               chatId: string;
               userId: string;
+              lastSenderId: string;
+              lastMessage: string;
+              date: Timestamp;
             }[]
           );
       });
@@ -80,7 +104,7 @@ const Messages: FC<MessagesProps> = () => {
 
   useEffect(() => {
     if (selectedChat) {
-      const unSub = onSnapshot(doc(firestore, 'messages', selectedChat), (doc) => {
+      const unSub = onSnapshot(doc(firestore, 'messages', selectedChat.chatId), (doc) => {
         doc.exists() &&
           setMessages(
             doc.data().messages as { date: Date; id: string; senderId: string; text: string }[]
@@ -105,7 +129,7 @@ const Messages: FC<MessagesProps> = () => {
 
   const handleSendMessage = async () => {
     if (currentUser && selectedChat) {
-      await updateDoc(doc(firestore, 'messages', selectedChat), {
+      await updateDoc(doc(firestore, 'messages', selectedChat.chatId), {
         messages: arrayUnion({
           id: uniqueId(),
           text,
@@ -113,6 +137,49 @@ const Messages: FC<MessagesProps> = () => {
           date: Timestamp.now(),
         }),
       });
+
+      const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
+      const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', selectedChat.userId));
+
+      //@ts-ignore
+      const indexSender = senderUserChatsRes
+        .data()
+        .chats.findIndex((chat: any) => chat.chatId === selectedChat.chatId);
+
+      if (indexSender !== -1) {
+        chats[indexSender] = {
+          chatId: selectedChat.chatId,
+          userId: selectedChat.userId,
+          lastSenderId: currentUser.uid,
+          lastMessage: text,
+          date: Timestamp.now(),
+        };
+
+        await updateDoc(doc(firestore, 'userChats', currentUser.uid), { chats: chats });
+        console.log('Chat object replaced successfully.');
+      } else {
+        console.log('Chat with the given chatId not found.');
+      }
+
+      //@ts-ignore
+      const indexReceiver = receiverUserChatsRes
+        .data()
+        .chats.findIndex((chat: any) => chat.chatId === selectedChat.chatId);
+
+      if (indexReceiver !== -1) {
+        chats[indexReceiver] = {
+          chatId: selectedChat.chatId,
+          userId: currentUser.uid,
+          lastSenderId: currentUser.uid,
+          lastMessage: text,
+          date: Timestamp.now(),
+        };
+
+        await updateDoc(doc(firestore, 'userChats', currentUser.uid), { chats: chats });
+        console.log('Chat object replaced successfully.');
+      } else {
+        console.log('Chat with the given chatId not found.');
+      }
     }
   };
 
@@ -132,13 +199,16 @@ const Messages: FC<MessagesProps> = () => {
           {filteredChats.map((chat) => {
             console.log('helll', chats);
             return (
-              <div className="flex gap-2 mx-7" onClick={() => setSelectedChat(chat.chatId)}>
+              <div
+                className="flex gap-2 mx-7"
+                onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
+              >
                 <Avatar src={chat.user.photoURL} />
                 <div className="flex flex-col flex-grow">
                   <div className="font-bold">{chat.user.username}</div>
-                  <div className="text-sm text-gray-800">{'chat.user.lastMessage'}</div>
+                  <div className="text-sm text-gray-800">{chat.lastMessage}</div>
                 </div>
-                <div className="text-sm text-gray-500">{'chat.user.date'}</div>
+                <div className="text-sm text-gray-500">{chat.date.toDate().toDateString()}</div>
               </div>
             );
           })}

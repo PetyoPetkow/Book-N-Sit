@@ -170,6 +170,24 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     // add userChats update logic here
   };
 
+  const handleImagesSave = (images: string[]) => {
+    if (venue) {
+      try {
+        // Reference to the document for the specified venue ID
+        const venueRef = doc(firestore, 'venues', venue.id!);
+
+        // Update the images array in the venue document
+        updateDoc(venueRef, {
+          images: images,
+        });
+
+        console.log('Images updated successfully');
+      } catch (error) {
+        console.error('Error updating images: ', error);
+      }
+    }
+  };
+
   const handleSendMessage = async () => {
     if (currentUser && venue) {
       const combinedId =
@@ -187,21 +205,49 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
       if (!senderUserChatsRes.exists()) {
         await setDoc(doc(firestore, 'userChats', currentUser.uid), {
-          chats: [{ chatId: combinedId, userId: venue.userId }],
+          chats: [
+            {
+              chatId: combinedId,
+              userId: venue.userId,
+              lastSenderId: currentUser.uid,
+              lastMessage: text,
+              date: Timestamp.now(),
+            },
+          ],
         });
       } else {
         await updateDoc(doc(firestore, 'userChats', currentUser.uid), {
-          chats: arrayUnion({ chatId: combinedId, userId: venue.userId }),
+          chats: arrayUnion({
+            chatId: combinedId,
+            userId: venue.userId,
+            lastSenderId: currentUser.uid,
+            lastMessage: text,
+            date: Timestamp.now(),
+          }),
         });
       }
 
       if (!receiverUserChatsRes.exists()) {
         await setDoc(doc(firestore, 'userChats', venue.userId), {
-          chats: [{ chatId: combinedId, userId: currentUser.uid }],
+          chats: [
+            {
+              chatId: combinedId,
+              userId: currentUser.uid,
+              lastSenderId: currentUser.uid,
+              lastMessage: text,
+              date: Timestamp.now(),
+            },
+          ],
         });
       } else {
         await updateDoc(doc(firestore, 'userChats', venue.userId), {
-          chats: arrayUnion({ chatId: combinedId, userId: currentUser.uid }),
+          chats: arrayUnion({
+            chatId: combinedId,
+            userId: currentUser.uid,
+            lastSenderId: currentUser.uid,
+            lastMessage: text,
+            date: Timestamp.now(),
+          }),
         });
       }
 
@@ -324,6 +370,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               <div className="text-lg font-bold text-center w-full">Images</div>
               <EditImages
                 images={venue.images as string[]}
+                onSave={handleImagesSave}
                 venueId={venue.id!}
                 onClose={() => setOpenImagesModal(false)}
               />

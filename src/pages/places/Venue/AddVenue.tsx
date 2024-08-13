@@ -17,6 +17,8 @@ import { doc, getDoc } from 'firebase/firestore';
 import Venue, { PerksMap, VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
 
+// TODO protect editing of venues that are not property of the current user
+
 const AddVenue: FC<AddVenueProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [name, setName] = useState<string>('');
