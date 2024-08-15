@@ -2,8 +2,8 @@ import { cloneElement, FC, useEffect, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs, query, where } from 'firebase/firestore';
 import { Autocomplete, Card, CardActionArea, CardMedia, Chip, TextField } from '@mui/material';
-import Venue from '../../global/models/Venue';
-import { useNavigate } from 'react-router-dom';
+import Venue, { VenueType } from '../../global/models/Venue';
+import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
 import { perksMock } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
@@ -14,6 +14,8 @@ const Places: FC<PlacesProps> = () => {
   const [perks, setPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
 
   const navigate = useNavigate();
+  const { category } = useParams();
+  console.log(category);
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
@@ -26,6 +28,16 @@ const Places: FC<PlacesProps> = () => {
         perks.map((p) => {
           conditions.push(where(`perks.${p.name}`, '==', true));
         });
+      }
+      if (category !== undefined) {
+        const routeToCategoryMapper: Record<string, VenueType> = {
+          Restaurants: 'restaurant',
+          Bars: 'bar',
+        };
+
+        const filter: string | undefined = routeToCategoryMapper[category];
+
+        filter && conditions.push(where('venueTypes', 'array-contains', filter));
       }
 
       console.log(conditions);
@@ -41,7 +53,7 @@ const Places: FC<PlacesProps> = () => {
     };
 
     getPlaces(firestore);
-  }, [city, perks]);
+  }, [city, perks, category]);
 
   return (
     <>
@@ -81,10 +93,10 @@ const Places: FC<PlacesProps> = () => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-3 max-lg:grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
+      <div className="grid grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
         {places.map(({ name, city, street, description, images, id }: Venue, index: number) => {
           return (
-            <Card key={name} className="max-w-96 max-md:max-w-full h-[400px] truncate text-wrap">
+            <Card key={name} className="col-span-1 max-md:max-w-full truncate text-wrap">
               <CardActionArea
                 className="h-full w-full flex flex-col justify-start items-start"
                 onClick={(event) => {
@@ -92,7 +104,7 @@ const Places: FC<PlacesProps> = () => {
                 }}
               >
                 <div className="w-full">
-                  <CardMedia className="h-60 w-full" image={images[0] as string} />
+                  <CardMedia className="aspect-video w-full" image={images[0] as string} />
                 </div>
 
                 <section className="p-2">

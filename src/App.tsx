@@ -17,6 +17,7 @@ import OverviewPage from './pages/places/Overview/OverviewPage';
 import AddVenue from './pages/places/Venue/AddVenue';
 import ScrollToTop from './navigation/ScrollToTop';
 import Messages from './pages/messages/Messages';
+import stockImg from './images/stockImg.jpg';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -58,20 +59,47 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-cover bg-fixed">
         <Header />
-        <Container className="h-[calc(100vh-109px)]">
+        <Container className="h-full">
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="/Account" element={<UserAccountPage />} />
               <Route path="/AddVenue" element={<AddVenue />} />
               <Route path="/AddVenue/:venueId" element={<AddVenue />} />
-              <Route path="/Places" element={<Places />} />
-              <Route path="/Places/:venueName" element={<OverviewPage />} />
-              <Route path="/Overview" element={<OverviewPage />} />
-              <Route path="/Login" element={<LoginPage />} />
-              <Route path="/Register" element={<RegisterPage />} />
-              <Route path="/Messages" element={<Messages />} />
+              {/* <Route path="/Places">
+                <Route index element={<Places />} />
+                <Route path="Restaurants" element={<Places />} />
+                <Route path="Bars" element={<Places />} />
+                <Route path="NightClubs" element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route> */}
+
+              {/* <Route path="/Places">
+                <Route index element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route>
+              <Route path="/Restaurants">
+                <Route index element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route>
+              <Route path="/Bars">
+                <Route index element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route>
+              <Route path="/NightClubs">
+                <Route index element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route> */}
+
+              <Route path="/:category">
+                <Route index element={<Places />} />
+                <Route path=":venueName" element={<OverviewPage />} />
+              </Route>
+
+              <Route path="Login" element={<LoginPage />} />
+              <Route path="Register" element={<RegisterPage />} />
+              <Route path="Messages" element={<Messages />} />
             </Route>
 
             <Route path="/" element={<PublicOutlet />}>

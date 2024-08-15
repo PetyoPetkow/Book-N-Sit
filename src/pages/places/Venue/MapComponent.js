@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { TextField } from '@mui/material';
+import 'leaflet/dist/leaflet.css';
 
 // Remove default icon settings
 delete L.Icon.Default.prototype._getIconUrl;
@@ -13,7 +14,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
-const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
+const MapComponent = ({ lat, lng, setCoordinates, draggable, height = 400 }) => {
   // Initialize state with props for latitude and longitude
   const [position, setPosition] = useState([lat, lng]);
 
@@ -47,8 +48,13 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
   };
 
   return (
-    <div className="mt-5">
-      <MapContainer center={position} zoom={13} style={{ height: '400px', width: '100%' }}>
+    <>
+      <MapContainer
+        className="overflow-hidden"
+        center={position}
+        zoom={13}
+        style={{ height: height }}
+      >
         <RecenterAutomatically lat={lat} lng={lng} />
         {/* TileLayer for map background */}
         <TileLayer
@@ -70,23 +76,25 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable }) => {
           <Popup>Drag me to change position!</Popup>
         </Marker>
       </MapContainer>
-      <div className="mt-5 flex justify-center gap-10">
-        <TextField
-          value={position[0]}
-          onChange={handleLatChange}
-          type="number"
-          label="Latitude"
-          size="small"
-        />
-        <TextField
-          value={position[1]}
-          onChange={handleLngChange}
-          type="number"
-          label="Longitude"
-          size="small"
-        />
-      </div>
-    </div>
+      {draggable && (
+        <div className="mt-5 flex justify-center gap-10">
+          <TextField
+            value={position[0]}
+            onChange={handleLatChange}
+            type="number"
+            label="Latitude"
+            size="small"
+          />
+          <TextField
+            value={position[1]}
+            onChange={handleLngChange}
+            type="number"
+            label="Longitude"
+            size="small"
+          />
+        </div>
+      )}
+    </>
   );
 };
 

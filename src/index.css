@@ -3,7 +3,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-@import "leaflet/dist/leaflet.css";
+@import 'leaflet/dist/leaflet.css';
 
 body {
   margin: 0;
@@ -16,3 +16,19 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
+
+::-webkit-scrollbar-track {
+  border: 5px solid transparent;
+  background-color: #4e4e4e;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #dfe6e9;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(175, 100%, 91%);
+  border-radius: 10px;
+}
+

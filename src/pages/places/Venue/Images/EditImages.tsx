@@ -9,29 +9,10 @@ import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 
 export default function EditImages({ images, onSave, venueId, onClose }: UploadImagesProps) {
-  const [editedImages, setEditedImages] = useState<string[]>(images);
+  const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
   useEffect(() => console.log(editedImages), [editedImages]);
-
-  const removeFiles = () => {
-    imagesToDelete.map(async (image) => {
-      const fileToDeleteRef = ref(storage, image);
-      const venueRef = doc(firestore, 'venues', venueId);
-
-      await updateDoc(venueRef, {
-        images: arrayRemove(image),
-      });
-
-      await deleteObject(fileToDeleteRef)
-        .then(() => {
-          console.log('file deleted successfully');
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    });
-  };
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -113,14 +94,21 @@ export default function EditImages({ images, onSave, venueId, onClose }: UploadI
             )}
           </StrictModeDroppable>
         </DragDropContext>
-        <Button
-          onClick={() => {
-            removeFiles();
-            onClose();
-          }}
-        >
-          Save
-        </Button>
+        <div className="flex justify-end gap-5">
+          <Button
+            color="success"
+            variant="outlined"
+            onClick={() => {
+              onSave(editedImages, imagesToDelete);
+              onClose();
+            }}
+          >
+            Save
+          </Button>
+          <Button color="error" variant="outlined" onClick={onClose}>
+            Cancel
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -144,6 +132,6 @@ export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
 interface UploadImagesProps {
   images: string[];
   venueId: string;
-  onSave: (images: string[]) => void;
+  onSave: (images: string[], imagesToDelete: string[]) => void;
   onClose: () => void;
 }

@@ -1,5 +1,5 @@
 import { Avatar, Divider, IconButton, OutlinedInput, TextField } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import clsx from 'clsx';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
@@ -18,6 +18,8 @@ import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 
 const Messages: FC<MessagesProps> = () => {
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
+
   const [text, setText] = useState('');
   const [chats, setChats] = useState<
     {
@@ -183,6 +185,10 @@ const Messages: FC<MessagesProps> = () => {
     }
   };
 
+  useEffect(() => {
+    endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   return (
     <div className="border border-solid border-red h-full w-full flex">
       <div className="w-1/3 flex flex-col bg-gray-200">
@@ -200,7 +206,7 @@ const Messages: FC<MessagesProps> = () => {
             console.log('helll', chats);
             return (
               <div
-                className="flex gap-2 mx-7"
+                className="flex p-2 mx-5 rounded-lg hover:bg-gray-300 hover:cursor-pointer"
                 onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
               >
                 <Avatar src={chat.user.photoURL} />
@@ -243,6 +249,7 @@ const Messages: FC<MessagesProps> = () => {
                 </div>
               );
             })}
+          <div ref={endOfMessagesRef} />
         </div>
         <Divider />
         <div className="p-2 h-fit flex items-center gap-2 bg-white">

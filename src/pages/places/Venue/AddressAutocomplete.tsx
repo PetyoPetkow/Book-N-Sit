@@ -67,6 +67,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
         options={options}
         inputValue={inputValue}
         onInputChange={(sss, value) => {
+          setInputValue(value);
           value ? debouncedAddressesLoad(value) : setOptions([]);
         }}
         onChange={(event, newValue) => {

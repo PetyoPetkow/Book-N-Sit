@@ -1,14 +1,13 @@
 import { VenueType } from '../../../../global/models/Venue';
 
 export const venueTypes: VenueType[] = [
-  'Bar',
-  'Restaurant',
-  'Club',
-  'Cafe',
-  'Theater',
-  'Concert Hall',
-  'Gallery',
-  'Lounge',
-  'Sports Arena',
-  'Conference Center',
+  'bar',
+  'restaurant',
+  'club',
+  'cafe',
+  'theater',
+  'gallery',
+  'lounge',
+  'sports_arena',
+  'conference_center',
 ];

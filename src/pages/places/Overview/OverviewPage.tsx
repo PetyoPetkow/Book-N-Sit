@@ -1,4 +1,12 @@
-import { FC, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  FC,
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import RatingDisplay from './Rating/RatingDisplay';
@@ -7,11 +15,12 @@ import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
 import WriteReviewSection from './Reviews/WriteReviewSection';
-import { firestore } from '../../../firebase/firebase';
+import { firestore, storage } from '../../../firebase/firebase';
 import { useNavigate, useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
 import {
   addDoc,
+  arrayRemove,
   arrayUnion,
   doc,
   DocumentData,
@@ -39,6 +48,8 @@ import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { uniqueId } from 'lodash';
 import clsx from 'clsx';
+import { deleteObject, ref } from 'firebase/storage';
+import { useTranslation } from 'react-i18next';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -53,6 +64,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     { date: Date; id: string; senderId: string; text: string }[] | null
   >(null);
 
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
   const { venueName } = useParams();
   const navigate = useNavigate();
@@ -170,15 +182,31 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     // add userChats update logic here
   };
 
-  const handleImagesSave = (images: string[]) => {
+  const handleImagesSave = async (images: string[], imagesToDelete: string[]) => {
     if (venue) {
       try {
-        // Reference to the document for the specified venue ID
         const venueRef = doc(firestore, 'venues', venue.id!);
 
-        // Update the images array in the venue document
-        updateDoc(venueRef, {
-          images: images,
+        imagesToDelete.map(async (image) => {
+          const fileToDeleteRef = ref(storage, image);
+
+          await updateDoc(venueRef, {
+            images: arrayRemove(image),
+          });
+
+          await deleteObject(fileToDeleteRef)
+            .then(() => {
+              console.log('file deleted successfully');
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+
+        const filteredImages = images.filter((image) => !imagesToDelete.includes(image));
+
+        await updateDoc(venueRef, {
+          images: filteredImages,
         });
 
         console.log('Images updated successfully');
@@ -263,8 +291,8 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   return (
-    <>
-      <div className="fixed bottom-6 right-20 max-w-full" style={{ zIndex: 9999 }}>
+    <div className="backdrop-blur-md bg-black bg-opacity-50 rounded-lg p-10 mt-10">
+      <div className="fixed bottom-6 right-20 max-w-full " style={{ zIndex: 9999 }}>
         {isChatOpen ? (
           <div className="w-80 h-[400px] rounded-lg border border-solid border-gray-200 shadow-lg flex flex-col">
             <div
@@ -351,9 +379,8 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         )}
       </div>
 
-      {venue?.userId && <Chat receiverId={venue.userId} />}
       {venue && (
-        <div className="flex flex-col gap-3 pb-10 mt-10">
+        <div className="flex flex-col gap-3 pb-10">
           <Modal
             open={openImagesModal}
             onClose={() => setOpenImagesModal(false)}
@@ -378,11 +405,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </Modal>
           <div>
             <div className="flex justify-between">
-              <div className="font-bold font-sans text-2xl">{venue.name}</div>
+              <div className="font-extrabold font-sans text-4xl rounded-lg p-2 text-white  underline decoration-white ">
+                {venue.name}
+              </div>
               {currentUser?.uid === venue.userId && (
-                <div className="flex gap-2">
+                <div className="flex gap-2 h-10">
                   <Button
+                    className="bg-white "
                     component="label"
+                    role={undefined}
                     variant="outlined"
                     tabIndex={-1}
                     //startIcon={<CloudUploadIcon />}
@@ -398,10 +429,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                       }}
                     />
                   </Button>
-                  <Button variant="outlined" onClick={() => setOpenImagesModal(true)}>
+                  <Button
+                    className="bg-white"
+                    variant="outlined"
+                    onClick={() => setOpenImagesModal(true)}
+                  >
                     Edit images
                   </Button>
                   <Button
+                    className="bg-white"
                     variant="outlined"
                     onClick={(event) => {
                       navigate(`/addVenue/${encodeURI(venue.id!)}`);
@@ -417,30 +453,32 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               city={venue.city}
               street={venue.street}
             />
-            <div className="mb-4">{venue.venueTypes.join(', ')}</div>
-            <div className="flex gap-2 h-[530px] w-full  ">
-              <div className="w-3/4">
+            <div className="mb-4 bg-white rounded-md w-fit px-2">
+              {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
+            </div>
+            <div className="grid grid-cols-4 gap-2 h-full w-full">
+              <div className="col-span-3 bg-black bg-opacity-50">
                 <ImageGallery images={venue.images as string[]}></ImageGallery>
               </div>
-              <div className="grid grid-rows-2 gap-2 w-1/4 h-full">
-                <RatingDisplay reviews={reviews} />
-                {venue.coordinates && (
-                  <div className="overflow-hidden border border-solid border-[#005C78]">
-                    <MapComponent
-                      lat={venue.coordinates[0]}
-                      lng={venue.coordinates[1]}
-                      setCoordinates={() => {}}
-                      draggable={false}
-                    />
-                  </div>
-                )}
-                <OwnerInfo />
+              <div className="col-span-1 flex flex-col gap-2">
+                {/* <RatingDisplay reviews={reviews} /> */}
+                <div className="flex-1">
+                  <OwnerInfo />
+                </div>
+
+                <MapComponent
+                  lat={venue.coordinates[0]}
+                  lng={venue.coordinates[1]}
+                  setCoordinates={() => {}}
+                  draggable={false}
+                  height={250}
+                />
               </div>
             </div>
           </div>
           <Divider />
           <PerksList perksList={venue.perks} />
-          <div className="my-5">
+          <div className="my-5 bg-white p-3 rounded-md">
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
@@ -458,7 +496,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           <ReviewsSection reviews={reviews} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -65,7 +65,7 @@ const Header: FC<HeaderProps> = () => {
 
   const menuConfig = [
     {
-      label: t('header_btn_places'),
+      label: t('header_btn_all'),
       path: '/Places',
       icon: <FavoriteIcon />,
     },
@@ -87,7 +87,7 @@ const Header: FC<HeaderProps> = () => {
   ];
 
   return (
-    <AppBar className="bg-[#006989]" position="static">
+    <AppBar className="bg-[#006989]" position="relative">
       <Container>
         <div className="w-full flex justify-between items-center mt-2">
           <img className="h-14" src={logo} />
