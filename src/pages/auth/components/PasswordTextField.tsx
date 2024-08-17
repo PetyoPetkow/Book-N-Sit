@@ -15,14 +15,15 @@ const PasswordTextField: FC<PasswordTextFieldProps> = (props) => {
 
   return (
     <TextField
+      {...props}
       type={showPassword ? 'text' : 'password'}
       label="Password"
       size="small"
-      variant="outlined"
+      variant="filled"
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <LockOpenIcon />
+            <LockOpenIcon className="text-white" />
           </InputAdornment>
         ),
         endAdornment: (
@@ -38,7 +39,6 @@ const PasswordTextField: FC<PasswordTextFieldProps> = (props) => {
           </InputAdornment>
         ),
       }}
-      {...props}
     />
   );
 };

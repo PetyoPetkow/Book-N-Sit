@@ -57,8 +57,8 @@ const Places: FC<PlacesProps> = () => {
   }, [city, perks, category]);
 
   return (
-    <>
-      <div className=" flex w-4/5 m-auto gap-4 mt-8 ">
+    <div className="flex-grow bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4">
+      <div className=" flex w-4/5 m-auto gap-4 mt-8">
         <div className="flex-1 bg-white p-2 ">
           <CityAutocomplete city={city} onCityChanged={setCity} />
         </div>
@@ -131,7 +131,7 @@ const Places: FC<PlacesProps> = () => {
           }
         )}
       </div>
-    </>
+    </div>
   );
 };
 

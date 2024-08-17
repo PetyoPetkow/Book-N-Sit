@@ -44,9 +44,6 @@ const App = () => {
       primary: {
         main: '#006989',
       },
-      error: {
-        main: '#E88D67',
-      },
       secondary: {
         main: '#F3F7EC',
       },
@@ -59,39 +56,14 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
-      <div className="min-h-screen bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-cover bg-fixed ">
+      <div className="min-h-[100vh] flex flex-col bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-fixed bg-cover">
         <Header />
-        <Container className="min-h-screen  pt-8 bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700">
-          <div className="background"></div>
+        <Container disableGutters className="flex-grow flex flex-col ">
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="/Account" element={<UserAccountPage />} />
               <Route path="/AddVenue" element={<AddVenue />} />
               <Route path="/AddVenue/:venueId" element={<AddVenue />} />
-              {/* <Route path="/Places">
-                <Route index element={<Places />} />
-                <Route path="Restaurants" element={<Places />} />
-                <Route path="Bars" element={<Places />} />
-                <Route path="NightClubs" element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
-              </Route> */}
-
-              {/* <Route path="/Places">
-                <Route index element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
-              </Route>
-              <Route path="/Restaurants">
-                <Route index element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
-              </Route>
-              <Route path="/Bars">
-                <Route index element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
-              </Route>
-              <Route path="/NightClubs">
-                <Route index element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
-              </Route> */}
 
               <Route path="/:category">
                 <Route index element={<Places />} />

@@ -292,7 +292,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   return (
-    <div>
+    <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4">
       <div className="fixed bottom-6 right-20 max-w-full " style={{ zIndex: 9999 }}>
         {isChatOpen ? (
           <div className="w-80 h-[400px] rounded-lg border border-solid border-gray-200 shadow-lg flex flex-col">

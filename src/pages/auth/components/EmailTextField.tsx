@@ -17,11 +17,11 @@ const EmailTextField: FC<EmailTextFieldProps> = (props) => {
       type="email"
       label="Email"
       size="small"
-      variant="outlined"
+      variant="filled"
       InputProps={{
         startAdornment: (
           <InputAdornment position="start">
-            <AccountCircle />
+            <AccountCircle className="text-white" />
           </InputAdornment>
         ),
       }}

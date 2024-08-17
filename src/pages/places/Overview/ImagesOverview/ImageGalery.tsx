@@ -1,6 +1,20 @@
 import { FC, useState } from 'react';
 import clsx from 'clsx';
 import FsLightbox from 'fslightbox-react';
+import ReactDOM from 'react-dom';
+
+//@ts-ignore
+const LightboxPortal = ({ toggler, currentImageIndex, images }) => {
+  return ReactDOM.createPortal(
+    <FsLightbox
+      toggler={toggler}
+      sourceIndex={currentImageIndex}
+      sources={images}
+      type={'image'}
+    />,
+    document.body
+  );
+};
 
 const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(2);
@@ -18,12 +32,7 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
           <ImageDisplay images={images} handleImageClick={handleImageClick} />
         </div>
       </div>
-      <FsLightbox
-        toggler={toggler}
-        sourceIndex={currentImageIndex}
-        sources={images}
-        type={'image'}
-      />
+      <LightboxPortal toggler={toggler} currentImageIndex={currentImageIndex} images={images} />
     </>
   );
 };
