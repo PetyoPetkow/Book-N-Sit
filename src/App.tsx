@@ -59,9 +59,10 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
-      <div className="min-h-screen bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-cover bg-fixed">
+      <div className="min-h-screen bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-cover bg-fixed ">
         <Header />
-        <Container className="h-full">
+        <Container className="min-h-screen  pt-8 bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700">
+          <div className="background"></div>
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="/Account" element={<UserAccountPage />} />

@@ -10,13 +10,13 @@ const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
   onCloseAtChanged,
 }) => {
   const daysOfWeek: DayOfWeek[] = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+    'sunday',
   ];
 
   return (

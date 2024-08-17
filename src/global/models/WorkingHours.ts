@@ -1,8 +1,8 @@
 import DayOfWeek from './DaysOfWeek';
 
 export type DailySchedule = {
-  openAt: number | null;
-  closeAt: number | null;
+  openAt: string | null;
+  closeAt: string | null;
 };
 
 type WorkingHours = Record<DayOfWeek, DailySchedule>;

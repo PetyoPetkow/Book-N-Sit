@@ -37,13 +37,13 @@ const AddVenue: FC<AddVenueProps> = () => {
     Cocktail: false,
   });
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
-    Monday: { openAt: null, closeAt: null },
-    Tuesday: { openAt: null, closeAt: null },
-    Wednesday: { openAt: null, closeAt: null },
-    Thursday: { openAt: null, closeAt: null },
-    Friday: { openAt: null, closeAt: null },
-    Saturday: { openAt: null, closeAt: null },
-    Sunday: { openAt: null, closeAt: null },
+    monday: { openAt: null, closeAt: null },
+    tuesday: { openAt: null, closeAt: null },
+    wednesday: { openAt: null, closeAt: null },
+    thursday: { openAt: null, closeAt: null },
+    friday: { openAt: null, closeAt: null },
+    saturday: { openAt: null, closeAt: null },
+    sunday: { openAt: null, closeAt: null },
   });
 
   const { venueId } = useParams();
@@ -179,16 +179,17 @@ const AddVenue: FC<AddVenueProps> = () => {
                   ...prevState,
                   [dayOfWeek]: {
                     ...prevState[dayOfWeek],
-                    openAt: date ? getTime(date) : null,
+                    openAt: date ? date.toTimeString() : null,
                   },
                 }));
+                console.log(date?.toTimeString());
               }}
               onCloseAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
                 setWorkingHours((prevState) => ({
                   ...prevState,
                   [dayOfWeek]: {
                     ...prevState[dayOfWeek],
-                    closeAt: date ? getTime(date) : null,
+                    closeAt: date ? date.toTimeString() : null,
                   },
                 }));
               }}

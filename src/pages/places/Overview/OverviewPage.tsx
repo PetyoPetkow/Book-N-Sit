@@ -50,6 +50,7 @@ import { uniqueId } from 'lodash';
 import clsx from 'clsx';
 import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
+import OpenClosed from './OpenClosed';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -291,7 +292,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   return (
-    <div className="backdrop-blur-md bg-black bg-opacity-50 rounded-lg p-10 mt-10">
+    <div>
       <div className="fixed bottom-6 right-20 max-w-full " style={{ zIndex: 9999 }}>
         {isChatOpen ? (
           <div className="w-80 h-[400px] rounded-lg border border-solid border-gray-200 shadow-lg flex flex-col">
@@ -405,51 +406,12 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </Modal>
           <div>
             <div className="flex justify-between">
-              <div className="font-extrabold font-sans text-4xl rounded-lg p-2 text-white  underline decoration-white ">
+              <div className="font-extrabold font-sans text-6xl rounded-lg p-2 text-stone-700 ">
                 {venue.name}
               </div>
-              {currentUser?.uid === venue.userId && (
-                <div className="flex gap-2 h-10">
-                  <Button
-                    className="bg-white "
-                    component="label"
-                    role={undefined}
-                    variant="outlined"
-                    tabIndex={-1}
-                    //startIcon={<CloudUploadIcon />}
-                  >
-                    Upload Images
-                    <VisuallyHiddenInput
-                      type="file"
-                      multiple
-                      onChange={async (event: any) => {
-                        const imageUrls = await uploadImages(event.target.files, venue.name);
-                        const venueRef = doc(firestore, 'venues', venue.id!);
-                        await addArrayToImages(venueRef, imageUrls);
-                      }}
-                    />
-                  </Button>
-                  <Button
-                    className="bg-white"
-                    variant="outlined"
-                    onClick={() => setOpenImagesModal(true)}
-                  >
-                    Edit images
-                  </Button>
-                  <Button
-                    className="bg-white"
-                    variant="outlined"
-                    onClick={(event) => {
-                      navigate(`/addVenue/${encodeURI(venue.id!)}`);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </div>
-              )}
             </div>
             <Location
-              className="bg-[#F3F7EC] w-fit pr-3 my-2 py-0 rounded-full"
+              className="bg-[#F3F7EC] w-fit pr-3 my-2 rounded-full"
               city={venue.city}
               street={venue.street}
             />
@@ -462,16 +424,59 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               </div>
               <div className="col-span-1 flex flex-col gap-2">
                 {/* <RatingDisplay reviews={reviews} /> */}
-                <div className="flex-1">
-                  <OwnerInfo />
-                </div>
 
+                {currentUser?.uid === venue.userId ? (
+                  <div className="flex flex-col gap-2 flex-grow">
+                    <Button
+                      className="text-white font-bold bg-black bg-opacity-60"
+                      variant="outlined"
+                      color="secondary"
+                      component="label"
+                      role={undefined}
+                      tabIndex={-1}
+                      //startIcon={<CloudUploadIcon />}
+                    >
+                      Upload Images
+                      <VisuallyHiddenInput
+                        type="file"
+                        multiple
+                        onChange={async (event: any) => {
+                          const imageUrls = await uploadImages(event.target.files, venue.name);
+                          const venueRef = doc(firestore, 'venues', venue.id!);
+                          await addArrayToImages(venueRef, imageUrls);
+                        }}
+                      />
+                    </Button>
+                    <Button
+                      className="text-white font-bold bg-black bg-opacity-60"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => setOpenImagesModal(true)}
+                    >
+                      Edit images
+                    </Button>
+                    <Button
+                      className="text-white font-bold bg-black bg-opacity-60"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={(event) => {
+                        navigate(`/addVenue/${encodeURI(venue.id!)}`);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex-1">
+                    <OwnerInfo />
+                  </div>
+                )}
                 <MapComponent
                   lat={venue.coordinates[0]}
                   lng={venue.coordinates[1]}
                   setCoordinates={() => {}}
                   draggable={false}
-                  height={250}
+                  height={currentUser?.uid === venue.userId ? 350 : 250}
                 />
               </div>
             </div>

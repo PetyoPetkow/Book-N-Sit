@@ -7,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
 import { perksMock } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
+import OpenClosed from './Overview/OpenClosed';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
@@ -57,11 +58,11 @@ const Places: FC<PlacesProps> = () => {
 
   return (
     <>
-      <div className=" flex w-4/5 m-auto gap-4 mt-8">
-        <div className="flex-1">
+      <div className=" flex w-4/5 m-auto gap-4 mt-8 ">
+        <div className="flex-1 bg-white p-2 ">
           <CityAutocomplete city={city} onCityChanged={setCity} />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 bg-white p-2 ">
           <Autocomplete
             className="flex-nowrap text-nowrap"
             limitTags={2}
@@ -94,36 +95,41 @@ const Places: FC<PlacesProps> = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
-        {places.map(({ name, city, street, description, images, id }: Venue, index: number) => {
-          return (
-            <Card key={name} className="col-span-1 max-md:max-w-full truncate text-wrap">
-              <CardActionArea
-                className="h-full w-full flex flex-col justify-start items-start"
-                onClick={(event) => {
-                  navigate(`${encodeURI(id!)}`);
-                }}
-              >
-                <div className="w-full">
-                  <CardMedia className="aspect-video w-full" image={images[0] as string} />
-                </div>
-
-                <section className="p-2">
-                  <div className="text-xl font-bold indent-3">{name}</div>
-                  <Location
-                    className="bg-[#F3F7EC] w-fit pr-3 py-0 -ml-2 rounded-full scale-90"
-                    iconSize="small"
-                    city={city}
-                    street={street}
-                  />
-                  <div className="mt-1">
-                    <span>{description}</span>
-                    <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent" />
+        {places.map(
+          ({ name, city, street, description, images, id, workingHours }: Venue, index: number) => {
+            return (
+              <Card key={name} className="col-span-1 max-md:max-w-full truncate text-wrap">
+                <CardActionArea
+                  className="h-full w-full flex flex-col justify-start items-start"
+                  onClick={(event) => {
+                    navigate(`${encodeURI(id!)}`);
+                  }}
+                >
+                  <div className="w-full">
+                    <CardMedia className="aspect-video w-full" image={images[0] as string} />
                   </div>
-                </section>
-              </CardActionArea>
-            </Card>
-          );
-        })}
+
+                  <section className="p-2 flex-grow">
+                    <div className="text-xl font-bold indent-3">{name}</div>
+                    <div className="flex justify-between flex-grow">
+                      <Location
+                        className="bg-[#F3F7EC] w-fit pr-3 py-0 -ml-2 rounded-full scale-90"
+                        iconSize="small"
+                        city={city}
+                        street={street}
+                      />
+                      <OpenClosed workingHours={workingHours} />
+                    </div>
+                    <div className="mt-1">
+                      <span>{description}</span>
+                      <div className="absolute bottom-0 w-full h-5 bg-gradient-to-t from-white via-white to-transparent" />
+                    </div>
+                  </section>
+                </CardActionArea>
+              </Card>
+            );
+          }
+        )}
       </div>
     </>
   );
