@@ -1,32 +1,41 @@
 import { Avatar, Button, Divider } from '@mui/material';
 import { FC } from 'react';
 import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
+import { useAuth } from '../../../../contexts/authContext';
 
-const OwnerInfo: FC<OwnerInfoProps> = () => {
+const OwnerInfo: FC<OwnerInfoProps> = ({ onChatOpen }) => {
+  const { currentUser } = useAuth();
+
   return (
-    <div className="flex flex-col h-full overflow-hidden border border-solid border-[#005C78] bg-[#F3F7EC] rounded-md">
-      <div className=" flex items-center justify-center text-xl font-bold bg-[#006989] w-full h-14 text-white">
+    <div className="flex flex-col h-full overflow-hidden  bg-white">
+      <div className=" flex items-center justify-center text-xl font-bold  w-full h-14 text-[#006989]">
         Contacts
       </div>
-      <Divider />
-      <div className="flex justify-between p-2">
-        <div>owner:</div>
-        <div className="flex gap-2 font-bold">
-          John Smith
+      <Divider className="mx-4 bg-[#006989]" />
+
+      <section className="flex flex-col flex-grow items-center justify-evenly m-4">
+        <div className="flex gap-2 font-bold items-center">
+          <span>John Smith</span>
           <Avatar />
         </div>
-      </div>
-      <div className="flex justify-between bg-white mx-4 px-4 py-2 rounded text-lg font-bold items-center">
-        <div>+359 882114269</div>
-        <PhoneEnabledIcon className="text-3xl" />
-      </div>
-      <Button className="w-fit m-auto mt-3" variant="outlined">
-        Open chat
-      </Button>
+
+        <div className="flex text-lg font-bold">
+          <div>+359 882114269</div>
+          <PhoneEnabledIcon className="text-3xl" />
+        </div>
+
+        {currentUser && (
+          <Button className="w-fit self-center" variant="outlined" onClick={onChatOpen}>
+            Open chat
+          </Button>
+        )}
+      </section>
     </div>
   );
 };
 
-interface OwnerInfoProps {}
+interface OwnerInfoProps {
+  onChatOpen: () => void;
+}
 
 export default OwnerInfo;

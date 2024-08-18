@@ -1,7 +1,15 @@
 import { cloneElement, FC, useEffect, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
 import { Firestore, collection, getDocs, query, where } from 'firebase/firestore';
-import { Autocomplete, Card, CardActionArea, CardMedia, Chip, TextField } from '@mui/material';
+import {
+  Autocomplete,
+  Card,
+  CardActionArea,
+  CardMedia,
+  Chip,
+  Divider,
+  TextField,
+} from '@mui/material';
 import Venue, { VenueType } from '../../global/models/Venue';
 import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
@@ -57,44 +65,49 @@ const Places: FC<PlacesProps> = () => {
   }, [city, perks, category]);
 
   return (
-    <div className="flex-grow bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4">
-      <div className=" flex w-4/5 m-auto gap-4 mt-8">
-        <div className="flex-1 bg-white p-2 ">
-          <CityAutocomplete city={city} onCityChanged={setCity} />
+    <div className="flex-grow flex flex-col gap-10 bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 ">
+      <div>
+        <div className="flex w-full min-h-20 h-fit gap-4 items-center">
+          <div className="flex-1 px-20">
+            <CityAutocomplete city={city} onCityChanged={setCity} />
+          </div>
+          <div className="flex-1 px-20">
+            <Autocomplete
+              className="flex-nowrap text-nowrap"
+              limitTags={2}
+              multiple
+              size="small"
+              options={perksMock}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option.name}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  {cloneElement(option.icon, { style: { fontSize: 18, marginRight: 8 } })}
+                  {option.name}
+                </li>
+              )}
+              value={perks}
+              onChange={(event, value) => {
+                setPerks(value);
+              }}
+              renderTags={(value, getTagProps) =>
+                value.map((option, index) => (
+                  <Chip
+                    size="small"
+                    label={option.name}
+                    icon={option.icon}
+                    {...getTagProps({ index })}
+                  />
+                ))
+              }
+              renderInput={(params) => <TextField {...params} variant="outlined" label="Filters" />}
+            />
+          </div>
         </div>
-        <div className="flex-1 bg-white p-2 ">
-          <Autocomplete
-            className="flex-nowrap text-nowrap"
-            limitTags={2}
-            multiple
-            options={perksMock}
-            disableCloseOnSelect
-            getOptionLabel={(option) => option.name}
-            renderOption={(props, option, { selected }) => (
-              <li {...props}>
-                {cloneElement(option.icon, { style: { fontSize: 18, marginRight: 8 } })}
-                {option.name}
-              </li>
-            )}
-            value={perks}
-            onChange={(event, value) => {
-              setPerks(value);
-            }}
-            renderTags={(value, getTagProps) =>
-              value.map((option, index) => (
-                <Chip
-                  size="small"
-                  label={option.name}
-                  icon={option.icon}
-                  {...getTagProps({ index })}
-                />
-              ))
-            }
-            renderInput={(params) => <TextField {...params} variant="outlined" label="Filters" />}
-          />
-        </div>
+        <Divider />
       </div>
-      <div className="grid grid-cols-2 max-sm:grid-cols-1 justify-center w-full gap-10 mt-10">
+
+      <div className="grid grid-cols-2 max-sm:grid-cols-1 justify-center  gap-10 px-4 pb-4">
         {places.map(
           ({ name, city, street, description, images, id, workingHours }: Venue, index: number) => {
             return (

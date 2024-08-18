@@ -1,10 +1,10 @@
-import { Avatar, Rating } from '@mui/material';
+import { Avatar, Divider, Rating } from '@mui/material';
 import { FC } from 'react';
 
 const ReviewDisplay: FC<ReviewDisplayProps> = ({ name, rating, comment }) => {
   return (
-    <div className="flex flex-col border border-solid border-gray-300 rounded-md">
-      <div className="flex flex-col h-fit bg-white p-4 rounded-lg">
+    <div className="flex flex-col">
+      <div className="flex flex-col gap-2 h-fit bg-white p-4">
         <div className="flex justify-between">
           <div className="flex gap-4 w-full font-bold">
             <Avatar />
@@ -15,7 +15,8 @@ const ReviewDisplay: FC<ReviewDisplayProps> = ({ name, rating, comment }) => {
           </div>
           <div className="justify-self-end">24.05.2024</div>
         </div>
-        <div className="mt-2">{comment}</div>
+        <Divider className="bg-[#006989] w-72" />
+        <div>{comment}</div>
       </div>
     </div>
   );

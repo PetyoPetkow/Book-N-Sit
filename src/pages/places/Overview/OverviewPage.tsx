@@ -51,6 +51,8 @@ import clsx from 'clsx';
 import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
 import OpenClosed from './OpenClosed';
+import { createPortal } from 'react-dom';
+import ChatBox from './ChatBox';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -217,7 +219,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (text: string) => {
     if (currentUser && venue) {
       const combinedId =
         currentUser.uid > venue.userId
@@ -292,94 +294,17 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   return (
-    <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4">
-      <div className="fixed bottom-6 right-20 max-w-full " style={{ zIndex: 9999 }}>
-        {isChatOpen ? (
-          <div className="w-80 h-[400px] rounded-lg border border-solid border-gray-200 shadow-lg flex flex-col">
-            <div
-              className="h-12 bg-[#4F709C] text-white text-lg flex items-center justify-center relative rounded-t-lg rounded-x-lg"
-              onClick={() => {
-                setIsChatOpen(!isChatOpen);
-              }}
-            >
-              <ChatOutlinedIcon className="absolute left-0 ml-3" />
-              <span className="absolute left-1/2 transform -translate-x-1/2">
-                {owner?.username}
-              </span>
-              <IconButton
-                className="absolute right-0 mr-2"
-                onClick={() => {
-                  setIsChatOpen(!isChatOpen);
-                }}
-              >
-                {isChatOpen && <RemoveIcon className="text-white" />}
-              </IconButton>
-            </div>
-            <div className="flex-1 p-2 overflow-auto justify-end bg-white">
-              {messages === null ? (
-                <div>There are still no messages.</div>
-              ) : (
-                messages.map((m) => (
-                  <div
-                    className={clsx(
-                      'flex gap-5 items-end',
-                      m.senderId === currentUser?.uid
-                        ? 'justify-start mr-20 '
-                        : 'justify-end ml-20 '
-                    )}
-                  >
-                    <Avatar
-                      className={clsx(
-                        m.senderId === currentUser?.uid
-                          ? 'order-first left-0'
-                          : 'order-last right-0'
-                      )}
-                    />
-                    <div
-                      className={clsx(
-                        m.senderId === currentUser?.uid
-                          ? 'bg-blue-200 rounded-br-xl'
-                          : 'bg-red-200 rounded-bl-xl',
-                        'p-2 rounded-t-xl'
-                      )}
-                    >
-                      {m.text}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-            <Divider />
-            <div className="p-2 h-fit flex items-center gap-2 bg-white">
-              <TextField
-                className="flex-1"
-                InputProps={{
-                  disableUnderline: true,
-                }}
-                variant="standard"
-                multiline
-                maxRows={3}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-              />
-              <IconButton className="aspect-square" onClick={handleSendMessage}>
-                <SendOutlinedIcon />
-              </IconButton>
-            </div>
-          </div>
-        ) : (
-          <div
-            className="h-12 w-12 rounded-full rounded-bl-none bg-[#A2D5F2] text-white font-bold flex items-center justify-center relative"
-            onClick={() => {
-              setIsChatOpen(!isChatOpen);
-              handleOpenChat();
-            }}
-          >
-            <ChatOutlinedIcon />
-          </div>
-        )}
-      </div>
-
+    <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4 relative">
+      <ChatBox
+        isOpen={isChatOpen}
+        messages={messages}
+        onOpen={() => {
+          handleOpenChat();
+          setIsChatOpen(true);
+        }}
+        onClose={() => setIsChatOpen(false)}
+        sendMessage={handleSendMessage}
+      />
       {venue && (
         <div className="flex flex-col gap-3 pb-10">
           <Modal
@@ -406,7 +331,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </Modal>
           <div>
             <div className="flex justify-between">
-              <div className="font-extrabold font-sans text-6xl rounded-lg p-2 text-stone-700 ">
+              <div className="font-extrabold font-sans text-6xl rounded-lg p-2 text-sky-950 ">
                 {venue.name}
               </div>
             </div>
@@ -427,6 +352,16 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
                 {currentUser?.uid === venue.userId ? (
                   <div className="flex flex-col gap-2 flex-grow">
+                    <Button
+                      className="text-white font-bold bg-black bg-opacity-60"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={(event) => {
+                        navigate(`/addVenue/${encodeURI(venue.id!)}`);
+                      }}
+                    >
+                      Edit
+                    </Button>
                     <Button
                       className="text-white font-bold bg-black bg-opacity-60"
                       variant="outlined"
@@ -455,20 +390,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                     >
                       Edit images
                     </Button>
-                    <Button
-                      className="text-white font-bold bg-black bg-opacity-60"
-                      variant="outlined"
-                      color="secondary"
-                      onClick={(event) => {
-                        navigate(`/addVenue/${encodeURI(venue.id!)}`);
-                      }}
-                    >
-                      Edit
-                    </Button>
                   </div>
                 ) : (
                   <div className="flex-1">
-                    <OwnerInfo />
+                    <OwnerInfo
+                      onChatOpen={() => {
+                        handleOpenChat();
+                        setIsChatOpen(true);
+                      }}
+                    />
                   </div>
                 )}
                 <MapComponent
@@ -483,7 +413,11 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </div>
           <Divider />
           <PerksList perksList={venue.perks} />
-          <div className="my-5 bg-white p-3 rounded-md">
+          <div className="my-5 flex flex-col gap-2 bg-white p-3">
+            <div className="text-lg font-bold">
+              About <span className="text-sky-900">{venue.name}</span>
+            </div>
+            <Divider className="bg-[#006989]" />
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
@@ -498,6 +432,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
               postReview={onFinishReviewClick}
             />
           )}
+          <Divider />
           <ReviewsSection reviews={reviews} />
         </div>
       )}

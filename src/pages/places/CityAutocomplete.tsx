@@ -48,6 +48,7 @@ const CityAutocomplete: FC<CityAutocompleteProps> = ({ city, onCityChanged }) =>
 
   return (
     <Autocomplete
+      size="small"
       clearOnBlur={false}
       options={options}
       onInputChange={(event, newValue) => {
