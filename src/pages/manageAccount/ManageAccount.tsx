@@ -1,13 +1,13 @@
 import { Button, Divider, styled, TextField } from '@mui/material';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authContext';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { firebase, firestore } from '../../firebase/firebase';
+import { doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { firebase, firestore, storage } from '../../firebase/firebase';
 import { getUserById, uploadProfilePicture } from '../../firebase/services/UserService';
+import { deleteObject, ref } from 'firebase/storage';
 
 const ManageAccount: FC<ManageAccountProps> = () => {
   const [userData, setUserData] = useState<any>();
-  const [image, setImage] = useState<File>();
   const { currentUser } = useAuth();
 
   const VisuallyHiddenInput = styled('input')({
@@ -40,6 +40,18 @@ const ManageAccount: FC<ManageAccountProps> = () => {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    if (currentUser) {
+      const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
+        doc.exists() && setUserData(doc.data());
+      });
+
+      return () => {
+        unSub();
+      };
+    }
+  }, [currentUser]);
+
   const handleUpdate = async () => {
     if (currentUser) {
       try {
@@ -58,6 +70,7 @@ const ManageAccount: FC<ManageAccountProps> = () => {
       await updateDoc(userRef, {
         photoURL: imageUrl, // Update just the photoUrl field
       });
+
       console.log('Photo URL updated successfully');
     } catch (error) {
       console.error('Error updating photo URL:', error);

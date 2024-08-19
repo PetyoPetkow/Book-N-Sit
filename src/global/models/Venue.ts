@@ -16,15 +16,15 @@ export default interface Venue {
 }
 
 export type VenueType =
-  | 'bar'
   | 'restaurant'
-  | 'club'
   | 'cafe'
-  | 'theater'
-  | 'gallery'
-  | 'lounge'
-  | 'sports_arena'
-  | 'conference_center';
+  | 'bar'
+  | 'pub'
+  | 'bakery'
+  | 'winery'
+  | 'brewery'
+  | 'cocktail_bar'
+  | 'night_club';
 
 export type Perk = 'No smoking' | 'Cocktail' | 'Sushi menu' | 'Wine list' | 'Personalized events';
 export type PerksMap = Record<Perk, boolean>;

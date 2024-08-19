@@ -41,7 +41,14 @@ const Places: FC<PlacesProps> = () => {
       if (category !== undefined) {
         const routeToCategoryMapper: Record<string, VenueType> = {
           Restaurants: 'restaurant',
+          Cafes: 'cafe',
           Bars: 'bar',
+          Pubs: 'pub',
+          Bakeries: 'bakery',
+          Wineries: 'winery',
+          Breweries: 'brewery',
+          CocktailBars: 'cocktail_bar',
+          NightClubs: 'night_club',
         };
 
         const filter: string | undefined = routeToCategoryMapper[category];
@@ -57,7 +64,7 @@ const Places: FC<PlacesProps> = () => {
       const placeList = placeSnapshot.docs.map((doc) => {
         return { id: doc.id, ...(doc.data() as Venue) };
       });
-      console.log(placeList);
+      console.log(placeList, 'pl');
       setPlaces(placeList);
     };
 

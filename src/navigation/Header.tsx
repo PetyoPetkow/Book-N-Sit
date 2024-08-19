@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useMemo, useState } from 'react';
+import { FC, MouseEvent, useEffect, useMemo, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { doSingOut } from '../firebase/auth';
 import {
@@ -20,14 +20,30 @@ import flagBG from './flagsImages/bulgaria.png';
 import flagUK from './flagsImages/united-kingdom.png';
 import logo from './logos/logo.png';
 import { firestore } from '../firebase/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import Language from '../global/models/Language';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import LocalCafeOutlinedIcon from '@mui/icons-material/LocalCafeOutlined';
+import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
+import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
+import RestaurantMenuOutlinedIcon from '@mui/icons-material/RestaurantMenuOutlined';
+import TableRestaurantOutlinedIcon from '@mui/icons-material/TableRestaurantOutlined';
+import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
+import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';
+import LocalDrinkOutlinedIcon from '@mui/icons-material/LocalDrinkOutlined';
+import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
+import NightlifeOutlinedIcon from '@mui/icons-material/NightlifeOutlined';
+import { getUserById } from '../firebase/services/UserService';
+import { User } from 'firebase/auth';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import clsx from 'clsx';
 
 const Header: FC<HeaderProps> = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorElLanguage, setAnchorElLanguage] = useState<null | HTMLElement>(null);
+  const [user, setUser] = useState<any>();
 
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
@@ -40,6 +56,18 @@ const Header: FC<HeaderProps> = () => {
       return flagUK;
     }
   }, [i18n.language]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
+        doc.exists() && setUser(doc.data());
+      });
+
+      return () => {
+        unSub();
+      };
+    }
+  }, [currentUser]);
 
   const changeLanguage = (lng: Language) => {
     if (currentUser) {
@@ -66,23 +94,47 @@ const Header: FC<HeaderProps> = () => {
   const menuConfig = [
     {
       label: t('header_btn_all'),
-      path: '/Places',
-      icon: <FavoriteIcon />,
+      path: '/All',
     },
     {
       label: t('header_btn_restaurants'),
       path: '/Restaurants',
-      icon: <RestoreIcon />,
+      icon: RestaurantMenuOutlinedIcon,
+    },
+    {
+      label: t('header_btn_cafes'),
+      path: '/Cafes',
+      icon: LocalCafeOutlinedIcon,
     },
     {
       label: t('header_btn_bars'),
       path: '/Bars',
-      icon: <RestoreIcon />,
+      icon: LocalBarOutlinedIcon,
+    },
+    {
+      label: t('header_btn_pubs'),
+      path: '/Pubs',
+      icon: SportsBarOutlinedIcon,
+    },
+    {
+      label: t('header_btn_bakeries'),
+      path: '/Bakeries',
+      icon: CakeOutlinedIcon,
+    },
+    {
+      label: t('header_btn_wineries'),
+      path: '/Wineries',
+      icon: WineBarOutlinedIcon,
+    },
+    {
+      label: t('header_btn_breweries'),
+      path: '/Breweries',
+      icon: LocalDrinkOutlinedIcon,
     },
     {
       label: t('header_btn_night_clubs'),
       path: '/NightClubs',
-      icon: <LocationOnIcon />,
+      icon: NightlifeOutlinedIcon,
     },
   ];
 
@@ -98,7 +150,11 @@ const Header: FC<HeaderProps> = () => {
                   className="h-full hover:backdrop-contrast-150"
                   onClick={handleOpenLanguageMenu}
                 >
-                  <Avatar className="w-7 h-7" alt="Country flag" src={prefferedLanguageFlag} />
+                  <Avatar
+                    className="w-7 h-7 shadow-sm shadow-black"
+                    alt="Country flag"
+                    src={prefferedLanguageFlag}
+                  />
                 </Button>
                 <Menu
                   anchorEl={anchorElLanguage}
@@ -114,7 +170,11 @@ const Header: FC<HeaderProps> = () => {
                       i18n.changeLanguage('bg');
                     }}
                   >
-                    <Avatar className="w-7 h-7" alt="Country flag" src={flagBG} />
+                    <Avatar
+                      className="w-7 h-7 shadow-sm shadow-black"
+                      alt="Country flag"
+                      src={flagBG}
+                    />
                     <div>Bulgarian</div>
                   </MenuItem>
 
@@ -126,7 +186,11 @@ const Header: FC<HeaderProps> = () => {
                       i18n.changeLanguage('en');
                     }}
                   >
-                    <Avatar className="w-7 h-7" alt="Country flag" src={flagUK} />
+                    <Avatar
+                      className="w-7 h-7 shadow-sm shadow-black"
+                      alt="Country flag"
+                      src={flagUK}
+                    />
                     <div>English</div>
                   </MenuItem>
                 </Menu>
@@ -136,7 +200,11 @@ const Header: FC<HeaderProps> = () => {
                   onClick={handleOpenUserMenu}
                 >
                   <div className="flex gap-3 items-center">
-                    <Avatar alt="User avatar" src="/static/images/avatar/2.jpg" />
+                    <Avatar
+                      className="shadow-sm shadow-black"
+                      alt="User avatar"
+                      src={user?.photoURL || ''}
+                    />
                     <div className="flex flex-col text-left">
                       <div>Hello,</div>
                       <div>{currentUser.email}</div>
@@ -172,7 +240,7 @@ const Header: FC<HeaderProps> = () => {
                     key={'setting'}
                     onClick={() => navigate('/ManageAccount')}
                   >
-                    <FavoriteIcon />
+                    <SettingsIcon />
                     <Typography textAlign="center">
                       {t('header_profile_menu_action_manage_account')}
                     </Typography>
@@ -185,7 +253,7 @@ const Header: FC<HeaderProps> = () => {
                       doSingOut();
                     }}
                   >
-                    <FavoriteIcon />
+                    <LogoutIcon />
                     <Typography textAlign="center">
                       {t('header_profile_menu_action_sign_out')}
                     </Typography>
@@ -216,23 +284,21 @@ const Header: FC<HeaderProps> = () => {
         </div>
         <Toolbar disableGutters>
           <div className="flex flex-wrap gap-3 my-2 whitespace-nowrap">
-            {menuConfig.map(({ label, path, icon }) => (
-              <Button
-                className="text-white rounded-full"
-                sx={{
-                  '&.active': {
-                    border: '1px solid',
-                    borderColor: 'white',
-                    fontWeight: 600,
-                  },
-                }}
-                startIcon={icon}
-                key={label}
-                component={NavLink}
+            {menuConfig.map(({ label, path, icon: Icon }) => (
+              <NavLink
                 to={path}
+                className={({ isActive, isPending }) =>
+                  clsx(
+                    isActive && 'border border-solid border-white font-bold',
+                    'decoration-transparent text-white p-2 px-4 rounded-full hover:bg-white hover:bg-opacity-10'
+                  )
+                }
               >
-                {label}
-              </Button>
+                <div className="flex items-center justify-center gap-2">
+                  {Icon && <Icon className="flex items-center" fontSize="small" />}
+                  <div className="flex items-center">{label}</div>
+                </div>
+              </NavLink>
             ))}
           </div>
         </Toolbar>

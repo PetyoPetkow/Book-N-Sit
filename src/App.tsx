@@ -66,7 +66,7 @@ const App = () => {
               <Route path="/AddVenue" element={<AddVenue />} />
               <Route path="/AddVenue/:venueId" element={<AddVenue />} />
 
-              <Route path="/:category">
+              <Route path="/:category?">
                 <Route index element={<Places />} />
                 <Route path=":venueName" element={<OverviewPage />} />
               </Route>

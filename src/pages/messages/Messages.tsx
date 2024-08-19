@@ -131,60 +131,52 @@ const Messages: FC<MessagesProps> = () => {
 
   const handleSendMessage = async () => {
     if (currentUser && selectedChat) {
-      await updateDoc(doc(firestore, 'messages', selectedChat.chatId), {
-        messages: arrayUnion({
-          id: uniqueId(),
-          text,
-          senderId: currentUser!.uid,
-          date: Timestamp.now(),
-        }),
-      });
+      try {
+        // 1. Update the messages array in the chat document
+        await updateDoc(doc(firestore, 'messages', selectedChat.chatId), {
+          messages: arrayUnion({
+            id: uniqueId(),
+            text,
+            senderId: currentUser.uid,
+            date: Timestamp.now(),
+          }),
+        });
 
-      const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
-      const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', selectedChat.userId));
+        // Helper function to update userChats
+        const updateUserChats = async (userId: string) => {
+          const userChatsRef = doc(firestore, 'userChats', userId);
+          const userChatsRes = await getDoc(userChatsRef);
+          const chats = userChatsRes.data()?.chats || [];
 
-      //@ts-ignore
-      const indexSender = senderUserChatsRes
-        .data()
-        .chats.findIndex((chat: any) => chat.chatId === selectedChat.chatId);
+          const updatedChats = chats.map((chat: any) =>
+            chat.chatId === selectedChat.chatId
+              ? {
+                  chatId: selectedChat.chatId,
+                  userId: selectedChat.userId,
+                  lastSenderId: currentUser.uid,
+                  lastMessage: text,
+                  date: Timestamp.now(),
+                }
+              : chat
+          );
 
-      if (indexSender !== -1) {
-        chats[indexSender] = {
-          chatId: selectedChat.chatId,
-          userId: selectedChat.userId,
-          lastSenderId: currentUser.uid,
-          lastMessage: text,
-          date: Timestamp.now(),
+          await updateDoc(userChatsRef, { chats: updatedChats });
         };
 
-        await updateDoc(doc(firestore, 'userChats', currentUser.uid), { chats: chats });
-        console.log('Chat object replaced successfully.');
-      } else {
-        console.log('Chat with the given chatId not found.');
+        // Update sender's userChats
+        await updateUserChats(currentUser.uid);
+        console.log('Sender chat updated successfully.');
+
+        // Update receiver's userChats
+        await updateUserChats(selectedChat.userId);
+        console.log('Receiver chat updated successfully.');
+      } catch (error) {
+        console.error('Error updating chat:', error);
       }
-
-      //@ts-ignore
-      const indexReceiver = receiverUserChatsRes
-        .data()
-        .chats.findIndex((chat: any) => chat.chatId === selectedChat.chatId);
-
-      if (indexReceiver !== -1) {
-        chats[indexReceiver] = {
-          chatId: selectedChat.chatId,
-          userId: currentUser.uid,
-          lastSenderId: currentUser.uid,
-          lastMessage: text,
-          date: Timestamp.now(),
-        };
-
-        await updateDoc(doc(firestore, 'userChats', currentUser.uid), { chats: chats });
-        console.log('Chat object replaced successfully.');
-      } else {
-        console.log('Chat with the given chatId not found.');
-      }
+    } else {
+      console.log('Current user or selected chat not found.');
     }
   };
-
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -214,7 +206,9 @@ const Messages: FC<MessagesProps> = () => {
                   <div className="font-bold">{chat.user.username}</div>
                   <div className="text-sm text-gray-800">{chat.lastMessage}</div>
                 </div>
-                <div className="text-sm text-gray-500">{chat.date.toDate().toDateString()}</div>
+                <div className="text-sm text-gray-500">
+                  {new Date(chat.date?.seconds * 1000).toDateString()}
+                </div>
               </div>
             );
           })}
