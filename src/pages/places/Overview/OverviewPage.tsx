@@ -134,7 +134,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         ),
         (doc) => {
           doc.exists() && setMessages(doc.data().messages);
-          console.log(doc.data(), 'asdasdas');
         }
       );
 

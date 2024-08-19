@@ -29,28 +29,6 @@ export default function InputFileUpload({
   files,
   onAddFiles,
 }: UploadImagesProps) {
-  // const handleFileChange = async (event: any) => {
-  //   const files = Array.from(event.target.files).map((file, index) => ({
-  //     id: index,
-  //     file: file as File,
-  //   }));
-  //   console.log(files);
-  //   const imageUrls = await uploadImages(files, 'name');
-
-  //   onImagesChanged(imageUrls);
-  // };
-
-  // const handleFileChange = async (event: any) => {
-  //   const files = Array.from(event.target.files).map((file, index) => ({
-  //     id: index,
-  //     file: file as File,
-  //   }));
-  //   console.log(files);
-  //   const imageUrls = await uploadImages(files, 'name');
-
-  //   onImagesChanged(imageUrls);
-  // };
-
   const removeFile = (idToRemove: string) => {
     onImagesChanged(images.filter((file: string) => file !== idToRemove));
     const fileToDeleteRef = ref(storage, idToRemove);
@@ -72,26 +50,6 @@ export default function InputFileUpload({
     reorderedFiles.splice(result.destination.index, 0, removed);
 
     onImagesChanged(reorderedFiles);
-  };
-
-  const compressImage = async (file: File, { quality = 1, type = file.type }) => {
-    // Get as image data
-    const imageBitmap = await createImageBitmap(file);
-
-    // Draw to canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = imageBitmap.width;
-    canvas.height = imageBitmap.height;
-    const ctx = canvas.getContext('2d');
-    ctx?.drawImage(imageBitmap, 0, 0);
-
-    // Turn into Blob
-    const blob: any = await new Promise((resolve) => canvas.toBlob(resolve, type, quality));
-
-    // Turn Blob into File
-    return new File([blob], file.name, {
-      type: blob.type,
-    });
   };
 
   return (

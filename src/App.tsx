@@ -18,6 +18,7 @@ import AddVenue from './pages/places/Venue/AddVenue';
 import ScrollToTop from './navigation/ScrollToTop';
 import Messages from './pages/messages/Messages';
 import stockImg from './images/stockImg.jpg';
+import ManageAccount from './pages/manageAccount/ManageAccount';
 
 const App = () => {
   const { currentUser } = useAuth();
@@ -74,6 +75,7 @@ const App = () => {
               <Route path="Register" element={<RegisterPage />} />
               <Route path="Messages" element={<Messages />} />
             </Route>
+            <Route path="/ManageAccount" element={<ManageAccount />} />
 
             <Route path="/" element={<PublicOutlet />}>
               <Route path="/Places" element={<Places />} />

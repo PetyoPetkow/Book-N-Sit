@@ -167,7 +167,11 @@ const Header: FC<HeaderProps> = () => {
                     <Typography textAlign="center">Messages</Typography>
                   </MenuItem>
 
-                  <MenuItem className="flex gap-2" key={'setting'} onClick={handleCloseUserMenu}>
+                  <MenuItem
+                    className="flex gap-2"
+                    key={'setting'}
+                    onClick={() => navigate('/ManageAccount')}
+                  >
                     <FavoriteIcon />
                     <Typography textAlign="center">
                       {t('header_profile_menu_action_manage_account')}
