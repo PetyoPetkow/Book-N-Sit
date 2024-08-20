@@ -8,7 +8,6 @@ const en = {
   header_btn_wineries: 'Wineries',
   header_btn_breweries: 'Breweries',
   header_btn_night_clubs: 'Night Clubs',
-  header_btn_others: 'Others',
 
   header_profile_menu_action_manage_account: 'Manage account',
   header_profile_menu_action_sign_out: 'Sign out',
@@ -21,7 +20,6 @@ const en = {
   winery: 'Winery',
   brewery: 'Brewery',
   night_club: 'Night Club',
-  other: 'Other',
 };
 
 export default en;

@@ -39,6 +39,8 @@ import { User } from 'firebase/auth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
+import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
+import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 
 const Header: FC<HeaderProps> = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -229,7 +231,10 @@ const Header: FC<HeaderProps> = () => {
                   <MenuItem
                     className="flex gap-2"
                     key={'setting'}
-                    onClick={() => navigate('/Messages')}
+                    onClick={() => {
+                      navigate('/Messages');
+                      handleCloseUserMenu();
+                    }}
                   >
                     <ChatOutlinedIcon />
                     <Typography textAlign="center">Messages</Typography>
@@ -238,7 +243,34 @@ const Header: FC<HeaderProps> = () => {
                   <MenuItem
                     className="flex gap-2"
                     key={'setting'}
-                    onClick={() => navigate('/ManageAccount')}
+                    onClick={() => {
+                      navigate('/MyVenues');
+                      handleCloseUserMenu();
+                    }}
+                  >
+                    <BallotOutlinedIcon />
+                    <Typography textAlign="center">My venues</Typography>
+                  </MenuItem>
+
+                  <MenuItem
+                    className="flex gap-2"
+                    key={'setting'}
+                    onClick={() => {
+                      navigate('/AddVenue');
+                      handleCloseUserMenu();
+                    }}
+                  >
+                    <AddBusinessOutlinedIcon />
+                    <Typography textAlign="center">Add venue</Typography>
+                  </MenuItem>
+
+                  <MenuItem
+                    className="flex gap-2"
+                    key={'setting'}
+                    onClick={() => {
+                      navigate('/ManageAccount');
+                      handleCloseUserMenu();
+                    }}
                   >
                     <SettingsIcon />
                     <Typography textAlign="center">
@@ -296,7 +328,7 @@ const Header: FC<HeaderProps> = () => {
               >
                 <div className="flex items-center justify-center gap-2">
                   {Icon && <Icon className="flex items-center" fontSize="small" />}
-                  <div className="flex items-center">{label}</div>
+                  <div className="flex items-center ">{label}</div>
                 </div>
               </NavLink>
             ))}

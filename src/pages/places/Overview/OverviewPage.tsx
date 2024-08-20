@@ -50,7 +50,6 @@ import { uniqueId } from 'lodash';
 import clsx from 'clsx';
 import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
-import OpenClosed from './OpenClosed';
 import { createPortal } from 'react-dom';
 import ChatBox from './ChatBox';
 
@@ -166,6 +165,26 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   }
 
+  const updateUserChats = async (combinedId: string, userId: string) => {
+    const userChatsRef = doc(firestore, 'userChats', userId);
+    const userChatsRes = await getDoc(userChatsRef);
+    const chats = userChatsRes.data()?.chats || [];
+
+    const updatedChats = chats.map((chat: any) =>
+      chat.chatId === combinedId
+        ? {
+            chatId: combinedId,
+            userId: userId,
+            lastSenderId: currentUser!.uid,
+            lastMessage: text,
+            date: Timestamp.now(),
+          }
+        : chat
+    );
+
+    await updateDoc(userChatsRef, { chats: updatedChats });
+  };
+
   const handleOpenChat = async () => {
     if (currentUser && venue) {
       const combinedId =
@@ -246,15 +265,19 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           ],
         });
       } else {
-        await updateDoc(doc(firestore, 'userChats', currentUser.uid), {
-          chats: arrayUnion({
-            chatId: combinedId,
-            userId: venue.userId,
-            lastSenderId: currentUser.uid,
-            lastMessage: text,
-            date: Timestamp.now(),
-          }),
-        });
+        if (senderUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
+          await updateUserChats(combinedId, currentUser.uid);
+        } else {
+          await updateDoc(doc(firestore, 'userChats', currentUser.uid), {
+            chats: arrayUnion({
+              chatId: combinedId,
+              userId: venue.userId,
+              lastSenderId: currentUser.uid,
+              lastMessage: text,
+              date: Timestamp.now(),
+            }),
+          });
+        }
       }
 
       if (!receiverUserChatsRes.exists()) {
@@ -270,15 +293,19 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           ],
         });
       } else {
-        await updateDoc(doc(firestore, 'userChats', venue.userId), {
-          chats: arrayUnion({
-            chatId: combinedId,
-            userId: currentUser.uid,
-            lastSenderId: currentUser.uid,
-            lastMessage: text,
-            date: Timestamp.now(),
-          }),
-        });
+        if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
+          await updateUserChats(combinedId, venue.userId);
+        } else {
+          await updateDoc(doc(firestore, 'userChats', venue.userId), {
+            chats: arrayUnion({
+              chatId: combinedId,
+              userId: currentUser.uid,
+              lastSenderId: currentUser.uid,
+              lastMessage: text,
+              date: Timestamp.now(),
+            }),
+          });
+        }
       }
 
       await updateDoc(doc(firestore, 'messages', combinedId), {

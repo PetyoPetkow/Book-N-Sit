@@ -51,6 +51,10 @@ const AddVenue: FC<AddVenueProps> = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log(workingHours);
+  }, [workingHours]);
+
+  useEffect(() => {
     const setData = async () => {
       if (venueId !== undefined) {
         const docRef = doc(firestore, 'venues', venueId);
@@ -175,23 +179,26 @@ const AddVenue: FC<AddVenueProps> = () => {
               disabled={isLoading}
               workingHours={workingHours}
               onOpenAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
-                setWorkingHours((prevState) => ({
-                  ...prevState,
-                  [dayOfWeek]: {
-                    ...prevState[dayOfWeek],
-                    openAt: date ? date.toTimeString() : null,
-                  },
-                }));
-                console.log(date?.toTimeString());
+                if (date && !isNaN(date.getTime())) {
+                  setWorkingHours((prevState) => ({
+                    ...prevState,
+                    [dayOfWeek]: {
+                      ...prevState[dayOfWeek],
+                      openAt: date.getTime(),
+                    },
+                  }));
+                }
               }}
               onCloseAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
-                setWorkingHours((prevState) => ({
-                  ...prevState,
-                  [dayOfWeek]: {
-                    ...prevState[dayOfWeek],
-                    closeAt: date ? date.toTimeString() : null,
-                  },
-                }));
+                if (date && !isNaN(date.getTime())) {
+                  setWorkingHours((prevState) => ({
+                    ...prevState,
+                    [dayOfWeek]: {
+                      ...prevState[dayOfWeek],
+                      closeAt: date.getTime(),
+                    },
+                  }));
+                }
               }}
             />
           </div>

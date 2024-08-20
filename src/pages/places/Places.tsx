@@ -15,7 +15,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
 import { perksMock } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
-import OpenClosed from './Overview/OpenClosed';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
@@ -138,7 +137,6 @@ const Places: FC<PlacesProps> = () => {
                         city={city}
                         street={street}
                       />
-                      <OpenClosed workingHours={workingHours} />
                     </div>
                     <div className="mt-1">
                       <span>{description}</span>

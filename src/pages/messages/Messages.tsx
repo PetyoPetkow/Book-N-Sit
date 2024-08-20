@@ -30,6 +30,7 @@ const Messages: FC<MessagesProps> = () => {
       date: Timestamp;
     }[]
   >([]);
+  const [users, setUser] = useState<{username: string, photoURL: string}[]>([])
   const [chatsWithUsers, setChatsWithUsers] = useState<
     {
       chatId: string;
@@ -143,32 +144,42 @@ const Messages: FC<MessagesProps> = () => {
         });
 
         // Helper function to update userChats
-        const updateUserChats = async (userId: string) => {
+        const updateUserChats = async (userId: string, otherUserId: string) => {
           const userChatsRef = doc(firestore, 'userChats', userId);
           const userChatsRes = await getDoc(userChatsRef);
           const chats = userChatsRes.data()?.chats || [];
 
-          const updatedChats = chats.map((chat: any) =>
-            chat.chatId === selectedChat.chatId
+          const updatedChats = chats.map((chat: any) => {
+            console.log(
+              userId,
+              chat.chatId === selectedChat.chatId && {
+                chatId: selectedChat.chatId,
+                userId: chat.userId,
+                lastSenderId: currentUser.uid,
+                lastMessage: text,
+                date: Timestamp.now(),
+              }
+            );
+            return chat.chatId === selectedChat.chatId
               ? {
                   chatId: selectedChat.chatId,
-                  userId: selectedChat.userId,
+                  userId: chat.userId,
                   lastSenderId: currentUser.uid,
                   lastMessage: text,
                   date: Timestamp.now(),
                 }
-              : chat
-          );
+              : chat;
+          });
 
           await updateDoc(userChatsRef, { chats: updatedChats });
         };
 
         // Update sender's userChats
-        await updateUserChats(currentUser.uid);
+        await updateUserChats(currentUser.uid, selectedChat.userId);
         console.log('Sender chat updated successfully.');
 
         // Update receiver's userChats
-        await updateUserChats(selectedChat.userId);
+        await updateUserChats(selectedChat.userId, currentUser.uid);
         console.log('Receiver chat updated successfully.');
       } catch (error) {
         console.error('Error updating chat:', error);
@@ -182,85 +193,101 @@ const Messages: FC<MessagesProps> = () => {
   }, [messages]);
 
   return (
-    <div className="border border-solid border-red h-full w-full flex">
-      <div className="w-1/3 flex flex-col bg-gray-200">
-        <div className="flex">
-          <OutlinedInput
-            className="flex-1 rounded-full m-7"
-            size="small"
-            startAdornment={<SearchIcon />}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-        <Divider className="mx-7" />
-        <div className="flex flex-col gap-5 mt-7">
-          {filteredChats.map((chat) => {
-            console.log('helll', chats);
-            return (
-              <div
-                className="flex p-2 mx-5 rounded-lg hover:bg-gray-300 hover:cursor-pointer"
-                onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
-              >
-                <Avatar src={chat.user.photoURL} />
-                <div className="flex flex-col flex-grow">
-                  <div className="font-bold">{chat.user.username}</div>
-                  <div className="text-sm text-gray-800">{chat.lastMessage}</div>
-                </div>
-                <div className="text-sm text-gray-500">
-                  {new Date(chat.date?.seconds * 1000).toDateString()}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div className="w-2/3 flex flex-col">
-        <div className="flex flex-col p-16 gap-4 overflow-auto">
-          {messages &&
-            messages.map((m, i) => {
+    <div className="flex flex-col items-center justify-center flex-grow bg-white bg-opacity-60 backdrop-blur-lg p-4 ">
+      <div className="flex h-[80vh] w-full">
+        <div className="w-1/3 flex flex-col bg-gray-200 bg-opacity-80 drop-shadow-md shadow-black ">
+          <div className="flex">
+            <OutlinedInput
+              className="flex-1 rounded-full m-7 bg-white"
+              size="small"
+              startAdornment={<SearchIcon />}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+          </div>
+          <Divider className="mx-7" />
+          <div className="flex flex-col gap-5 mt-7">
+            {filteredChats.map((chat) => {
               return (
                 <div
                   className={clsx(
-                    'flex gap-5 items-end',
-                    m.senderId === currentUser?.uid ? 'justify-start mr-20 ' : 'justify-end ml-20 '
+                    chat.chatId === selectedChat?.chatId ? 'bg-opacity-80' : '',
+                    'flex gap-3 p-2 mx-5 rounded-lg bg-white hover:bg-gray-300 hover:cursor-pointer'
                   )}
+                  onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
                 >
-                  <Avatar
-                    className={clsx(
-                      m.senderId === currentUser?.uid ? 'order-first left-0' : 'order-last right-0'
-                    )}
-                  />
-                  <div
-                    className={clsx(
-                      m.senderId === currentUser?.uid
-                        ? 'bg-blue-200 rounded-br-xl'
-                        : 'bg-red-200 rounded-bl-xl',
-                      'p-2 rounded-t-xl'
-                    )}
-                  >
-                    {m.text}
+                  <Avatar src={chat.user.photoURL} />
+                  <div className="flex flex-col flex-grow">
+                    <div className="font-bold">{chat.user.username}</div>
+                    <div className="text-sm text-gray-800">
+                      {chat.lastSenderId === currentUser!.uid ? 'You: ' : 'Them: '}
+                      {chat.lastMessage}
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(chat.date?.seconds * 1000).toDateString()}
                   </div>
                 </div>
               );
             })}
-          <div ref={endOfMessagesRef} />
+          </div>
         </div>
-        <Divider />
-        <div className="p-2 h-fit flex items-center gap-2 bg-white">
-          <TextField
-            className="flex-1"
-            InputProps={{
-              disableUnderline: true,
-            }}
-            variant="standard"
-            multiline
-            maxRows={3}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-          <IconButton className="aspect-square" onClick={handleSendMessage}>
-            <SendOutlinedIcon />
-          </IconButton>
+        <div className="w-2/3 flex-grow flex flex-col justify-end ">
+          {selectedChat && (
+            <>
+              <div className="flex flex-col px-16 gap-4 overflow-auto">
+                {messages &&
+                  messages.map((m, i) => {
+                    return (
+                      <div
+                        className={clsx(
+                          'flex gap-5 items-end',
+                          m.senderId === currentUser?.uid
+                            ? 'justify-start mr-20 '
+                            : 'justify-end ml-20 '
+                        )}
+                      >
+                        <Avatar
+                          className={clsx(
+                            m.senderId === currentUser?.uid
+                              ? 'order-first left-0'
+                              : 'order-last right-0'
+                          )}
+                        />
+                        <div
+                          className={clsx(
+                            m.senderId === currentUser?.uid
+                              ? 'bg-blue-200 rounded-br-xl'
+                              : 'bg-red-200 rounded-bl-xl',
+                            'p-2 rounded-t-xl'
+                          )}
+                        >
+                          {m.text}
+                        </div>
+                      </div>
+                    );
+                  })}
+                <div ref={endOfMessagesRef} />
+              </div>
+
+              <Divider />
+              <div className="p-2 h-fit flex items-center gap-2 bg-white">
+                <TextField
+                  className="flex-1"
+                  InputProps={{
+                    disableUnderline: true,
+                  }}
+                  variant="standard"
+                  multiline
+                  maxRows={3}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+                <IconButton className="aspect-square" onClick={handleSendMessage}>
+                  <SendOutlinedIcon />
+                </IconButton>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

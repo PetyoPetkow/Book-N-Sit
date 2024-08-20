@@ -57,13 +57,14 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
-      <div className="min-h-[100vh] flex flex-col bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-fixed bg-cover">
+      <div className="min-h-[100vh] flex flex-col overflow-hidden bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-fixed bg-cover">
         <Header />
         <Container disableGutters className="flex-grow flex flex-col ">
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="/Account" element={<UserAccountPage />} />
               <Route path="/AddVenue" element={<AddVenue />} />
+              <Route path="/MyVenues" element={<Places />} />
               <Route path="/AddVenue/:venueId" element={<AddVenue />} />
 
               <Route path="/:category?">
