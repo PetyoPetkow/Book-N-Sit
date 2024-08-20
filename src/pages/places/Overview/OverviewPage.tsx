@@ -22,6 +22,7 @@ import {
   addDoc,
   arrayRemove,
   arrayUnion,
+  collection,
   doc,
   DocumentData,
   getDoc,
@@ -68,16 +69,16 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
   const { t } = useTranslation();
   const { currentUser } = useAuth();
-  const { venueName } = useParams();
+  const { venueId } = useParams();
   const navigate = useNavigate();
 
   const refetchReviews = useCallback(async () => {
     let reviews: Review[] = [];
-    if (venue) {
-      reviews = await getVenueReviews(venue.name);
+    if (venueId) {
+      reviews = await getVenueReviews(venueId);
     }
     setReviews(reviews);
-  }, [venue]);
+  }, [venueId]);
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -92,8 +93,8 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   });
 
   const onFinishReviewClick = (rating: number, comment: string) => {
-    if (currentUser && venue) {
-      setReview(currentUser.uid, venue.name, rating, comment).then(() => {
+    if (currentUser && venueId) {
+      setReview(currentUser.uid, venueId, rating, comment).then(() => {
         setRating(null);
         setComment('');
         refetchReviews();
@@ -102,12 +103,12 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   useEffect(() => {
-    if (venueName) {
+    if (venueId) {
       const a = async () => {
-        const docRef = doc(firestore, 'venues', venueName);
+        const docRef = await doc(collection(firestore, 'venues'), venueId);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setVenue({ id: docSnap.id, ...(docSnap.data() as Venue) });
+          setVenue(docSnap.data() as Venue);
         } else {
           console.log('venue with name ... does not exist');
         }
@@ -115,7 +116,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
       a();
     }
-  }, [venueName]);
+  }, [venueId]);
 
   useEffect(() => {
     refetchReviews();

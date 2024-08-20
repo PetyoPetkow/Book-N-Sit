@@ -56,9 +56,13 @@ const Places: FC<PlacesProps> = () => {
       const placesCol = collection(firestore, 'venues');
       const placesQuery = query(placesCol, ...conditions);
       const placeSnapshot = await getDocs(placesQuery);
-      const placeList = placeSnapshot.docs.map((doc) => {
-        return { id: doc.id, ...(doc.data() as Venue) };
-      });
+      const placeList = placeSnapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          }) as Venue
+      );
 
       setPlaces(placeList);
     };

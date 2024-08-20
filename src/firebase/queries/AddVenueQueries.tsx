@@ -34,7 +34,7 @@ export const uploadImages = async (files: FileList | null, venueName: string) =>
 };
 
 export const saveVenue = async (
-  venue: Omit<Venue, 'images'>,
+  venue: Omit<Venue, 'images' | 'id'>,
   files: FileList | null
 ): Promise<{
   status: 'success' | 'error';

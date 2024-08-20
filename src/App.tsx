@@ -75,7 +75,7 @@ const App = () => {
             <Route path="/">
               <Route path="/:category?">
                 <Route index element={<Places />} />
-                <Route path=":venueName" element={<OverviewPage />} />
+                <Route path=":venueId" element={<OverviewPage />} />
               </Route>
             </Route>
           </Routes>

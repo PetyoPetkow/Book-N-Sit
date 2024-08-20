@@ -12,7 +12,7 @@ export default interface Venue {
   venueTypes: VenueType[];
   workingHours: WorkingHours;
   userId: string;
-  id?: string;
+  id: string;
 }
 
 export type VenueType =
