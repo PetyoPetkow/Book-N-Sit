@@ -4,13 +4,13 @@ import { useAuth } from '../contexts/authContext';
 
 const PrivateOutlet = () => {
   const navigate = useNavigate();
-  const { userLoggedIn } = useAuth();
+  const { currentUser } = useAuth();
 
-  // useEffect(() => {
-  //   if (userLoggedIn === false) {
-  //     navigate('/Login');
-  //   }
-  // }, [userLoggedIn, navigate]);
+  useEffect(() => {
+    if (currentUser === null) {
+      navigate('/Login');
+    }
+  }, [currentUser, navigate]);
 
   return <Outlet />;
 };

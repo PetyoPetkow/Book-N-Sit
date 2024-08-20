@@ -1,6 +1,5 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
-import UserAccountPage from './pages/users/UserAccountPage';
 import Header from './navigation/Header';
 import Places from './pages/places/Places';
 import LoginPage from './pages/auth/LoginPage';
@@ -17,7 +16,6 @@ import OverviewPage from './pages/places/Overview/OverviewPage';
 import AddVenue from './pages/places/Venue/AddVenue';
 import ScrollToTop from './navigation/ScrollToTop';
 import Messages from './pages/messages/Messages';
-import stockImg from './images/stockImg.jpg';
 import ManageAccount from './pages/manageAccount/ManageAccount';
 
 const App = () => {
@@ -62,26 +60,23 @@ const App = () => {
         <Container disableGutters className="flex-grow flex flex-col ">
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
-              <Route path="/Account" element={<UserAccountPage />} />
               <Route path="/AddVenue" element={<AddVenue />} />
               <Route path="/MyVenues" element={<Places />} />
               <Route path="/AddVenue/:venueId" element={<AddVenue />} />
+              <Route path="Messages" element={<Messages />} />
+              <Route path="/ManageAccount" element={<ManageAccount />} />
+            </Route>
 
+            <Route path="/" element={<PublicOutlet />}>
+              <Route path="/Login" element={<LoginPage />} />
+              <Route path="/Register" element={<RegisterPage />} />
+            </Route>
+
+            <Route path="/">
               <Route path="/:category?">
                 <Route index element={<Places />} />
                 <Route path=":venueName" element={<OverviewPage />} />
               </Route>
-
-              <Route path="Login" element={<LoginPage />} />
-              <Route path="Register" element={<RegisterPage />} />
-              <Route path="Messages" element={<Messages />} />
-            </Route>
-            <Route path="/ManageAccount" element={<ManageAccount />} />
-
-            <Route path="/" element={<PublicOutlet />}>
-              <Route path="/Places" element={<Places />} />
-              <Route path="/Login" element={<LoginPage />} />
-              <Route path="/Register" element={<RegisterPage />} />
             </Route>
           </Routes>
         </Container>

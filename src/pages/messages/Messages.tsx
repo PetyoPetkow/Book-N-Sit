@@ -1,19 +1,11 @@
 import { Avatar, Divider, IconButton, OutlinedInput, TextField } from '@mui/material';
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import clsx from 'clsx';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { useAuth } from '../../contexts/authContext';
 import { firestore } from '../../firebase/firebase';
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  onSnapshot,
-  setDoc,
-  Timestamp,
-  updateDoc,
-} from 'firebase/firestore';
+import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
 import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 
@@ -30,55 +22,28 @@ const Messages: FC<MessagesProps> = () => {
       date: Timestamp;
     }[]
   >([]);
-  const [users, setUser] = useState<{username: string, photoURL: string}[]>([])
-  const [chatsWithUsers, setChatsWithUsers] = useState<
-    {
-      chatId: string;
-      lastSenderId: string;
-      lastMessage: string;
-      date: Timestamp;
-      user: {
-        username: string;
-        photoURL: string;
-      };
-    }[]
-  >([]);
-  const [filteredChats, setFilteredChats] = useState<
-    {
-      chatId: string;
-      lastSenderId: string;
-      lastMessage: string;
-      date: Timestamp;
-      user: {
-        username: string;
-        photoURL: string;
-      };
-    }[]
-  >([]);
+  const [users, setUsers] = useState<{ username: string; photoURL: string; id: string }[]>([]);
+
+  const [search, setSearch] = useState<string>('');
+
   const [selectedChat, setSelectedChat] = useState<{ chatId: string; userId: string } | null>(null);
   const [messages, setMessages] = useState<
     { date: Date; id: string; senderId: string; text: string }[]
   >([]);
 
   const { currentUser } = useAuth();
+
   //@ts-ignore
   useEffect(() => {
     const fetchUsers = async () => {
       const users = await Promise.all(
         chats.map(async (chat) => {
           const user = await getUserById(chat.userId);
-          return {
-            chatId: chat.chatId,
-            lastSenderId: chat.lastSenderId,
-            lastMessage: chat.lastMessage,
-            date: chat.date,
-            user: { username: user?.username, photoURL: user?.photoURL },
-          };
+          return user;
         })
       );
 
-      setChatsWithUsers(users);
-      setFilteredChats(users);
+      setUsers(users as any);
     };
 
     fetchUsers();
@@ -120,15 +85,22 @@ const Messages: FC<MessagesProps> = () => {
     }
   }, [selectedChat]);
 
-  const handleSearch = (value: string) => {
-    const chatsCopy = structuredClone(chatsWithUsers);
+  const chatsToShow = useMemo(() => {
+    const chatsCopy = structuredClone(chats);
 
-    const result = chatsCopy.filter((chat: any) =>
-      chat.user.username.toLowerCase().includes(value.toLowerCase())
+    const filteredUsers = users.filter((u: any) =>
+      u.username?.toLowerCase().includes(search.toLowerCase())
     );
 
-    setFilteredChats(value !== '' ? result : chatsCopy);
-  };
+    const filteredUserIds = filteredUsers.map((u: any) => u.id);
+
+    const filteredChats =
+      search === ''
+        ? chatsCopy
+        : chatsCopy.filter((chat: any) => filteredUserIds.includes(chat.userId));
+
+    return filteredChats;
+  }, [search, chats, users]);
 
   const handleSendMessage = async () => {
     if (currentUser && selectedChat) {
@@ -192,6 +164,8 @@ const Messages: FC<MessagesProps> = () => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  if (currentUser === null) return <></>;
+
   return (
     <div className="flex flex-col items-center justify-center flex-grow bg-white bg-opacity-60 backdrop-blur-lg p-4 ">
       <div className="flex h-[80vh] w-full">
@@ -201,12 +175,13 @@ const Messages: FC<MessagesProps> = () => {
               className="flex-1 rounded-full m-7 bg-white"
               size="small"
               startAdornment={<SearchIcon />}
-              onChange={(e) => handleSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
           <Divider className="mx-7" />
           <div className="flex flex-col gap-5 mt-7">
-            {filteredChats.map((chat) => {
+            {chatsToShow.map((chat: any) => {
+              const user = users.find((u) => u.id === chat.userId);
               return (
                 <div
                   className={clsx(
@@ -215,11 +190,11 @@ const Messages: FC<MessagesProps> = () => {
                   )}
                   onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
                 >
-                  <Avatar src={chat.user.photoURL} />
+                  <Avatar src={user?.photoURL} />
                   <div className="flex flex-col flex-grow">
-                    <div className="font-bold">{chat.user.username}</div>
+                    <div className="font-bold">{user?.username}</div>
                     <div className="text-sm text-gray-800">
-                      {chat.lastSenderId === currentUser!.uid ? 'You: ' : 'Them: '}
+                      {chat.lastSenderId === currentUser.uid ? 'You: ' : 'Them: '}
                       {chat.lastMessage}
                     </div>
                   </div>
@@ -237,25 +212,31 @@ const Messages: FC<MessagesProps> = () => {
               <div className="flex flex-col px-16 gap-4 overflow-auto">
                 {messages &&
                   messages.map((m, i) => {
+                    const user = users.find((u: any) => u.id === selectedChat.userId);
                     return (
                       <div
                         className={clsx(
                           'flex gap-5 items-end',
-                          m.senderId === currentUser?.uid
+                          m.senderId === currentUser.uid
                             ? 'justify-start mr-20 '
                             : 'justify-end ml-20 '
                         )}
                       >
                         <Avatar
+                          src={
+                            m.senderId === currentUser.uid
+                              ? currentUser.photoURL || ''
+                              : user?.photoURL || ''
+                          }
                           className={clsx(
-                            m.senderId === currentUser?.uid
+                            m.senderId === currentUser.uid
                               ? 'order-first left-0'
                               : 'order-last right-0'
                           )}
                         />
                         <div
                           className={clsx(
-                            m.senderId === currentUser?.uid
+                            m.senderId === currentUser.uid
                               ? 'bg-blue-200 rounded-br-xl'
                               : 'bg-red-200 rounded-bl-xl',
                             'p-2 rounded-t-xl'
@@ -297,57 +278,3 @@ const Messages: FC<MessagesProps> = () => {
 interface MessagesProps {}
 
 export default Messages;
-
-const messages = [
-  {
-    sender: 'me',
-    text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
-  },
-  { sender: 'me', text: 'Ut enim ad minima veniam' },
-  {
-    sender: 'them',
-    text: 'Fusce pulvinar felis ut ante aliquam lobortis. Donec gravida finibus nulla quis facilisis.',
-  },
-  {
-    sender: 'them',
-    text: 'Ut consectetur.',
-  },
-  {
-    sender: 'me',
-    text: 'Aenean sit amet dictum justo.',
-  },
-  {
-    sender: 'me',
-    text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
-  },
-  { sender: 'me', text: 'Ut enim ad minima veniam' },
-  {
-    sender: 'them',
-    text: 'Fusce pulvinar felis ut ante aliquam lobortis. Donec gravida finibus nulla quis facilisis.',
-  },
-  {
-    sender: 'them',
-    text: 'Ut consectetur.',
-  },
-  {
-    sender: 'me',
-    text: 'Aenean sit amet dictum justo.',
-  },
-  {
-    sender: 'me',
-    text: 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.',
-  },
-  { sender: 'me', text: 'Ut enim ad minima veniam' },
-  {
-    sender: 'them',
-    text: 'Fusce pulvinar felis ut ante aliquam lobortis. Donec gravida finibus nulla quis facilisis.',
-  },
-  {
-    sender: 'them',
-    text: 'Ut consectetur.',
-  },
-  {
-    sender: 'me',
-    text: 'Aenean sit amet dictum justo.',
-  },
-];
