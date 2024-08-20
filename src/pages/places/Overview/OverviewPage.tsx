@@ -66,11 +66,26 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [messages, setMessages] = useState<
     { date: Date; id: string; senderId: string; text: string }[] | null
   >(null);
+  const [hasReviewed, setHasReviewed] = useState<boolean>(false);
 
   const { t } = useTranslation();
   const { currentUser } = useAuth();
   const { venueId } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkDocumentExists = async () => {
+      if (currentUser && venue) {
+        const docRef = doc(firestore, 'reviews', `${venue.id}_${currentUser.uid}`);
+        const docSnap = await getDoc(docRef);
+        setHasReviewed(docSnap.exists());
+      } else {
+        setHasReviewed(false);
+      }
+    };
+
+    checkDocumentExists();
+  }, [currentUser, venue, firestore]);
 
   const refetchReviews = useCallback(async () => {
     let reviews: Review[] = [];
@@ -448,18 +463,21 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <PropertyDescription />
           </div>
           <Divider className="mb-5" />
-          {currentUser && venue.userId !== currentUser.uid && (
-            <WriteReviewSection
-              rating={rating}
-              comment={comment}
-              onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
-                setRating(rating)
-              }
-              onCommentChange={setComment}
-              postReview={onFinishReviewClick}
-            />
+          {currentUser && venue.userId !== currentUser.uid && hasReviewed && (
+            <>
+              <WriteReviewSection
+                rating={rating}
+                comment={comment}
+                onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
+                  setRating(rating)
+                }
+                onCommentChange={setComment}
+                postReview={onFinishReviewClick}
+              />
+              <Divider />
+            </>
           )}
-          <Divider />
+
           <ReviewsSection reviews={reviews} />
         </div>
       )}
