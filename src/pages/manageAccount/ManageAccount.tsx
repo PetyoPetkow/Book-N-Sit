@@ -131,15 +131,24 @@ const ManageAccount: FC<ManageAccountProps> = () => {
               <div className="flex-1 flex flex-col gap-6 px-14">
                 <TextField
                   label="Username"
-                  value={userData.username}
+                  value={userData.displayName}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
                     setUserData((prevData: any) => ({
                       ...prevData,
-                      username: e.target.value,
+                      displayName: e.target.value,
                     }))
                   }
                 />
-                <TextField label="Phone Number" value={userData.phoneNumber} />
+                <TextField
+                  label="Phone Number"
+                  value={userData.phoneNumber}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setUserData((prevData: any) => ({
+                      ...prevData,
+                      phoneNumber: e.target.value,
+                    }))
+                  }
+                />
                 <Button size="large" variant="contained" onClick={handleUpdate}>
                   Save
                 </Button>

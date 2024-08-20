@@ -209,7 +209,7 @@ const Header: FC<HeaderProps> = () => {
                     />
                     <div className="flex flex-col text-left">
                       <div>Hello,</div>
-                      <div>{currentUser.email}</div>
+                      <div>{currentUser.displayName}</div>
                     </div>
                   </div>
                 </Button>

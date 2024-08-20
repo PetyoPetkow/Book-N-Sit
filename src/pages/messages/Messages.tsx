@@ -22,7 +22,7 @@ const Messages: FC<MessagesProps> = () => {
       date: Timestamp;
     }[]
   >([]);
-  const [users, setUsers] = useState<{ username: string; photoURL: string; id: string }[]>([]);
+  const [users, setUsers] = useState<{ displayName: string; photoURL: string; id: string }[]>([]);
 
   const [search, setSearch] = useState<string>('');
 
@@ -89,7 +89,7 @@ const Messages: FC<MessagesProps> = () => {
     const chatsCopy = structuredClone(chats);
 
     const filteredUsers = users.filter((u: any) =>
-      u.username?.toLowerCase().includes(search.toLowerCase())
+      u.displayName?.toLowerCase().includes(search.toLowerCase())
     );
 
     const filteredUserIds = filteredUsers.map((u: any) => u.id);
@@ -122,16 +122,6 @@ const Messages: FC<MessagesProps> = () => {
           const chats = userChatsRes.data()?.chats || [];
 
           const updatedChats = chats.map((chat: any) => {
-            console.log(
-              userId,
-              chat.chatId === selectedChat.chatId && {
-                chatId: selectedChat.chatId,
-                userId: chat.userId,
-                lastSenderId: currentUser.uid,
-                lastMessage: text,
-                date: Timestamp.now(),
-              }
-            );
             return chat.chatId === selectedChat.chatId
               ? {
                   chatId: selectedChat.chatId,
@@ -192,7 +182,7 @@ const Messages: FC<MessagesProps> = () => {
                 >
                   <Avatar src={user?.photoURL} />
                   <div className="flex flex-col flex-grow">
-                    <div className="font-bold">{user?.username}</div>
+                    <div className="font-bold">{user?.displayName}</div>
                     <div className="text-sm text-gray-800">
                       {chat.lastSenderId === currentUser.uid ? 'You: ' : 'Them: '}
                       {chat.lastMessage}

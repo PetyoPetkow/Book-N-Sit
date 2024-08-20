@@ -23,8 +23,7 @@ export type VenueType =
   | 'bakery'
   | 'winery'
   | 'brewery'
-  | 'cocktail_bar'
   | 'night_club';
 
-export type Perk = 'No smoking' | 'Cocktail' | 'Sushi menu' | 'Wine list' | 'Personalized events';
+export type Perk = 'No smoking' | 'Cocktails' | 'Sushi menu' | 'Wine list' | 'Personalized events';
 export type PerksMap = Record<Perk, boolean>;

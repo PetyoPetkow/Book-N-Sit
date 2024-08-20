@@ -8,6 +8,5 @@ export const venueTypes: VenueType[] = [
   'bakery',
   'winery',
   'brewery',
-  'cocktail_bar',
   'night_club',
 ];

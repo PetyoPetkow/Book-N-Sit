@@ -3,7 +3,6 @@ import { perksIcons, perksMock } from './PerksMock';
 import { Perk, PerksMap } from '../../../../global/models/Venue';
 
 const PerksList: FC<PerksListProps> = ({ perksList }) => {
-  console.log(perksList);
   return (
     <div className="flex flex-wrap gap-3">
       {Object.entries(perksList).map(([perk, value]) => {

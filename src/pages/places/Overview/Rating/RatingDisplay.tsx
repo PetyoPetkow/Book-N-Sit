@@ -87,7 +87,7 @@ const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
                 <div className="flex items-start gap-2">
                   <Avatar />
                   <div>
-                    <div className="font-bold">{currentReview.username}</div>
+                    <div className="font-bold">{currentReview.displayName}</div>
                     <Rating value={currentReview.rating} readOnly />
                   </div>
                 </div>

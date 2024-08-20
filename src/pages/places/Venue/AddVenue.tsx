@@ -34,7 +34,7 @@ const AddVenue: FC<AddVenueProps> = () => {
     'Personalized events': false,
     'Sushi menu': false,
     'Wine list': false,
-    Cocktail: false,
+    Cocktails: false,
   });
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     monday: { openAt: null, closeAt: null },
@@ -49,10 +49,6 @@ const AddVenue: FC<AddVenueProps> = () => {
   const { venueId } = useParams();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    console.log(workingHours);
-  }, [workingHours]);
 
   useEffect(() => {
     const setData = async () => {
@@ -154,7 +150,6 @@ const AddVenue: FC<AddVenueProps> = () => {
               selectedVenueTypes={selectedVenueTypes}
               onselectedVenueTypesChanged={(event, checked) => {
                 setSelectedVenueTypes((prevState) => {
-                  console.log(checked);
                   if (checked) {
                     return [...prevState, event.target.value as VenueType];
                   } else {
@@ -170,7 +165,6 @@ const AddVenue: FC<AddVenueProps> = () => {
               selectedPerks={selectedPerks}
               onSelectedPerksChanged={(event, perks) => {
                 setSelectedPerks(perks);
-                console.log(perks);
               }}
             />
           </div>
@@ -226,7 +220,6 @@ const AddVenue: FC<AddVenueProps> = () => {
                       navigate(`/Places/${venueId}`);
                     }
                   } else {
-                    console.log(selectedPerks);
                     const result = await saveVenue(
                       {
                         city: city,
@@ -247,7 +240,6 @@ const AddVenue: FC<AddVenueProps> = () => {
                     }
                   }
                 } else {
-                  //console.log(address, coordinates, currentUser, currentUser?.uid);
                 }
                 setIsLoading(false);
               }}

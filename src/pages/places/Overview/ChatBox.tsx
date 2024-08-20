@@ -13,7 +13,6 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
   const { currentUser } = useAuth();
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
-    console.log(e);
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
       e.preventDefault();
       if (text !== '') {
@@ -96,7 +95,6 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
           value={text}
           onChange={(e) => {
             setText(e.target.value);
-            console.log(e.target.value);
           }}
           onKeyDown={handleKeyDown}
         />

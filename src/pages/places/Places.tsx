@@ -23,7 +23,6 @@ const Places: FC<PlacesProps> = () => {
 
   const navigate = useNavigate();
   const { category } = useParams();
-  console.log(category);
 
   useEffect(() => {
     const getPlaces = async (firestore: Firestore) => {
@@ -46,7 +45,6 @@ const Places: FC<PlacesProps> = () => {
           Bakeries: 'bakery',
           Wineries: 'winery',
           Breweries: 'brewery',
-          CocktailBars: 'cocktail_bar',
           NightClubs: 'night_club',
         };
 
@@ -55,15 +53,13 @@ const Places: FC<PlacesProps> = () => {
         filter && conditions.push(where('venueTypes', 'array-contains', filter));
       }
 
-      console.log(conditions);
-
       const placesCol = collection(firestore, 'venues');
       const placesQuery = query(placesCol, ...conditions);
       const placeSnapshot = await getDocs(placesQuery);
       const placeList = placeSnapshot.docs.map((doc) => {
         return { id: doc.id, ...(doc.data() as Venue) };
       });
-      console.log(placeList, 'pl');
+
       setPlaces(placeList);
     };
 

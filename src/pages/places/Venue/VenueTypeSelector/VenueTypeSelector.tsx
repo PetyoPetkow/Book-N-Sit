@@ -2,12 +2,15 @@ import { Checkbox, Divider, FormControlLabel } from '@mui/material';
 import { ChangeEvent, FC } from 'react';
 import { venueTypes } from './VenueTypeMock';
 import { VenueType } from '../../../../global/models/Venue';
+import { useTranslation } from 'react-i18next';
 
 const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
   disabled = false,
   selectedVenueTypes,
   onselectedVenueTypesChanged,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="text-lg font-bold">Venue Type</div>
@@ -24,7 +27,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
                   onChange={onselectedVenueTypesChanged}
                 />
               }
-              label={venueType}
+              label={t(venueType)}
             />
           );
         })}

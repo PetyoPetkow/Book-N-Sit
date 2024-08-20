@@ -12,8 +12,6 @@ export default function EditImages({ images, onSave, venueId, onClose }: UploadI
   const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
-  useEffect(() => console.log(editedImages), [editedImages]);
-
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
 

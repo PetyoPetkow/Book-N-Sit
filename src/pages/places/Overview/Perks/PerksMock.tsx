@@ -33,5 +33,5 @@ export const perksIcons: Record<Perk, JSX.Element> = {
   'Personalized events': <CakeOutlinedIcon />,
   'Sushi menu': <SetMealOutlinedIcon />,
   'Wine list': <WineBarOutlinedIcon />,
-  Cocktail: <LocalBarOutlinedIcon />,
+  Cocktails: <LocalBarOutlinedIcon />,
 };

@@ -23,11 +23,11 @@ const getVenueReviews = async (venueId: string) => {
     const user = await getUserById(reviewData.userId);
 
     if (user) {
-      const reviewWithUsername: Review = {
+      const reviewWithDisplayName: Review = {
         ...reviewData,
-        username: user.username,
+        displayName: user.displayName,
       };
-      reviewsList.push(reviewWithUsername);
+      reviewsList.push(reviewWithDisplayName);
     } else {
       console.error(`User with ID ${reviewData.userId} does not exist.`);
     }

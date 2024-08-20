@@ -1,11 +1,13 @@
 import { FC, useState } from 'react';
-import { doCreateUserWithEmailAndPassword } from '../../firebase/auth';
+import { doCreateUserWithEmailAndPassword, doUpdateProfile } from '../../firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
 import { Button } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
+import { doc, setDoc } from 'firebase/firestore';
+import { firestore } from '../../firebase/firebase';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -16,7 +18,22 @@ const RegisterPage: FC<RegisterPageProps> = () => {
 
   const onRegister = async () => {
     try {
-      await doCreateUserWithEmailAndPassword(email, password);
+      const userCredential = await doCreateUserWithEmailAndPassword(email, password);
+
+      console.log(userCredential);
+
+      const user = userCredential.user;
+
+      await doUpdateProfile(user);
+
+      await setDoc(doc(firestore, 'users', user.uid), {
+        id: user.uid,
+        language: 'en',
+        displayName: user.email!.split('@')[0],
+        photoURL: '',
+        phoneNumber: '',
+      });
+
       setErrorMsg(null);
     } catch (error) {
       if (error instanceof FirebaseError) {
