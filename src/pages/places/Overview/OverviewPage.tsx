@@ -1,16 +1,9 @@
-import {
-  FC,
-  SyntheticEvent,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
 import { Button, Divider, IconButton, Modal } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
-import PropertyDescription from './PropertyDescription/PropertyDescription';
 import WriteReviewSection from './Reviews/WriteReviewSection';
 import { firestore, storage } from '../../../firebase/firebase';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -388,7 +381,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                       variant="outlined"
                       color="secondary"
                       onClick={(event) => {
-                        navigate(`/addVenue/${encodeURI(venue.id!)}`);
+                        navigate(`/addVenue/${venueId}`);
                       }}
                     >
                       Edit
@@ -447,13 +440,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </div>
           <Divider />
           <PerksList perksList={venue.perks} />
-          <div className="my-5 flex flex-col gap-2 bg-white p-3">
-            <div className="text-lg font-bold">
-              About <span className="text-sky-900">{venue.name}</span>
+          {venue.description && (
+            <div className="my-5 flex flex-col gap-2 bg-white p-3">
+              <div className="text-lg font-bold">
+                About <span className="text-sky-900">{venue.name}</span>
+              </div>
+              <Divider className="bg-[#006989]" />
+              <div>{venue.description}</div>
             </div>
-            <Divider className="bg-[#006989]" />
-            <PropertyDescription />
-          </div>
+          )}
           <Divider className="mb-5" />
           {currentUser && venue.userId !== currentUser.uid && hasReviewed && (
             <>

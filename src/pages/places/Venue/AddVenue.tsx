@@ -18,6 +18,8 @@ import Venue, { PerksMap, VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
 
 // TODO protect editing of venues that are not property of the current user
+const defaultOpeningTime = () => new Date().setHours(8, 0, 0, 0);
+const defaultClosingTime = () => new Date().setHours(22, 0, 0, 0);
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,11 +39,11 @@ const AddVenue: FC<AddVenueProps> = () => {
     Cocktails: false,
   });
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
-    monday: { openAt: null, closeAt: null },
-    tuesday: { openAt: null, closeAt: null },
-    wednesday: { openAt: null, closeAt: null },
-    thursday: { openAt: null, closeAt: null },
-    friday: { openAt: null, closeAt: null },
+    monday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
+    tuesday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
+    wednesday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
+    thursday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
+    friday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
     saturday: { openAt: null, closeAt: null },
     sunday: { openAt: null, closeAt: null },
   });
