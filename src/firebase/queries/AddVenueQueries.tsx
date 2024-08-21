@@ -1,5 +1,5 @@
-import { UploadResult, getDownloadURL, listAll, ref, uploadBytes } from 'firebase/storage';
-import { db, firebase, firestore, storage } from '../firebase';
+import { UploadResult, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { firestore, storage } from '../firebase';
 import Venue from '../../global/models/Venue';
 import {
   addDoc,
@@ -7,12 +7,10 @@ import {
   doc,
   DocumentData,
   DocumentReference,
-  setDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { push } from 'firebase/database';
 
-export const uploadImages = async (files: FileList | null, venueName: string) => {
+export const uploadImages = async (files: FileList | null, venueId: string) => {
   const metadata = {
     contentType: 'image/jpeg',
   };
@@ -20,7 +18,7 @@ export const uploadImages = async (files: FileList | null, venueName: string) =>
   const uploadPromises =
     files &&
     Array.from(files).map((file) => {
-      const storageRef = ref(storage, `images/${venueName}/${file.name}`);
+      const storageRef = ref(storage, `images/${venueId}/${file.name}`);
       return uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
         return getDownloadURL(storageRef);
       });

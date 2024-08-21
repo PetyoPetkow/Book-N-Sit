@@ -3,14 +3,11 @@ import {
   SyntheticEvent,
   useCallback,
   useEffect,
-  useMemo,
   useState,
-  useTransition,
 } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
-import RatingDisplay from './Rating/RatingDisplay';
-import { Avatar, Button, Divider, IconButton, Modal, TextField } from '@mui/material';
+import { Button, Divider, IconButton, Modal } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import PropertyDescription from './PropertyDescription/PropertyDescription';
@@ -19,14 +16,12 @@ import { firestore, storage } from '../../../firebase/firebase';
 import { useNavigate, useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
 import {
-  addDoc,
   arrayRemove,
   arrayUnion,
   collection,
   doc,
   DocumentData,
   getDoc,
-  getDocs,
   onSnapshot,
   setDoc,
   Timestamp,
@@ -41,18 +36,12 @@ import { uploadImages } from '../../../firebase/queries/AddVenueQueries';
 import styled from '@emotion/styled';
 import EditImages from '../Venue/Images/EditImages';
 import MapComponent from '../Venue/MapComponent';
-import Chat from '../../users/chat/Chat';
-import RemoveIcon from '@mui/icons-material/Remove';
-import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import { getUserById } from '../../../firebase/services/UserService';
-import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { uniqueId } from 'lodash';
-import clsx from 'clsx';
 import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
-import { createPortal } from 'react-dom';
 import ChatBox from './ChatBox';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -411,16 +400,19 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                       component="label"
                       role={undefined}
                       tabIndex={-1}
-                      //startIcon={<CloudUploadIcon />}
+                      startIcon={<CloudUploadIcon />}
                     >
                       Upload Images
                       <VisuallyHiddenInput
+                        disabled={venueId === undefined}
                         type="file"
                         multiple
                         onChange={async (event: any) => {
-                          const imageUrls = await uploadImages(event.target.files, venue.name);
-                          const venueRef = doc(firestore, 'venues', venue.id!);
-                          await addArrayToImages(venueRef, imageUrls);
+                          if (venueId) {
+                            const imageUrls = await uploadImages(event.target.files, venueId);
+                            const venueRef = doc(firestore, 'venues', venueId);
+                            await addArrayToImages(venueRef, imageUrls);
+                          }
                         }}
                       />
                     </Button>
