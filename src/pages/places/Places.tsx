@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
 import { perksMock } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
+import { useAuth } from '../../contexts/authContext';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
@@ -23,8 +24,11 @@ const Places: FC<PlacesProps> = () => {
 
   const navigate = useNavigate();
   const { category } = useParams();
+  const { currentUser } = useAuth();
 
   useEffect(() => {
+    if (currentUser === null) return;
+
     const getPlaces = async (firestore: Firestore) => {
       const conditions = [];
 
@@ -51,6 +55,9 @@ const Places: FC<PlacesProps> = () => {
         const filter: string | undefined = routeToCategoryMapper[category];
 
         filter && conditions.push(where('venueTypes', 'array-contains', filter));
+      }
+      if (location.pathname === '/MyVenues') {
+        conditions.push(where('userId', '==', currentUser.uid));
       }
 
       const placesCol = collection(firestore, 'venues');
