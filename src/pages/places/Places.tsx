@@ -29,6 +29,7 @@ import Location from './Overview/Location';
 import { useAuth } from '../../contexts/authContext';
 import DayOfWeek from '../../global/models/DaysOfWeek';
 import clsx from 'clsx';
+import _ from 'lodash';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
@@ -58,30 +59,21 @@ const Places: FC<PlacesProps> = () => {
     const getPlaces = async (firestore: Firestore) => {
       const conditions = [];
 
-      if (city !== null) {
-        conditions.push(where('city', '==', city));
+      if (city !== '' && city !== null) {
+        const cityToCapitalized = _.startCase(_.toLower(city));
+
+        conditions.push(
+          orderBy('city'),
+          startAt(cityToCapitalized),
+          endAt(`${cityToCapitalized}\uf8ff`)
+        );
       }
       if (perks.length !== 0) {
         perks.map((p) => {
           conditions.push(where(`perks.${p.name}`, '==', true));
         });
       }
-      if (category !== undefined) {
-        const routeToCategoryMapper: Record<string, VenueType> = {
-          Restaurants: 'restaurant',
-          Cafes: 'cafe',
-          Bars: 'bar',
-          Pubs: 'pub',
-          Bakeries: 'bakery',
-          Wineries: 'winery',
-          Breweries: 'brewery',
-          NightClubs: 'night_club',
-        };
 
-        const filter: string | undefined = routeToCategoryMapper[category];
-
-        filter && conditions.push(where('venueTypes', 'array-contains', filter));
-      }
       if (location.pathname === '/MyVenues') {
         conditions.push(where('userId', '==', currentUser.uid));
       }
@@ -109,7 +101,13 @@ const Places: FC<PlacesProps> = () => {
       <div>
         <div className="flex w-full min-h-20 h-fit gap-4 items-center">
           <div className="flex-1 px-20">
-            <CityAutocomplete city={city} onCityChanged={setCity} />
+            <TextField
+              fullWidth
+              size="small"
+              label="City"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
           </div>
           <div className="flex-1 px-20">
             <Autocomplete

@@ -9,6 +9,7 @@ import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'fireb
 import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 import { format } from 'date-fns';
+import moment from 'moment';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -239,15 +240,20 @@ const Messages: FC<MessagesProps> = () => {
                           title={format(new Date(m.date.seconds * 1000), 'HH:mm dd/MM/yyyy')}
                           placement="top"
                         >
-                          <div
-                            className={clsx(
-                              m.senderId === currentUser.uid
-                                ? 'bg-blue-200 rounded-br-xl'
-                                : 'bg-[#F3F7EC] rounded-bl-xl',
-                              'rounded-t-xl p-1 px-3'
-                            )}
-                          >
-                            {m.text}
+                          <div className="flex flex-col">
+                            <div
+                              className={clsx(
+                                m.senderId === currentUser.uid
+                                  ? 'bg-blue-200 rounded-br-xl'
+                                  : 'bg-[#F3F7EC] rounded-bl-xl',
+                                'rounded-t-xl p-1 px-3 w-fit'
+                              )}
+                            >
+                              {m.text}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {moment(new Date(m.date.seconds * 1000)).fromNow()}
+                            </div>
                           </div>
                         </Tooltip>
                       </div>
