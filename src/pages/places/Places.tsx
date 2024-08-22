@@ -90,7 +90,28 @@ const Places: FC<PlacesProps> = () => {
           }) as Venue
       );
 
-      setPlaces(placeList);
+      let venues: Venue[] = [];
+
+      if (category !== undefined && category !== 'All') {
+        const routeToCategoryMapper: Record<string, VenueType> = {
+          Restaurants: 'restaurant',
+          Cafes: 'cafe',
+          Bars: 'bar',
+          Pubs: 'pub',
+          Bakeries: 'bakery',
+          Wineries: 'winery',
+          Breweries: 'brewery',
+          NightClubs: 'night_club',
+        };
+
+        venues = placeList.filter((venue) =>
+          venue.venueTypes.includes(routeToCategoryMapper[category])
+        );
+      } else {
+        venues = placeList;
+      }
+
+      setPlaces(venues);
     };
 
     getPlaces(firestore);
