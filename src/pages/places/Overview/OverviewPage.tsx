@@ -202,9 +202,9 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   const handleImagesSave = async (images: string[], imagesToDelete: string[]) => {
-    if (venue) {
+    if (venueId) {
       try {
-        const venueRef = doc(firestore, 'venues', venue.id!);
+        const venueRef = doc(firestore, 'venues', venueId);
 
         imagesToDelete.map(async (image) => {
           const fileToDeleteRef = ref(storage, image);

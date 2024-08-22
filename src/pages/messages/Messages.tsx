@@ -1,5 +1,5 @@
-import { Avatar, Divider, IconButton, OutlinedInput, TextField } from '@mui/material';
-import { FC, useEffect, useMemo, useRef, useState } from 'react';
+import { Avatar, Divider, IconButton, OutlinedInput, TextField, Tooltip } from '@mui/material';
+import { FC, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import clsx from 'clsx';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
@@ -8,6 +8,7 @@ import { firestore } from '../../firebase/firebase';
 import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
 import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
+import { format } from 'date-fns';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -28,10 +29,20 @@ const Messages: FC<MessagesProps> = () => {
 
   const [selectedChat, setSelectedChat] = useState<{ chatId: string; userId: string } | null>(null);
   const [messages, setMessages] = useState<
-    { date: Date; id: string; senderId: string; text: string }[]
+    { date: Timestamp; id: string; senderId: string; text: string }[]
   >([]);
 
   const { currentUser } = useAuth();
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
+      e.preventDefault();
+      if (text !== '') {
+        handleSendMessage();
+        setText('');
+      }
+    }
+  };
 
   //@ts-ignore
   useEffect(() => {
@@ -75,7 +86,7 @@ const Messages: FC<MessagesProps> = () => {
       const unSub = onSnapshot(doc(firestore, 'messages', selectedChat.chatId), (doc) => {
         doc.exists() &&
           setMessages(
-            doc.data().messages as { date: Date; id: string; senderId: string; text: string }[]
+            doc.data().messages as { date: Timestamp; id: string; senderId: string; text: string }[]
           );
       });
 
@@ -224,16 +235,21 @@ const Messages: FC<MessagesProps> = () => {
                               : 'order-last right-0'
                           )}
                         />
-                        <div
-                          className={clsx(
-                            m.senderId === currentUser.uid
-                              ? 'bg-blue-200 rounded-br-xl'
-                              : 'bg-red-200 rounded-bl-xl',
-                            'p-2 rounded-t-xl'
-                          )}
+                        <Tooltip
+                          title={format(new Date(m.date.seconds * 1000), 'HH:mm dd/MM/yyyy')}
+                          placement="top"
                         >
-                          {m.text}
-                        </div>
+                          <div
+                            className={clsx(
+                              m.senderId === currentUser.uid
+                                ? 'bg-blue-200 rounded-br-xl'
+                                : 'bg-[#F3F7EC] rounded-bl-xl',
+                              'rounded-t-xl p-1 px-3'
+                            )}
+                          >
+                            {m.text}
+                          </div>
+                        </Tooltip>
                       </div>
                     );
                   })}
@@ -252,6 +268,7 @@ const Messages: FC<MessagesProps> = () => {
                   maxRows={3}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
                 <IconButton className="aspect-square" onClick={handleSendMessage}>
                   <SendOutlinedIcon />

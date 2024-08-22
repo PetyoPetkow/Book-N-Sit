@@ -38,6 +38,9 @@ const AddVenue: FC<AddVenueProps> = () => {
     'Wine list': false,
     Cocktails: false,
   });
+  const [isWorkingHoursValid, setIsWorkingHoursValid] = useState<boolean>(true);
+  const [isDataValid, setIsDataValid] = useState<boolean>(false);
+
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     monday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
     tuesday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
@@ -51,6 +54,8 @@ const AddVenue: FC<AddVenueProps> = () => {
   const { venueId } = useParams();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {}, [name, city, coordinates, images, isWorkingHoursValid]);
 
   useEffect(() => {
     const setData = async () => {
@@ -68,6 +73,8 @@ const AddVenue: FC<AddVenueProps> = () => {
         setSelectedVenueTypes(venueTypes);
         setSelectedPerks(perks);
         setWorkingHours(workingHours);
+
+        setIsDataValid(true);
       }
     };
 
@@ -126,15 +133,18 @@ const AddVenue: FC<AddVenueProps> = () => {
               />
             )}
           </div>
-          <div>
-            <InputFileUpload
-              disabled={isLoading}
-              images={images}
-              onImagesChanged={setImages}
-              files={files}
-              onAddFiles={setFiles}
-            />
-          </div>
+          {!venueId && (
+            <div>
+              <InputFileUpload
+                disabled={isLoading}
+                images={images}
+                onImagesChanged={setImages}
+                files={files}
+                onAddFiles={setFiles}
+              />
+              {files === null && <span className="text-red-800">*Images are required</span>}
+            </div>
+          )}
           <div>
             <InputLabel className="text-lg font-bold text-black">Description</InputLabel>
             <TextField
@@ -173,37 +183,37 @@ const AddVenue: FC<AddVenueProps> = () => {
           <div>
             <WorkigHoursPicker
               disabled={isLoading}
+              onValidityChange={setIsWorkingHoursValid}
               workingHours={workingHours}
               onOpenAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
-                if (date && !isNaN(date.getTime())) {
-                  setWorkingHours((prevState) => ({
-                    ...prevState,
-                    [dayOfWeek]: {
-                      ...prevState[dayOfWeek],
-                      openAt: date.getTime(),
-                    },
-                  }));
-                }
+                setWorkingHours((prevState) => ({
+                  ...prevState,
+                  [dayOfWeek]: {
+                    ...prevState[dayOfWeek],
+                    openAt: date && !isNaN(date.getTime()) ? date.getTime() : null,
+                  },
+                }));
+                console.log(date && !isNaN(date.getTime()) ? date.getTime() : null);
               }}
               onCloseAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
-                if (date && !isNaN(date.getTime())) {
-                  setWorkingHours((prevState) => ({
-                    ...prevState,
-                    [dayOfWeek]: {
-                      ...prevState[dayOfWeek],
-                      closeAt: date.getTime(),
-                    },
-                  }));
-                }
+                console.log(date);
+                setWorkingHours((prevState) => ({
+                  ...prevState,
+                  [dayOfWeek]: {
+                    ...prevState[dayOfWeek],
+                    closeAt: date && !isNaN(date.getTime()) ? date.getTime() : null,
+                  },
+                }));
               }}
             />
           </div>
           <div className="flex justify-end gap-5">
             <Button
+              disabled={isDataValid}
               variant="contained"
               onClick={async () => {
                 setIsLoading(true);
-                if (city && street && coordinates && currentUser && currentUser.uid) {
+                if (city && coordinates && currentUser && currentUser.uid) {
                   if (venueId) {
                     const result = await updateVenue({
                       city: city,

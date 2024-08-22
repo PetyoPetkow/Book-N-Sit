@@ -9,7 +9,7 @@ const Location: FC<LocationProps> = ({ city, street, className, iconSize }) => {
       <IconButton size="small">
         <LocationOnIcon fontSize={iconSize} />
       </IconButton>
-      {city}, {street}
+      {[city, street].join(', ')}
     </div>
   );
 };
@@ -18,7 +18,7 @@ interface LocationProps {
   iconSize?: 'small' | 'medium' | 'large' | 'inherit';
   className?: string;
   city: string;
-  street: string;
+  street: string | null;
 }
 
 export default Location;
