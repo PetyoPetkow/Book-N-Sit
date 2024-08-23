@@ -1,4 +1,3 @@
-import Address from './Address';
 import WorkingHours from './WorkingHours';
 
 export default interface Venue {

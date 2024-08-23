@@ -1,6 +1,7 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { firestore, storage } from '../firebase';
 import { getDownloadURL, ref, uploadBytes, UploadResult } from 'firebase/storage';
+import UserDetails from '../../global/models/users/UserDetails';
 
 const getUserById = async (userId: string) => {
   const userRef = doc(firestore, 'users', userId);
@@ -31,4 +32,8 @@ const uploadProfilePicture = async (userId: string, file: File) => {
   return uploadPromise;
 };
 
-export { getUserById, uploadProfilePicture };
+const createUserInDB = async (user: UserDetails) => {
+  await setDoc(doc(firestore, 'users', user.id), user);
+};
+
+export { getUserById, uploadProfilePicture, createUserInDB };

@@ -35,6 +35,6 @@ const EmailTextField: FC<EmailTextFieldProps> = (props) => {
   );
 };
 
-type EmailTextFieldProps = Omit<TextFieldProps, 'type'>;
+type EmailTextFieldProps = Omit<TextFieldProps, 'type' | 'label'>;
 
 export default EmailTextField;

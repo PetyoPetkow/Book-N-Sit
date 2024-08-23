@@ -6,9 +6,7 @@ import { Button } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
-import { doc, setDoc } from 'firebase/firestore';
-import { firestore } from '../../firebase/firebase';
-import { getAuth } from 'firebase/auth';
+import { createUserInDB } from '../../firebase/services/UserService';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -21,12 +19,10 @@ const RegisterPage: FC<RegisterPageProps> = () => {
     try {
       const { user } = await doCreateUserWithEmailAndPassword(email, password);
 
-      await setDoc(doc(firestore, 'users', user.uid), {
+      await createUserInDB({
         id: user.uid,
         language: 'en',
         displayName: user.email!.split('@')[0],
-        photoURL: '',
-        phoneNumber: '',
       });
 
       setErrorMsg(null);
