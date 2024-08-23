@@ -41,15 +41,17 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
+import MenuIcon from '@mui/icons-material/Menu';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const Header: FC<HeaderProps> = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorElLanguage, setAnchorElLanguage] = useState<null | HTMLElement>(null);
-  const [user, setUser] = useState<any>();
 
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
-  const { userLoggedIn, currentUser } = useAuth();
+  const { userLoggedIn, currentUser, userInfo } = useAuth();
 
   const prefferedLanguageFlag = useMemo(() => {
     if (i18n.language === 'bg') {
@@ -58,18 +60,6 @@ const Header: FC<HeaderProps> = () => {
       return flagUK;
     }
   }, [i18n.language]);
-
-  useEffect(() => {
-    if (currentUser) {
-      const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
-        doc.exists() && setUser(doc.data());
-      });
-
-      return () => {
-        unSub();
-      };
-    }
-  }, [currentUser]);
 
   const changeLanguage = (lng: Language) => {
     if (currentUser) {
@@ -205,11 +195,17 @@ const Header: FC<HeaderProps> = () => {
                     <Avatar
                       className="shadow-sm shadow-black"
                       alt="User avatar"
-                      src={user?.photoURL || ''}
+                      src={userInfo?.photoURL || ''}
                     />
-                    <div className="flex flex-col text-left">
-                      <div>Hello,</div>
-                      <div>{currentUser.displayName}</div>
+                    <div className="flex flex-col text-right">
+                      <div>{userInfo?.displayName}</div>
+                      <div>
+                        {Boolean(anchorElUser) ? (
+                          <KeyboardArrowUpIcon />
+                        ) : (
+                          <KeyboardArrowDownIcon />
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Button>

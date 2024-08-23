@@ -2,9 +2,8 @@ import { Button, Divider, styled, TextField } from '@mui/material';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authContext';
 import { doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
-import { firestore } from '../../firebase/firebase';
+import { auth, firestore } from '../../firebase/firebase';
 import { getUserById, uploadProfilePicture } from '../../firebase/services/UserService';
-import { doUpdateProfile } from '../../firebase/auth';
 
 const ManageAccount: FC<ManageAccountProps> = () => {
   const [userData, setUserData] = useState<any>();
@@ -57,7 +56,6 @@ const ManageAccount: FC<ManageAccountProps> = () => {
       try {
         const userDoc = doc(firestore, 'users', currentUser.uid);
         await setDoc(userDoc, userData, { merge: true });
-        await doUpdateProfile({ ...userData });
         console.log('Profile updated successfully');
       } catch (error) {
         console.error('Error updating profile:', error);
@@ -119,9 +117,6 @@ const ManageAccount: FC<ManageAccountProps> = () => {
                       const userRef = doc(firestore, 'users', currentUser!.uid);
                       if (imageUrl) {
                         await updatePhotoURL(userRef, imageUrl);
-                        await doUpdateProfile({
-                          photoURL: imageUrl,
-                        });
                       }
                     }}
                   />

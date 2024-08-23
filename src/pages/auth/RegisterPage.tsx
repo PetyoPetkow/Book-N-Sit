@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { doCreateUserWithEmailAndPassword, doUpdateProfile } from '../../firebase/auth';
+import { doCreateUserWithEmailAndPassword } from '../../firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
 import { Button } from '@mui/material';
@@ -8,6 +8,7 @@ import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
 import { doc, setDoc } from 'firebase/firestore';
 import { firestore } from '../../firebase/firebase';
+import { getAuth } from 'firebase/auth';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -18,13 +19,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
 
   const onRegister = async () => {
     try {
-      const userCredential = await doCreateUserWithEmailAndPassword(email, password);
-
-      console.log(userCredential);
-
-      const user = userCredential.user;
-
-      await doUpdateProfile(user);
+      const { user } = await doCreateUserWithEmailAndPassword(email, password);
 
       await setDoc(doc(firestore, 'users', user.uid), {
         id: user.uid,
