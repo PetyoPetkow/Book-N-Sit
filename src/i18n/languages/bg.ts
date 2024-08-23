@@ -1,4 +1,13 @@
 const bg = {
+  header_bg_lng: 'Български',
+  header_en_lng: 'Английски',
+
+  header_account_messages: 'Съобщения',
+  header_account_my_venues: 'Мои обекти',
+  header_account_register_venue: 'Регистрирай обект',
+  header_account_manage_account: 'Управление на акаунт',
+  header_account_sign_out: 'Изход',
+
   header_btn_all: 'Всички',
   header_btn_restaurants: 'Ресторанти',
   header_btn_cafes: 'Кафенета',
@@ -9,8 +18,8 @@ const bg = {
   header_btn_breweries: 'Бирарии',
   header_btn_night_clubs: 'Нощни Клубове',
 
-  header_profile_menu_action_manage_account: 'Настройки на профила',
-  header_profile_menu_action_sign_out: 'Изход',
+  city: 'Град',
+  filters: 'Филтри',
 
   restaurant: 'Ресторант',
   cafe: 'Кафене',
@@ -20,6 +29,12 @@ const bg = {
   winery: 'Винарна',
   brewery: 'Бирария',
   night_club: 'Нощен клуб',
+
+  free_wifi: 'Безплатен WiFi',
+  personalized_events: 'Персонализирани събития',
+  sushi_menu: 'Суши меню',
+  wine_list: 'Винена листа',
+  cocktails: 'Коктейли',
 };
 
 export default bg;

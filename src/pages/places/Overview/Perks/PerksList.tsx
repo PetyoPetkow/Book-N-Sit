@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { perksIcons, perksMock } from './PerksMock';
+import { perksIcons } from './PerksMock';
 import { Perk, PerksMap } from '../../../../global/models/Venue';
 
 const PerksList: FC<PerksListProps> = ({ perksList }) => {

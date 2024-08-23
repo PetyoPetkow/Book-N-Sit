@@ -32,11 +32,11 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<VenueType[]>([]);
   const [selectedPerks, setSelectedPerks] = useState<PerksMap>({
-    'No smoking': false,
-    'Personalized events': false,
-    'Sushi menu': false,
-    'Wine list': false,
-    Cocktails: false,
+    free_wifi: false,
+    personalized_events: false,
+    sushi_menu: false,
+    wine_list: false,
+    cocktails: false,
   });
   const [isWorkingHoursValid, setIsWorkingHoursValid] = useState<boolean>(true);
   const [isDataValid, setIsDataValid] = useState<boolean>(false);

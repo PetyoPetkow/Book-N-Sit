@@ -167,7 +167,7 @@ const Header: FC<HeaderProps> = () => {
                       alt="Country flag"
                       src={flagBG}
                     />
-                    <div>Bulgarian</div>
+                    <div>{t('header_bg_lng')}</div>
                   </MenuItem>
 
                   <MenuItem
@@ -183,7 +183,7 @@ const Header: FC<HeaderProps> = () => {
                       alt="Country flag"
                       src={flagUK}
                     />
-                    <div>English</div>
+                    <div>{t('header_en_lng')}</div>
                   </MenuItem>
                 </Menu>
 
@@ -233,7 +233,7 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <ChatOutlinedIcon />
-                    <Typography textAlign="center">Messages</Typography>
+                    <Typography textAlign="center">{t('header_account_messages')}</Typography>
                   </MenuItem>
 
                   <MenuItem
@@ -245,7 +245,7 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <BallotOutlinedIcon />
-                    <Typography textAlign="center">My venues</Typography>
+                    <Typography textAlign="center">{t('header_account_my_venues')}</Typography>
                   </MenuItem>
 
                   <MenuItem
@@ -257,7 +257,7 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <AddBusinessOutlinedIcon />
-                    <Typography textAlign="center">Add venue</Typography>
+                    <Typography textAlign="center">{t('header_account_register_venue')}</Typography>
                   </MenuItem>
 
                   <MenuItem
@@ -269,9 +269,7 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <SettingsIcon />
-                    <Typography textAlign="center">
-                      {t('header_profile_menu_action_manage_account')}
-                    </Typography>
+                    <Typography textAlign="center">{t('header_account_manage_account')}</Typography>
                   </MenuItem>
                   <MenuItem
                     className="flex gap-2"
@@ -282,9 +280,7 @@ const Header: FC<HeaderProps> = () => {
                     }}
                   >
                     <LogoutIcon />
-                    <Typography textAlign="center">
-                      {t('header_profile_menu_action_sign_out')}
-                    </Typography>
+                    <Typography textAlign="center">{t('header_account_sign_out')}</Typography>
                   </MenuItem>
                 </Menu>
               </div>

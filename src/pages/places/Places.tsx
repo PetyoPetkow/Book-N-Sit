@@ -1,4 +1,4 @@
-import { cloneElement, FC, useEffect, useMemo, useState } from 'react';
+import { cloneElement, FC, useEffect, useMemo, useState, useTransition } from 'react';
 import { firestore } from '../../firebase/firebase';
 import {
   Firestore,
@@ -24,17 +24,25 @@ import {
 import Venue, { VenueType } from '../../global/models/Venue';
 import { useNavigate, useParams } from 'react-router-dom';
 import CityAutocomplete from './CityAutocomplete';
-import { perksMock } from './Overview/Perks/PerksMock';
+import { perksIcons } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
 import { useAuth } from '../../contexts/authContext';
 import DayOfWeek from '../../global/models/DaysOfWeek';
 import clsx from 'clsx';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
   const [city, setCity] = useState<string | null>(null);
   const [perks, setPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
+
+  const perksOptions = useMemo(() => {
+    return Object.entries(perksIcons).map(([perk, icon]) => ({
+      name: perk,
+      icon: icon,
+    }));
+  }, [perksIcons]);
 
   const daysOfWeek: DayOfWeek[] = [
     'sunday',
@@ -47,6 +55,7 @@ const Places: FC<PlacesProps> = () => {
   ];
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { category } = useParams();
   const { currentUser } = useAuth();
 
@@ -125,7 +134,7 @@ const Places: FC<PlacesProps> = () => {
             <TextField
               fullWidth
               size="small"
-              label="City"
+              label={t('city')}
               value={city}
               onChange={(e) => setCity(e.target.value)}
             />
@@ -136,18 +145,24 @@ const Places: FC<PlacesProps> = () => {
               limitTags={2}
               multiple
               size="small"
-              options={perksMock}
+              options={perksOptions}
               disableCloseOnSelect
               getOptionLabel={(option) => option.name}
-              renderOption={(props, option, { selected }) => (
+              renderOption={(props, option, state) => (
                 <li {...props}>
-                  {cloneElement(option.icon, { style: { fontSize: 18, marginRight: 8 } })}
-                  {option.name}
+                  <div className="flex gap-2">
+                    <div className="mr-2">{option.icon}</div>
+                    <div>{t(option.name)}</div>
+                  </div>
                 </li>
               )}
               value={perks}
               onChange={(event, value) => {
-                setPerks(value);
+                // Filter out duplicates by checking if the option is already in the value array
+                const uniqueValue = value.filter(
+                  (v, index, self) => index === self.findIndex((t) => t.name === v.name)
+                );
+                setPerks(uniqueValue);
               }}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
@@ -159,7 +174,9 @@ const Places: FC<PlacesProps> = () => {
                   />
                 ))
               }
-              renderInput={(params) => <TextField {...params} variant="outlined" label="Filters" />}
+              renderInput={(params) => (
+                <TextField {...params} variant="outlined" label={t('filters')} />
+              )}
             />
           </div>
         </div>

@@ -38,23 +38,25 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
         value={selectedPerkNames}
         onChange={handlePerkChange} // Updated handler
       >
-        {Object.entries(selectedPerks).map(([perk, value]) => (
-          <ToggleButton
-            key={perk}
-            value={perk} // Fixed: using `perk` as the value
-            selected={value}
-            color="success"
-            className="flex items-center p-3 border border-solid border-gray-300 rounded gap-3"
-            sx={{
-              '&.Mui-selected': {
-                backgroundColor: '#F3F7EC',
-              },
-            }}
-          >
-            <div>{perksIcons[perk as Perk]}</div>
-            <div>{perk}</div>
-          </ToggleButton>
-        ))}
+        {Object.entries(selectedPerks).map(([perk, value]) => {
+          return (
+            <ToggleButton
+              key={perk}
+              value={perk}
+              selected={value}
+              color="success"
+              className="flex items-center p-3 border border-solid border-gray-300 rounded gap-3"
+              sx={{
+                '&.Mui-selected': {
+                  backgroundColor: '#F3F7EC',
+                },
+              }}
+            >
+              <div>{perksIcons[perk as Perk]}</div>
+              <div>{perk}</div>
+            </ToggleButton>
+          );
+        })}
       </ToggleButtonGroup>
       <Divider />
     </div>
