@@ -421,6 +421,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                 ) : (
                   <div className="flex-1">
                     <OwnerInfo
+                      owner={owner}
                       onChatOpen={() => {
                         handleOpenChat();
                         setIsChatOpen(true);

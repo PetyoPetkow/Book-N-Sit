@@ -3,7 +3,7 @@ import { FC } from 'react';
 import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
 import { useAuth } from '../../../../contexts/authContext';
 
-const OwnerInfo: FC<OwnerInfoProps> = ({ onChatOpen }) => {
+const OwnerInfo: FC<OwnerInfoProps> = ({ owner, onChatOpen }) => {
   const { currentUser } = useAuth();
 
   return (
@@ -15,12 +15,12 @@ const OwnerInfo: FC<OwnerInfoProps> = ({ onChatOpen }) => {
 
       <section className="flex flex-col flex-grow items-center justify-evenly m-4">
         <div className="flex gap-2 font-bold items-center">
-          <span>John Smith</span>
-          <Avatar />
+          <span>{owner && owner.displayName}</span>
+          <Avatar className="shadow-sm shadow-black" src={owner.photoURL || ''} />
         </div>
 
         <div className="flex text-lg font-bold">
-          <div>+359 882114269</div>
+          <div>{owner && owner.phoneNumber}</div>
           <PhoneEnabledIcon className="text-3xl" />
         </div>
 
@@ -35,6 +35,7 @@ const OwnerInfo: FC<OwnerInfoProps> = ({ onChatOpen }) => {
 };
 
 interface OwnerInfoProps {
+  owner: any;
   onChatOpen: () => void;
 }
 
