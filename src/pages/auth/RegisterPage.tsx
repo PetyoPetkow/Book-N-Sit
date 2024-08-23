@@ -2,11 +2,11 @@ import { FC, useState } from 'react';
 import { doCreateUserWithEmailAndPassword } from '../../firebase/auth';
 import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
-import { Button } from '@mui/material';
-import { NavLink } from 'react-router-dom';
 import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
 import { createUserInDB } from '../../firebase/services/UserService';
+import { useTranslation } from 'react-i18next';
+import AuthFormBase from './AuthFormBase';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -14,6 +14,8 @@ const RegisterPage: FC<RegisterPageProps> = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [isPasswordMismatch, setIsPasswordMismatch] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const { t } = useTranslation();
 
   const onRegister = async () => {
     try {
@@ -34,57 +36,31 @@ const RegisterPage: FC<RegisterPageProps> = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center flex-grow">
-      <div className="w-[500px] overflow-hidden bg-white shadow-gray-500 shadow-md">
-        <div className="h-20 font-bold text-[#028391] text-5xl font-sans flex items-center justify-center">
-          Register
-        </div>
-        <div className="p-10 pt-20">
-          <div className="flex flex-col gap-10">
-            <EmailTextField onChange={(event) => setEmail(event.target.value)} />
-            <PasswordTextField onChange={(event) => setPassword(event.target.value)} />
-            <PasswordTextField
-              error={isPasswordMismatch}
-              onBlur={() => {
-                if (confirmPassword !== '' && password !== confirmPassword) {
-                  setIsPasswordMismatch(true);
-                } else {
-                  setIsPasswordMismatch(false);
-                }
-              }}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-            />
-          </div>
-          <div className="flex flex-col">
-            <NavLink className="ml-auto text-[#028391] no-underline" to="">
-              Forgot password
-            </NavLink>
-            {errorMsg && <div className="text-red-500 text-center mt-4">{errorMsg}</div>}
-            <Button
-              className="mt-12 bg-[#028391] hover:bg-[#60b6c0]"
-              size="large"
-              variant="contained"
-              onClick={onRegister}
-            >
-              Sign up
-            </Button>
-            <div>
-              Already have an account?{' '}
-              <NavLink className="text-[#028391] no-underline" to="">
-                Login here
-              </NavLink>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AuthFormBase
+      title={t('register')}
+      submitBtnLabel={t('sign_up_btn')}
+      redirectLinkLabel={t('login_here_link')}
+      redirectPath="/Login"
+      errorMsg={errorMsg}
+      onSubmit={onRegister}
+      disabled={isPasswordMismatch}
+    >
+      <EmailTextField onChange={(event) => setEmail(event.target.value)} />
+      <PasswordTextField onChange={(event) => setPassword(event.target.value)} />
+      <PasswordTextField
+        label={t('confirm_password')}
+        error={isPasswordMismatch}
+        onBlur={() => {
+          if (password !== confirmPassword) {
+            setIsPasswordMismatch(true);
+          } else {
+            setIsPasswordMismatch(false);
+          }
+        }}
+        onChange={(event) => setConfirmPassword(event.target.value)}
+      />
+    </AuthFormBase>
   );
-};
-
-type FieldType = {
-  email?: string;
-  password?: string;
-  remember?: string;
 };
 
 interface RegisterPageProps {}

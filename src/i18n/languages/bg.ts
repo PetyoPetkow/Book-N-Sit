@@ -1,4 +1,8 @@
 const bg = {
+  //=============================//
+  //           HEADER            //
+  //=============================//
+
   header_bg_lng: 'Български',
   header_en_lng: 'Английски',
 
@@ -17,6 +21,27 @@ const bg = {
   header_btn_wineries: 'Винарни',
   header_btn_breweries: 'Бирарии',
   header_btn_night_clubs: 'Нощни Клубове',
+
+  //=============================//
+  //            AUTH             //
+  //=============================//
+  email: 'Имейл',
+  password: 'Парола',
+  confirm_password: 'Потвърди парола',
+  register_email_validation: 'Моля въведете валиден имейл адрес',
+
+  //----------Login page---------//
+  login: 'Вход',
+  forgot_password_link: 'Забравена парола',
+  log_in_btn: 'Вход',
+  register_now_link: 'Регистрирай се!',
+
+  //--------Register page-------//
+  register: 'Регистрация',
+  forgot_password: 'Забравена парола?',
+  sign_up_btn: 'регистрация',
+  already_have_an_account: 'Вече притежавате акаунт?',
+  login_here_link: 'Влезте от тук!',
 
   city: 'Град',
   filters: 'Филтри',

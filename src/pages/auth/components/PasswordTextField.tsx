@@ -3,21 +3,17 @@ import { FC, useState } from 'react';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useTranslation } from 'react-i18next';
 
 const PasswordTextField: FC<PasswordTextFieldProps> = (props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
+  const { t } = useTranslation();
 
   return (
     <TextField
-      {...props}
       type={showPassword ? 'text' : 'password'}
-      label="Password"
+      label={t('password')}
       size="small"
       variant="filled"
       InputProps={{
@@ -29,9 +25,8 @@ const PasswordTextField: FC<PasswordTextFieldProps> = (props) => {
         endAdornment: (
           <InputAdornment position="end">
             <IconButton
-              aria-label="toggle password visibility"
-              onClick={handleClickShowPassword}
-              onMouseDown={handleMouseDownPassword}
+              onClick={() => setShowPassword(!showPassword)}
+              onMouseDown={(event) => event.preventDefault()}
               edge="end"
             >
               {showPassword ? <VisibilityOff /> : <Visibility />}
@@ -39,6 +34,7 @@ const PasswordTextField: FC<PasswordTextFieldProps> = (props) => {
           </InputAdornment>
         ),
       }}
+      {...props}
     />
   );
 };

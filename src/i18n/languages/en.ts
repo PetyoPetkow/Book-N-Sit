@@ -1,4 +1,8 @@
 const en = {
+  //=============================//
+  //           HEADER            //
+  //=============================//
+
   header_bg_lng: 'Bulgarian',
   header_en_lng: 'English',
 
@@ -17,6 +21,27 @@ const en = {
   header_btn_wineries: 'Wineries',
   header_btn_breweries: 'Breweries',
   header_btn_night_clubs: 'Night Clubs',
+
+  //=============================//
+  //            AUTH             //
+  //=============================//
+  email: 'Email',
+  password: 'Password',
+  confirm_password: 'Confirm Password',
+  register_email_validation: 'Please enter a valid email',
+
+  //----------Login page---------//
+  login: 'Login',
+  forgot_password_link: 'Forgot password',
+  log_in_btn: 'Log in',
+  register_now_link: 'Register now!',
+
+  //--------Register page-------//
+  register: 'Register',
+  forgot_password: 'Forgot password?',
+  sign_up_btn: 'Sign up',
+  already_have_an_account: 'Already have an account?',
+  login_here_link: 'Login here!',
 
   city: 'City',
   filters: 'Filters',
