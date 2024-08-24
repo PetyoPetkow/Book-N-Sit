@@ -9,6 +9,9 @@ import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'fireb
 import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 import moment from 'moment';
+import UserChat from '../../global/models/messages/UserChat';
+import Message from '../../global/models/messages/Message';
+import UserDetails from '../../global/models/users/UserDetails';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -23,16 +26,16 @@ const Messages: FC<MessagesProps> = () => {
       date: Timestamp;
     }[]
   >([]);
-  const [users, setUsers] = useState<{ displayName: string; photoURL: string; id: string }[]>([]);
+  const [users, setUsers] = useState<UserDetails[]>([]);
 
   const [search, setSearch] = useState<string>('');
 
-  const [selectedChat, setSelectedChat] = useState<{ chatId: string; userId: string } | null>(null);
+  const [selectedChat, setSelectedChat] = useState<UserChat | null>(null);
   const [messages, setMessages] = useState<
     { date: Timestamp; id: string; senderId: string; text: string }[]
   >([]);
 
-  const { currentUser, userInfo } = useAuth();
+  const { currentUser, userDetails } = useAuth();
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
@@ -54,7 +57,7 @@ const Messages: FC<MessagesProps> = () => {
         })
       );
 
-      setUsers(users as any);
+      setUsers(users as UserDetails[]);
     };
 
     fetchUsers();
@@ -63,16 +66,7 @@ const Messages: FC<MessagesProps> = () => {
   useEffect(() => {
     if (currentUser) {
       const unSub = onSnapshot(doc(firestore, 'userChats', currentUser.uid), (doc) => {
-        doc.exists() &&
-          setChats(
-            doc.data().chats as {
-              chatId: string;
-              userId: string;
-              lastSenderId: string;
-              lastMessage: string;
-              date: Timestamp;
-            }[]
-          );
+        doc.exists() && setChats(doc.data().chats as UserChat[]);
       });
 
       return () => {
@@ -84,10 +78,7 @@ const Messages: FC<MessagesProps> = () => {
   useEffect(() => {
     if (selectedChat) {
       const unSub = onSnapshot(doc(firestore, 'messages', selectedChat.chatId), (doc) => {
-        doc.exists() &&
-          setMessages(
-            doc.data().messages as { date: Timestamp; id: string; senderId: string; text: string }[]
-          );
+        doc.exists() && setMessages(doc.data().messages as Message[]);
       });
 
       return () => {
@@ -99,16 +90,16 @@ const Messages: FC<MessagesProps> = () => {
   const chatsToShow = useMemo(() => {
     const chatsCopy = structuredClone(chats);
 
-    const filteredUsers = users.filter((u: any) =>
+    const filteredUsers = users.filter((u: UserDetails) =>
       u.displayName?.toLowerCase().includes(search.toLowerCase())
     );
 
-    const filteredUserIds = filteredUsers.map((u: any) => u.id);
+    const filteredUserIds = filteredUsers.map((u: UserDetails) => u.id);
 
     const filteredChats =
       search === ''
         ? chatsCopy
-        : chatsCopy.filter((chat: any) => filteredUserIds.includes(chat.userId));
+        : chatsCopy.filter((chat: UserChat) => filteredUserIds.includes(chat.userId));
 
     return filteredChats;
   }, [search, chats, users]);
@@ -132,7 +123,7 @@ const Messages: FC<MessagesProps> = () => {
           const userChatsRes = await getDoc(userChatsRef);
           const chats = userChatsRes.data()?.chats || [];
 
-          const updatedChats = chats.map((chat: any) => {
+          const updatedChats = chats.map((chat: UserChat) => {
             return chat.chatId === selectedChat.chatId
               ? {
                   chatId: selectedChat.chatId,
@@ -181,7 +172,7 @@ const Messages: FC<MessagesProps> = () => {
           </div>
           <Divider className="mx-7" />
           <div className="flex flex-col gap-5 mt-7">
-            {chatsToShow.map((chat: any) => {
+            {chatsToShow.map((chat: UserChat) => {
               const user = users.find((u) => u.id === chat.userId);
               return (
                 <div
@@ -211,8 +202,8 @@ const Messages: FC<MessagesProps> = () => {
           {selectedChat && (
             <>
               <div className="flex flex-col px-16 gap-4 overflow-auto">
-                {messages.map((m: any) => {
-                  const user = users.find((u: any) => u.id === selectedChat.userId);
+                {messages.map((m: Message) => {
+                  const user = users.find((u: UserDetails) => u.id === selectedChat.userId);
                   console.log(user);
                   return (
                     <div
@@ -226,7 +217,7 @@ const Messages: FC<MessagesProps> = () => {
                       <Avatar
                         src={
                           m.senderId === currentUser.uid
-                            ? userInfo?.photoURL || ''
+                            ? userDetails?.photoURL || ''
                             : user?.photoURL || ''
                         }
                         className={clsx(

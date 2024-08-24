@@ -56,7 +56,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [hasReviewed, setHasReviewed] = useState<boolean>(false);
 
   const { t } = useTranslation();
-  const { currentUser, userInfo } = useAuth();
+  const { currentUser, userDetails } = useAuth();
   const { venueId } = useParams();
 
   useEffect(() => {

@@ -51,7 +51,7 @@ const Header: FC<HeaderProps> = () => {
 
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
-  const { userLoggedIn, currentUser, userInfo } = useAuth();
+  const { userLoggedIn, currentUser, userDetails } = useAuth();
 
   const prefferedLanguageFlag = useMemo(() => {
     if (i18n.language === 'bg') {
@@ -195,10 +195,10 @@ const Header: FC<HeaderProps> = () => {
                     <Avatar
                       className="shadow-sm shadow-black"
                       alt="User avatar"
-                      src={userInfo?.photoURL || ''}
+                      src={userDetails?.photoURL || ''}
                     />
                     <div className="flex flex-col text-right">
-                      <div>{userInfo?.displayName}</div>
+                      <div>{userDetails?.displayName}</div>
                       <div>
                         {Boolean(anchorElUser) ? (
                           <KeyboardArrowUpIcon />

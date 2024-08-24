@@ -10,7 +10,7 @@ import moment from 'moment';
 const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) => {
   const [text, setText] = useState<string>('');
 
-  const { currentUser, userInfo } = useAuth();
+  const { currentUser } = useAuth();
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
