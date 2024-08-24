@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../firebase';
 import { getDownloadURL, ref, uploadBytes, UploadResult } from 'firebase/storage';
 import UserDetails from '../../global/models/users/UserDetails';
@@ -7,15 +7,10 @@ const getUserById = async (userId: string) => {
   const userRef = doc(firestore, 'users', userId);
   const userDoc = await getDoc(userRef);
 
-  if (userDoc.exists()) {
-    const userData = userDoc.data();
-    return userData;
-  } else {
-    console.log(`No user with id ${userId}`);
-  }
+  return userDoc.exists() ? (userDoc.data() as UserDetails) : null;
 };
 
-const uploadProfilePicture = async (userId: string, file: File) => {
+const uploadProfilePictureToStorage = async (userId: string, file: File) => {
   const metadata = {
     contentType: 'image/jpeg',
   };
@@ -25,15 +20,42 @@ const uploadProfilePicture = async (userId: string, file: File) => {
     return getDownloadURL(storageRef);
   });
 
-  if (!uploadPromise) {
-    return;
-  }
-
   return uploadPromise;
+};
+
+const updateProfilePicture = async (userId: string, imageURL: string) => {
+  const userRef = doc(firestore, 'users', userId);
+  await updateDoc(userRef, {
+    photoURL: imageURL,
+  });
 };
 
 const createUserInDB = async (user: UserDetails) => {
   await setDoc(doc(firestore, 'users', user.id), user);
 };
 
-export { getUserById, uploadProfilePicture, createUserInDB };
+const subscribeToUser = (userId: string, onUserUpdate: (user: UserDetails) => void) => {
+  const userRef = doc(firestore, 'users', userId);
+
+  const unsubscribe = onSnapshot(userRef, (doc) => {
+    if (doc.exists()) {
+      onUserUpdate(doc.data() as UserDetails);
+    }
+  });
+
+  return unsubscribe;
+};
+
+const updateUser = async (userId: string, user: UserDetails) => {
+  const userDoc = doc(firestore, 'users', userId);
+  await setDoc(userDoc, user, { merge: true });
+};
+
+export {
+  getUserById,
+  uploadProfilePictureToStorage,
+  createUserInDB,
+  updateProfilePicture,
+  subscribeToUser,
+  updateUser,
+};

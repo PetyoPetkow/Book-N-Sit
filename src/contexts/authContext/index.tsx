@@ -3,6 +3,7 @@ import { auth, firestore } from '../../firebase/firebase';
 import { NextOrObserver, User, onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
 import UserDetails from '../../global/models/users/UserDetails';
+import { subscribeToUser } from '../../firebase/services/UserService';
 
 const AuthContext = createContext<AuthContextProps>({
   currentUser: null,
@@ -43,9 +44,7 @@ export const AuthProvider = ({ children }: any) => {
     if (currentUser) {
       console.log(currentUser);
 
-      const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
-        doc.exists() && setCurrentUserDetails(doc.data() as UserDetails);
-      });
+      const unSub = subscribeToUser(currentUser.uid, setCurrentUserDetails);
 
       return () => {
         unSub();

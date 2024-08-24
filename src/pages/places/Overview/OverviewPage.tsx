@@ -1,31 +1,19 @@
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
-import { Divider } from '@mui/material';
+import { Divider, LinearProgress } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import WriteReviewSection from './Reviews/WriteReviewSection';
-import { firestore, storage } from '../../../firebase/firebase';
-import { useNavigate, useParams } from 'react-router-dom';
+import { firestore } from '../../../firebase/firebase';
+import { useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDoc,
-  onSnapshot,
-  setDoc,
-  Timestamp,
-  updateDoc,
-} from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
 import { useAuth } from '../../../contexts/authContext';
 import Review from '../../../global/models/Review';
 import MapComponent from '../Venue/MapComponent';
 import { getUserById } from '../../../firebase/services/UserService';
-import { uniqueId } from 'lodash';
-import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
 import ChatBox from './ChatBox';
 import UserDetails from '../../../global/models/users/UserDetails';
@@ -59,7 +47,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [comment, setComment] = useState<string>('');
   const [openImagesModal, setOpenImagesModal] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-  const [venueOwner, setVenueOwner] = useState<UserDetails>();
+  const [venueOwner, setVenueOwner] = useState<UserDetails | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [hasReviewed, setHasReviewed] = useState<boolean>(false);
 
@@ -68,7 +56,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const { venueId } = useParams();
 
   useEffect(() => {
-    if (venueId) {
+    if (venueId !== undefined) {
       const fetchVenue = async () => {
         const venue = await getVenueById(venueId);
         setVenue(venue);
@@ -135,7 +123,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   useEffect(() => {
     const fetchOwner = async () => {
       if (venue) {
-        const user = (await getUserById(venue.userId)) as UserDetails;
+        const user = await getUserById(venue.userId);
         setVenueOwner(user);
       }
     };
@@ -228,7 +216,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   };
 
-  if (venue === null || venueId === undefined) return <></>;
+  if (venue === null || venueId === undefined) return <LinearProgress />;
 
   return (
     <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4 relative">

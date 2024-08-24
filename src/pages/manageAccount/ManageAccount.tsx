@@ -1,61 +1,25 @@
-import { Button, Divider, styled, TextField } from '@mui/material';
+import { Button, Divider, LinearProgress, TextField } from '@mui/material';
 import { ChangeEvent, FC, useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/authContext';
-import { doc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, firestore } from '../../firebase/firebase';
-import { getUserById, uploadProfilePicture } from '../../firebase/services/UserService';
+import {
+  updateProfilePicture,
+  updateUser,
+  uploadProfilePictureToStorage,
+} from '../../firebase/services/UserService';
+import UserDetails from '../../global/models/users/UserDetails';
 
 const ManageAccount: FC<ManageAccountProps> = () => {
-  const [userData, setUserData] = useState<any>();
-  const { currentUser } = useAuth();
-
-  const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const { currentUserDetails } = useAuth();
 
   useEffect(() => {
-    if (currentUser) {
-      const fetchUserData = async () => {
-        try {
-          const user = await getUserById(currentUser.uid);
-
-          setUserData(user);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        } finally {
-          //setLoading(false);
-        }
-      };
-
-      fetchUserData();
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (currentUser) {
-      const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
-        doc.exists() && setUserData(doc.data());
-      });
-
-      return () => {
-        unSub();
-      };
-    }
-  }, [currentUser]);
+    setUserDetails(currentUserDetails);
+  }, [currentUserDetails]);
 
   const handleUpdate = async () => {
-    if (currentUser) {
+    if (currentUserDetails && userDetails) {
       try {
-        const userDoc = doc(firestore, 'users', currentUser.uid);
-        await setDoc(userDoc, userData, { merge: true });
+        updateUser(currentUserDetails.id, userDetails);
         console.log('Profile updated successfully');
       } catch (error) {
         console.error('Error updating profile:', error);
@@ -64,60 +28,28 @@ const ManageAccount: FC<ManageAccountProps> = () => {
     }
   };
 
-  const updatePhotoURL = async (userRef: any, imageUrl: string) => {
-    try {
-      await updateDoc(userRef, {
-        photoURL: imageUrl, // Update just the photoUrl field
-      });
-
-      console.log('Photo URL updated successfully');
-    } catch (error) {
-      console.error('Error updating photo URL:', error);
-    }
-  };
+  if (currentUserDetails === null || userDetails === null) return <LinearProgress />;
 
   return (
     <div className="flex flex-col flex-grow bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700">
-      {userData && (
+      {userDetails && (
         <>
           <div className="flex flex-grow">
             <div className="flex flex-grow gap-10 justify-center items-center">
               <div className="flex flex-col items-center justify-center flex-1 px-14">
-                <img className="h-56" src={userData.photoURL} alt="Avatar" />
-                {/* <Button role={undefined} tabIndex={-1}>
-                  Change image
-                  <VisuallyHiddenInput
-                    type="file"
-                    onChange={async (event: any) => {
-                      const imageUrl = await uploadProfilePicture(
-                        currentUser!.uid,
-                        event.target.file
-                      );
-                      const userRef = doc(firestore, 'users', currentUser!.uid);
-                      if (imageUrl) {
-                        await updatePhotoURL(userRef, imageUrl);
-                      }
-                    }}
-                  />
-                </Button> */}
-                <Button
-                  component="label"
-                  role={undefined}
-                  tabIndex={-1}
-                  //startIcon={<CloudUploadIcon />}
-                >
+                <img className="h-56" src={userDetails.photoURL} alt="Avatar" />
+
+                <Button component="label" role={undefined} tabIndex={-1}>
                   Upload Images
-                  <VisuallyHiddenInput
+                  <input
+                    className="hidden"
                     type="file"
                     onChange={async (event: any) => {
-                      const imageUrl = await uploadProfilePicture(
-                        currentUser!.uid,
+                      const imageURL = await uploadProfilePictureToStorage(
+                        currentUserDetails.id,
                         event.target.files[0]
                       );
-                      const userRef = doc(firestore, 'users', currentUser!.uid);
-                      if (imageUrl) {
-                        await updatePhotoURL(userRef, imageUrl);
-                      }
+                      await updateProfilePicture(currentUserDetails.id, imageURL);
                     }}
                   />
                 </Button>
@@ -126,23 +58,21 @@ const ManageAccount: FC<ManageAccountProps> = () => {
               <div className="flex-1 flex flex-col gap-6 px-14">
                 <TextField
                   label="Username"
-                  value={userData.displayName}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setUserData((prevData: any) => ({
-                      ...prevData,
-                      displayName: e.target.value,
-                    }))
-                  }
+                  value={userDetails.displayName}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const userDetailsCopy = structuredClone(userDetails);
+                    userDetailsCopy.displayName = e.target.value;
+                    setUserDetails(userDetailsCopy);
+                  }}
                 />
                 <TextField
                   label="Phone Number"
-                  value={userData.phoneNumber}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setUserData((prevData: any) => ({
-                      ...prevData,
-                      phoneNumber: e.target.value,
-                    }))
-                  }
+                  value={userDetails.phoneNumber}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const userDetailsCopy = structuredClone(userDetails);
+                    userDetailsCopy.phoneNumber = e.target.value;
+                    setUserDetails(userDetailsCopy);
+                  }}
                 />
                 <Button size="large" variant="contained" onClick={handleUpdate}>
                   Save
