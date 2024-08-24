@@ -12,6 +12,12 @@ import moment from 'moment';
 import UserChat from '../../global/models/messages/UserChat';
 import Message from '../../global/models/messages/Message';
 import UserDetails from '../../global/models/users/UserDetails';
+import {
+  appendMessages,
+  subscribeToMessages,
+  subscribeToUserChats,
+  updateUserChat,
+} from '../../firebase/services/MessagesService';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -36,6 +42,10 @@ const Messages: FC<MessagesProps> = () => {
   >([]);
 
   const { currentUser, userDetails } = useAuth();
+
+  const selectedChatUser = useMemo(() => {
+    return users.find((user) => user.id === selectedChat?.userId);
+  }, [users, selectedChat]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
@@ -65,9 +75,7 @@ const Messages: FC<MessagesProps> = () => {
 
   useEffect(() => {
     if (currentUser) {
-      const unSub = onSnapshot(doc(firestore, 'userChats', currentUser.uid), (doc) => {
-        doc.exists() && setChats(doc.data().chats as UserChat[]);
-      });
+      const unSub = subscribeToUserChats(currentUser.uid, setChats);
 
       return () => {
         unSub();
@@ -77,9 +85,7 @@ const Messages: FC<MessagesProps> = () => {
 
   useEffect(() => {
     if (selectedChat) {
-      const unSub = onSnapshot(doc(firestore, 'messages', selectedChat.chatId), (doc) => {
-        doc.exists() && setMessages(doc.data().messages as Message[]);
-      });
+      const unSub = subscribeToMessages(selectedChat.chatId, setMessages);
 
       return () => {
         unSub();
@@ -107,43 +113,47 @@ const Messages: FC<MessagesProps> = () => {
   const handleSendMessage = async () => {
     if (currentUser && selectedChat) {
       try {
-        // 1. Update the messages array in the chat document
-        await updateDoc(doc(firestore, 'messages', selectedChat.chatId), {
-          messages: arrayUnion({
-            id: uniqueId(),
-            text,
-            senderId: currentUser.uid,
-            date: Timestamp.now(),
-          }),
-        });
+        await appendMessages(selectedChat.chatId, currentUser.uid, text);
 
-        // Helper function to update userChats
-        const updateUserChats = async (userId: string, otherUserId: string) => {
-          const userChatsRef = doc(firestore, 'userChats', userId);
-          const userChatsRes = await getDoc(userChatsRef);
-          const chats = userChatsRes.data()?.chats || [];
+        const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
+        const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', selectedChat.userId));
 
-          const updatedChats = chats.map((chat: UserChat) => {
-            return chat.chatId === selectedChat.chatId
-              ? {
-                  chatId: selectedChat.chatId,
-                  userId: chat.userId,
-                  lastSenderId: currentUser.uid,
-                  lastMessage: text,
-                  date: Timestamp.now(),
-                }
-              : chat;
-          });
-
-          await updateDoc(userChatsRef, { chats: updatedChats });
+        const senderChat: UserChat = {
+          chatId: selectedChat.chatId,
+          userId: selectedChat.userId,
+          lastSenderId: currentUser.uid,
+          lastMessage: text,
+          date: Timestamp.now(),
         };
 
-        // Update sender's userChats
-        await updateUserChats(currentUser.uid, selectedChat.userId);
-        console.log('Sender chat updated successfully.');
+        const receiverChat: UserChat = {
+          chatId: selectedChat.chatId,
+          userId: currentUser.uid,
+          lastSenderId: currentUser.uid,
+          lastMessage: text,
+          date: Timestamp.now(),
+        };
 
-        // Update receiver's userChats
-        await updateUserChats(selectedChat.userId, currentUser.uid);
+        if (senderUserChatsRes.exists()) {
+          const chats = senderUserChatsRes.data().chats || [];
+
+          const updatedChats = chats.map((chat: UserChat) =>
+            chat.chatId === selectedChat.chatId ? { ...chat, ...senderChat } : chat
+          );
+
+          await updateUserChat(currentUser.uid, updatedChats);
+        }
+
+        if (receiverUserChatsRes.exists()) {
+          const chats = receiverUserChatsRes.data().chats || [];
+
+          const updatedChats = chats.map((chat: UserChat) =>
+            chat.chatId === selectedChat.chatId ? { ...chat, ...receiverChat } : chat
+          );
+
+          await updateUserChat(selectedChat.userId, updatedChats);
+        }
+
         console.log('Receiver chat updated successfully.');
       } catch (error) {
         console.error('Error updating chat:', error);
@@ -203,8 +213,6 @@ const Messages: FC<MessagesProps> = () => {
             <>
               <div className="flex flex-col px-16 gap-4 overflow-auto">
                 {messages.map((m: Message) => {
-                  const user = users.find((u: UserDetails) => u.id === selectedChat.userId);
-                  console.log(user);
                   return (
                     <div
                       className={clsx(
@@ -218,7 +226,7 @@ const Messages: FC<MessagesProps> = () => {
                         src={
                           m.senderId === currentUser.uid
                             ? userDetails?.photoURL || ''
-                            : user?.photoURL || ''
+                            : selectedChatUser?.photoURL || ''
                         }
                         className={clsx(
                           m.senderId === currentUser?.uid

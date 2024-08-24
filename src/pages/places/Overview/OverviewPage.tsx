@@ -37,8 +37,10 @@ import UserChat from '../../../global/models/messages/UserChat';
 import {
   appendMessages,
   appendUserChat,
+  createMessage,
   createUserChat,
   removeUserChat,
+  updateUserChat,
 } from '../../../firebase/services/MessagesService';
 import Message from '../../../global/models/messages/Message';
 
@@ -243,26 +245,17 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         date: Timestamp.now(),
       };
 
-      const message: Message = {
-        id: uniqueId(),
-        text: text,
-        senderId: currentUser.uid,
-        date: Timestamp.now(),
-      };
-
-      if (!chatPair.exists()) {
-        await setDoc(doc(firestore, 'messages', combinedId), { messages: [] });
-      }
-
       if (!senderUserChatsRes.exists()) {
         await createUserChat(currentUser.uid, senderChat);
       } else {
         if (senderUserChatsRes.data().chats.find((c: UserChat) => c.chatId === combinedId)) {
           const chats = senderUserChatsRes.data().chats || [];
-          const chatToRemove = chats.find((chat: UserChat) => chat.chatId === combinedId);
 
-          await removeUserChat(currentUser.uid, chatToRemove);
-          await appendUserChat(currentUser.uid, senderChat);
+          const updatedChats = chats.map((chat: UserChat) =>
+            chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
+          );
+
+          await updateUserChat(currentUser.uid, updatedChats);
         } else {
           await appendUserChat(currentUser.uid, senderChat);
         }
@@ -273,16 +266,22 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       } else {
         if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
           const chats = receiverUserChatsRes.data().chats || [];
-          const chatToRemove = chats.find((chat: UserChat) => chat.chatId === combinedId);
 
-          await removeUserChat(venue.userId, chatToRemove);
-          await appendUserChat(venue.userId, receiverChat);
+          const updatedChats = chats.map((chat: UserChat) =>
+            chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
+          );
+
+          await updateUserChat(venue.userId, updatedChats);
         } else {
           await appendUserChat(venue.userId, receiverChat);
         }
       }
 
-      await appendMessages(combinedId, message);
+      if (!chatPair.exists()) {
+        await createMessage(combinedId, currentUser.uid, text);
+      } else {
+        await appendMessages(combinedId, currentUser.uid, text);
+      }
     }
   };
 
