@@ -39,7 +39,8 @@ import {
   appendUserChat,
   createMessage,
   createUserChat,
-  removeUserChat,
+  getMessages,
+  getUserChats,
   updateUserChat,
 } from '../../../firebase/services/MessagesService';
 import Message from '../../../global/models/messages/Message';
@@ -190,9 +191,9 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const handleSendMessage = async (text: string, sender: UserDetails, receiver: UserDetails) => {
     const combinedId = sender.id > receiver.id ? sender.id + receiver.id : receiver.id + sender.id;
 
-    const chatPair = await getDoc(doc(firestore, 'messages', combinedId));
-    const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', sender.id));
-    const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', receiver.id));
+    const messages = await getMessages(combinedId);
+    const senderUserChats = await getUserChats(sender.id);
+    const receiverUserChats = await getUserChats(receiver.id);
 
     const senderChat: UserChat = {
       chatId: combinedId,
@@ -210,13 +211,11 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       date: Timestamp.now(),
     };
 
-    if (!senderUserChatsRes.exists()) {
+    if (senderUserChats === null) {
       await createUserChat(sender.id, senderChat);
     } else {
-      if (senderUserChatsRes.data().chats.find((c: UserChat) => c.chatId === combinedId)) {
-        const chats = senderUserChatsRes.data().chats || [];
-
-        const updatedChats = chats.map((chat: UserChat) =>
+      if (senderUserChats.find((chat: UserChat) => chat.chatId === combinedId)) {
+        const updatedChats = senderUserChats.map((chat: UserChat) =>
           chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
         );
 
@@ -226,13 +225,11 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       }
     }
 
-    if (!receiverUserChatsRes.exists()) {
+    if (receiverUserChats === null) {
       await createUserChat(receiver.id, receiverChat);
     } else {
-      if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
-        const chats = receiverUserChatsRes.data().chats || [];
-
-        const updatedChats = chats.map((chat: UserChat) =>
+      if (receiverUserChats.find((chat: UserChat) => chat.chatId === combinedId)) {
+        const updatedChats = receiverUserChats.map((chat: UserChat) =>
           chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
         );
 
@@ -242,7 +239,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       }
     }
 
-    if (!chatPair.exists()) {
+    if (messages === null) {
       await createMessage(combinedId, sender.id, text);
     } else {
       await appendMessages(combinedId, sender.id, text);
