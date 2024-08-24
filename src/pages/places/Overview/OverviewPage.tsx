@@ -43,6 +43,7 @@ import {
   updateUserChat,
 } from '../../../firebase/services/MessagesService';
 import Message from '../../../global/models/messages/Message';
+import { getVenueById } from '../../../firebase/services/VenuesService';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -51,19 +52,25 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [comment, setComment] = useState<string>('');
   const [openImagesModal, setOpenImagesModal] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-  const [owner, setOwner] = useState<UserDetails>();
-  const [messages, setMessages] = useState<
-    { date: Date; id: string; senderId: string; text: string }[] | null
-  >(null);
+  const [venueOwner, setVenueOwner] = useState<UserDetails>();
+  const [messages, setMessages] = useState<Message[]>([]);
   const [hasReviewed, setHasReviewed] = useState<boolean>(false);
 
   const { t } = useTranslation();
-  const { currentUser, userDetails } = useAuth();
+  const { currentUser, currentUserDetails } = useAuth();
   const { venueId } = useParams();
 
   useEffect(() => {
-    console.log(owner, venue, currentUser);
-  }, [owner, venue, currentUser]);
+    if (venueId) {
+      const fetchVenue = async () => {
+        const venue = await getVenueById(venueId);
+        setVenue(venue);
+      };
+
+      fetchVenue();
+      refetchReviews();
+    }
+  }, [venueId]);
 
   useEffect(() => {
     const checkDocumentExists = async () => {
@@ -98,34 +105,14 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   };
 
   useEffect(() => {
-    if (venueId) {
-      const a = async () => {
-        const docRef = await doc(collection(firestore, 'venues'), venueId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setVenue(docSnap.data() as Venue);
-        } else {
-          console.log('venue with name ... does not exist');
-        }
-      };
-
-      a();
-    }
-  }, [venueId]);
-
-  useEffect(() => {
-    refetchReviews();
-  }, [venue]);
-
-  useEffect(() => {
-    if (venue && currentUser) {
+    if (venueOwner && currentUserDetails) {
       const unSub = onSnapshot(
         doc(
           firestore,
           'messages',
-          currentUser.uid > venue.userId
-            ? currentUser.uid + venue.userId
-            : venue.userId + currentUser.uid
+          currentUserDetails.id > venueOwner.id
+            ? currentUserDetails.id + venueOwner.id
+            : venueOwner.id + currentUserDetails.id
         ),
         (doc) => {
           doc.exists() && setMessages(doc.data().messages);
@@ -136,13 +123,13 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         unSub();
       };
     }
-  }, [venue, currentUser]);
+  }, [venueOwner, currentUserDetails]);
 
   useEffect(() => {
     const fetchOwner = async () => {
       if (venue) {
         const user = (await getUserById(venue.userId)) as UserDetails;
-        setOwner(user);
+        setVenueOwner(user);
       }
     };
 
@@ -165,24 +152,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       }
     }
   }
-
-  const handleOpenChat = async () => {
-    if (currentUser && venue) {
-      const combinedId =
-        currentUser.uid > venue.userId
-          ? currentUser.uid + venue.userId
-          : venue.userId + currentUser.uid;
-      try {
-        const messageRef = doc(firestore, 'messages', combinedId);
-        const res = await getDoc(messageRef);
-
-        if (!res.exists()) {
-          await setDoc(doc(firestore, 'messages', combinedId), { messages: [] });
-        }
-      } catch (error) {}
-    }
-    // add userChats update logic here
-  };
 
   const handleImagesSave = async (images: string[], imagesToDelete: string[]) => {
     if (venueId) {
@@ -218,70 +187,65 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
   };
 
-  const handleSendMessage = async (text: string) => {
-    if (currentUser && venue) {
-      const combinedId =
-        currentUser.uid > venue.userId
-          ? currentUser.uid + venue.userId
-          : venue.userId + currentUser.uid;
+  const handleSendMessage = async (text: string, sender: UserDetails, receiver: UserDetails) => {
+    const combinedId = sender.id > receiver.id ? sender.id + receiver.id : receiver.id + sender.id;
 
-      const chatPair = await getDoc(doc(firestore, 'messages', combinedId));
-      const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
-      const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', venue.userId));
+    const chatPair = await getDoc(doc(firestore, 'messages', combinedId));
+    const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', sender.id));
+    const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', receiver.id));
 
-      const senderChat: UserChat = {
-        chatId: combinedId,
-        userId: venue.userId,
-        lastSenderId: currentUser.uid,
-        lastMessage: text,
-        date: Timestamp.now(),
-      };
+    const senderChat: UserChat = {
+      chatId: combinedId,
+      userId: receiver.id,
+      lastSenderId: sender.id,
+      lastMessage: text,
+      date: Timestamp.now(),
+    };
 
-      const receiverChat: UserChat = {
-        chatId: combinedId,
-        userId: currentUser.uid,
-        lastSenderId: currentUser.uid,
-        lastMessage: text,
-        date: Timestamp.now(),
-      };
+    const receiverChat: UserChat = {
+      chatId: combinedId,
+      userId: sender.id,
+      lastSenderId: sender.id,
+      lastMessage: text,
+      date: Timestamp.now(),
+    };
 
-      if (!senderUserChatsRes.exists()) {
-        await createUserChat(currentUser.uid, senderChat);
+    if (!senderUserChatsRes.exists()) {
+      await createUserChat(sender.id, senderChat);
+    } else {
+      if (senderUserChatsRes.data().chats.find((c: UserChat) => c.chatId === combinedId)) {
+        const chats = senderUserChatsRes.data().chats || [];
+
+        const updatedChats = chats.map((chat: UserChat) =>
+          chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
+        );
+
+        await updateUserChat(sender.id, updatedChats);
       } else {
-        if (senderUserChatsRes.data().chats.find((c: UserChat) => c.chatId === combinedId)) {
-          const chats = senderUserChatsRes.data().chats || [];
-
-          const updatedChats = chats.map((chat: UserChat) =>
-            chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
-          );
-
-          await updateUserChat(currentUser.uid, updatedChats);
-        } else {
-          await appendUserChat(currentUser.uid, senderChat);
-        }
+        await appendUserChat(sender.id, senderChat);
       }
+    }
 
-      if (!receiverUserChatsRes.exists()) {
-        await createUserChat(venue.userId, receiverChat);
+    if (!receiverUserChatsRes.exists()) {
+      await createUserChat(receiver.id, receiverChat);
+    } else {
+      if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
+        const chats = receiverUserChatsRes.data().chats || [];
+
+        const updatedChats = chats.map((chat: UserChat) =>
+          chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
+        );
+
+        await updateUserChat(receiver.id, updatedChats);
       } else {
-        if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
-          const chats = receiverUserChatsRes.data().chats || [];
-
-          const updatedChats = chats.map((chat: UserChat) =>
-            chat.chatId === combinedId ? { ...chat, ...receiverChat } : chat
-          );
-
-          await updateUserChat(venue.userId, updatedChats);
-        } else {
-          await appendUserChat(venue.userId, receiverChat);
-        }
+        await appendUserChat(receiver.id, receiverChat);
       }
+    }
 
-      if (!chatPair.exists()) {
-        await createMessage(combinedId, currentUser.uid, text);
-      } else {
-        await appendMessages(combinedId, currentUser.uid, text);
-      }
+    if (!chatPair.exists()) {
+      await createMessage(combinedId, sender.id, text);
+    } else {
+      await appendMessages(combinedId, sender.id, text);
     }
   };
 
@@ -299,16 +263,17 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         }
       />
 
-      <ChatBox
-        isOpen={isChatOpen}
-        messages={messages}
-        onOpen={() => {
-          handleOpenChat();
-          setIsChatOpen(true);
-        }}
-        onClose={() => setIsChatOpen(false)}
-        sendMessage={handleSendMessage}
-      />
+      {currentUserDetails && venueOwner && (
+        <ChatBox
+          isOpen={isChatOpen}
+          senderUser={currentUserDetails}
+          receiverUser={venueOwner}
+          messages={messages}
+          onOpen={() => setIsChatOpen(true)}
+          onClose={() => setIsChatOpen(false)}
+          onMessageSent={handleSendMessage}
+        />
+      )}
 
       <div className="flex flex-col gap-3 pb-10">
         <div>
@@ -343,15 +308,9 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                   onImagesAdded={addArrayToImages}
                 />
               )}
-              {owner && venue.userId !== currentUser?.uid && (
+              {venueOwner && venue.userId !== currentUser?.uid && (
                 <div className="flex-1">
-                  <OwnerInfo
-                    owner={owner}
-                    onChatOpen={() => {
-                      handleOpenChat();
-                      setIsChatOpen(true);
-                    }}
-                  />
+                  <OwnerInfo owner={venueOwner} onChatOpen={() => setIsChatOpen(true)} />
                 </div>
               )}
               {/* <RatingDisplay reviews={reviews} /> */}

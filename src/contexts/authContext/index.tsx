@@ -6,7 +6,7 @@ import UserDetails from '../../global/models/users/UserDetails';
 
 const AuthContext = createContext<AuthContextProps>({
   currentUser: null,
-  userDetails: null,
+  currentUserDetails: null,
   userLoggedIn: false,
   loading: true,
 });
@@ -17,7 +17,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }: any) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [currentUserDetails, setCurrentUserDetails] = useState<UserDetails | null>(null);
   const [userLoggedIn, setUserLoggedIn] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -44,7 +44,7 @@ export const AuthProvider = ({ children }: any) => {
       console.log(currentUser);
 
       const unSub = onSnapshot(doc(firestore, 'users', currentUser.uid), (doc) => {
-        doc.exists() && setUserDetails(doc.data() as UserDetails);
+        doc.exists() && setCurrentUserDetails(doc.data() as UserDetails);
       });
 
       return () => {
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const value = {
     currentUser,
-    userDetails,
+    currentUserDetails,
     userLoggedIn,
     loading,
   };
@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: any) => {
 
 interface AuthContextProps {
   currentUser: User | null;
-  userDetails: UserDetails | null;
+  currentUserDetails: UserDetails | null;
   userLoggedIn: boolean;
   loading: boolean;
 }

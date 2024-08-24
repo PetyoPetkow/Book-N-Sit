@@ -41,7 +41,7 @@ const Messages: FC<MessagesProps> = () => {
     { date: Timestamp; id: string; senderId: string; text: string }[]
   >([]);
 
-  const { currentUser, userDetails } = useAuth();
+  const { currentUser, currentUserDetails: userDetails } = useAuth();
 
   const selectedChatUser = useMemo(() => {
     return users.find((user) => user.id === selectedChat?.userId);

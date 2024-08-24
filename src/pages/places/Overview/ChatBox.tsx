@@ -2,21 +2,27 @@ import { Avatar, Divider, IconButton, TextField, Tooltip } from '@mui/material';
 import clsx from 'clsx';
 import { FC, KeyboardEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useAuth } from '../../../contexts/authContext';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import moment from 'moment';
+import UserDetails from '../../../global/models/users/UserDetails';
+import Message from '../../../global/models/messages/Message';
 
-const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) => {
+const ChatBox: FC<ChatBoxProps> = ({
+  isOpen,
+  messages,
+  onMessageSent,
+  onClose,
+  senderUser,
+  receiverUser,
+}) => {
   const [text, setText] = useState<string>('');
-
-  const { currentUser } = useAuth();
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
       e.preventDefault();
       if (text !== '') {
-        sendMessage(text);
+        onMessageSent(text, senderUser, receiverUser);
         setText('');
       }
     }
@@ -26,8 +32,8 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
     <div className="fixed flex flex-col bottom-4 h-96 right-20 w-80 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
       <div className="flex justify-between items-center p-2 bg-gray-200">
         <div className="flex gap-3">
-          <Avatar className="h-7 w-7" />
-          <span className="font-bold">John Smith</span>
+          <Avatar className="h-7 w-7" src={receiverUser.photoURL} />
+          <span className="font-bold">{receiverUser.displayName}</span>
         </div>
         <IconButton className="w-7 h-7" onClick={onClose}>
           <CloseIcon />
@@ -36,50 +42,48 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
       <Divider />
       <div className="overflow-auto flex flex-col-reverse flex-grow">
         <div className="p-2 justify-end">
-          {messages === null ? (
-            <div>There are still no messages.</div>
-          ) : (
-            messages.map((m: any) => (
+          {messages.map((m: any) => (
+            <div
+              className={clsx(
+                'flex gap-5 items-center mt-2',
+                m.senderId === senderUser.id ? 'justify-start mr-20 ' : 'justify-end ml-20 '
+              )}
+            >
+              <Avatar
+                className={clsx(
+                  m.senderId === senderUser.id ? 'order-first left-0' : 'order-last right-0',
+                  'shadow-sm shadow-black'
+                )}
+                src={m.senderId === senderUser.id ? senderUser.photoURL : receiverUser.photoURL}
+              />
               <div
                 className={clsx(
-                  'flex gap-5 items-end mt-2',
-                  m.senderId === currentUser?.uid ? 'justify-start mr-20 ' : 'justify-end ml-20 '
+                  'flex flex-col',
+                  m.senderId === senderUser.id ? 'items-start' : 'items-end'
                 )}
               >
-                <Avatar
-                  className={clsx(
-                    m.senderId === currentUser?.uid ? 'order-first left-0' : 'order-last right-0'
-                  )}
-                />
                 <div
                   className={clsx(
-                    'flex flex-col',
-                    m.senderId === currentUser?.uid ? 'items-start' : 'items-end'
+                    m.senderId === senderUser.id
+                      ? 'bg-blue-200 rounded-br-xl'
+                      : 'bg-[#e3e7db] rounded-bl-xl ',
+                    'p-1 px-3 rounded-t-xl w-fit'
                   )}
                 >
-                  <div
-                    className={clsx(
-                      m.senderId === currentUser?.uid
-                        ? 'bg-blue-200 rounded-br-xl'
-                        : 'bg-[#e3e7db] rounded-bl-xl ',
-                      'p-1 px-3 rounded-t-xl w-fit'
-                    )}
-                  >
-                    {m.text}
-                  </div>
-                  <Tooltip
-                    title={new Date(m.date.seconds * 1000).toDateString()}
-                    placement="top"
-                    enterDelay={1000}
-                  >
-                    <div className="text-xs text-gray-600">
-                      {moment(new Date(m.date.seconds * 1000)).fromNow()}
-                    </div>
-                  </Tooltip>
+                  {m.text}
                 </div>
+                <Tooltip
+                  title={new Date(m.date.seconds * 1000).toDateString()}
+                  placement="top"
+                  enterDelay={1000}
+                >
+                  <div className="text-xs text-gray-600">
+                    {moment(new Date(m.date.seconds * 1000)).fromNow()}
+                  </div>
+                </Tooltip>
               </div>
-            ))
-          )}
+            </div>
+          ))}
         </div>
       </div>
       <Divider />
@@ -101,7 +105,7 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
         <IconButton
           className="aspect-square"
           onClick={() => {
-            sendMessage(text);
+            onMessageSent(text, senderUser, receiverUser);
             setText('');
           }}
         >
@@ -118,17 +122,12 @@ const ChatBox: FC<ChatBoxProps> = ({ isOpen, messages, sendMessage, onClose }) =
 
 interface ChatBoxProps {
   isOpen: boolean;
-  messages:
-    | {
-        date: Date;
-        id: string;
-        senderId: string;
-        text: string;
-      }[]
-    | null;
-  sendMessage: (text: string) => Promise<void>;
+  messages: Message[];
+  onMessageSent: (text: string, sender: UserDetails, receiver: UserDetails) => Promise<void>;
   onOpen: () => void;
   onClose: () => void;
+  senderUser: UserDetails;
+  receiverUser: UserDetails;
 }
 
 export default ChatBox;

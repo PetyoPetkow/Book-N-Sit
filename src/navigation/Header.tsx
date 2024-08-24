@@ -51,7 +51,7 @@ const Header: FC<HeaderProps> = () => {
 
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
-  const { userLoggedIn, currentUser, userDetails } = useAuth();
+  const { userLoggedIn, currentUser, currentUserDetails: userDetails } = useAuth();
 
   const prefferedLanguageFlag = useMemo(() => {
     if (i18n.language === 'bg') {
