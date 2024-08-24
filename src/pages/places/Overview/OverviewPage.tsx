@@ -22,7 +22,6 @@ import {
 import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
 import { useAuth } from '../../../contexts/authContext';
 import Review from '../../../global/models/Review';
-import { uploadImages } from '../../../firebase/queries/AddVenueQueries';
 import MapComponent from '../Venue/MapComponent';
 import { getUserById } from '../../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
@@ -44,7 +43,14 @@ import {
   updateUserChat,
 } from '../../../firebase/services/MessagesService';
 import Message from '../../../global/models/messages/Message';
-import { getVenueById } from '../../../firebase/services/VenuesService';
+import {
+  appendImages,
+  deleteImagesFromStorage,
+  getVenueById,
+  removeImages,
+  updateVenueImages,
+  uploadImagesToStorage,
+} from '../../../firebase/services/VenuesService';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -137,50 +143,26 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     fetchOwner();
   }, [venue]);
 
-  async function addArrayToImages(files: FileList) {
+  const handleUploadImages = async (files: FileList) => {
     if (venueId) {
       try {
-        const imageUrls = await uploadImages(files, venueId);
-        const venueRef = doc(firestore, 'venues', venueId);
-        // Use arrayUnion to add each element of newImagesArray to the 'images' array
-        imageUrls &&
-          (await updateDoc(venueRef, {
-            images: arrayUnion(...imageUrls), // Spread operator to add each item separately
-          }));
+        const imageUrls = await uploadImagesToStorage(files, venueId);
+        await appendImages(venueId, imageUrls);
         console.log('Array added to images successfully!');
       } catch (error) {
         console.error('Error adding array to images:', error);
       }
     }
-  }
+  };
 
-  const handleImagesSave = async (images: string[], imagesToDelete: string[]) => {
+  const handleImagesUpdate = async (images: string[], imagesToDelete: string[]) => {
     if (venueId) {
       try {
-        const venueRef = doc(firestore, 'venues', venueId);
-
-        imagesToDelete.map(async (image) => {
-          const fileToDeleteRef = ref(storage, image);
-
-          await updateDoc(venueRef, {
-            images: arrayRemove(image),
-          });
-
-          await deleteObject(fileToDeleteRef)
-            .then(() => {
-              console.log('file deleted successfully');
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
-
         const filteredImages = images.filter((image) => !imagesToDelete.includes(image));
 
-        await updateDoc(venueRef, {
-          images: filteredImages,
-        });
-
+        await removeImages(venueId, imagesToDelete);
+        await updateVenueImages(venueId, filteredImages);
+        await deleteImagesFromStorage(imagesToDelete);
         console.log('Images updated successfully');
       } catch (error) {
         console.error('Error updating images: ', error);
@@ -256,7 +238,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         open={openImagesModal}
         onClose={() => setOpenImagesModal(false)}
         onSave={(images: string[], imagesToDelete: string[]) =>
-          handleImagesSave(images, imagesToDelete)
+          handleImagesUpdate(images, imagesToDelete)
         }
       />
 
@@ -300,9 +282,9 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                   onClose={() => setOpenImagesModal(false)}
                   onOpen={() => setOpenImagesModal(true)}
                   onSave={(images: string[], imagesToDelete: string[]) =>
-                    handleImagesSave(images, imagesToDelete)
+                    handleImagesUpdate(images, imagesToDelete)
                   }
-                  onImagesAdded={addArrayToImages}
+                  onImagesAdded={handleUploadImages}
                 />
               )}
               {venueOwner && venue.userId !== currentUser?.uid && (

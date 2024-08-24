@@ -14,18 +14,16 @@ export default interface Venue {
   id: string;
 }
 
-export interface VenueUpdate {
+export interface VenueCreate {
   name: string;
   city: string;
   street: string | null;
   coordinates: [number, number];
-  images: FileList;
   description: string;
   perks: PerksMap;
   venueTypes: VenueType[];
   workingHours: WorkingHours;
   userId: string;
-  id: string;
 }
 
 export type VenueType =

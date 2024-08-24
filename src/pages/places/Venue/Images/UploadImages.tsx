@@ -5,22 +5,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { DragDropContext, Droppable, Draggable, DroppableProps } from 'react-beautiful-dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { uploadImages } from '../../../../firebase/queries/AddVenueQueries';
 import { storage } from '../../../../firebase/firebase';
 import { deleteObject, ref } from 'firebase/storage';
-import { useParams } from 'react-router-dom';
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
 
 export default function InputFileUpload({
   disabled = false,
@@ -63,7 +49,8 @@ export default function InputFileUpload({
         startIcon={<CloudUploadIcon />}
       >
         Upload Images
-        <VisuallyHiddenInput
+        <input
+          className="hidden"
           type="file"
           multiple
           onChange={(event) => {

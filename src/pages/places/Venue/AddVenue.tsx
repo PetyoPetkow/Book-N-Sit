@@ -6,16 +6,13 @@ import WorkigHoursPicker from './WorkingHours/WorkingHoursPicker';
 import InputFileUpload from './Images/UploadImages';
 import WorkingHours from '../../../global/models/WorkingHours';
 import DayOfWeek from '../../../global/models/DaysOfWeek';
-import { getTime } from 'date-fns';
-import { saveVenue, updateVenue } from '../../../firebase/queries/AddVenueQueries';
 import { useAuth } from '../../../contexts/authContext';
 import VenueTypeSelector from './VenueTypeSelector/VenueTypeSelector';
 import VenuePerksSelector from './VenuePerksSelector/VenuePerksSelector';
 import { useNavigate, useParams } from 'react-router-dom';
-import { firestore } from '../../../firebase/firebase';
-import { doc, getDoc } from 'firebase/firestore';
-import Venue, { PerksMap, VenueType } from '../../../global/models/Venue';
+import Venue, { PerksMap, VenueCreate, VenueType } from '../../../global/models/Venue';
 import MapComponent from './MapComponent';
+import { createVenue, getVenueById, updateVenue } from '../../../firebase/services/VenuesService';
 
 // TODO protect editing of venues that are not property of the current user
 const defaultOpeningTime = () => new Date().setHours(8, 0, 0, 0);
@@ -23,7 +20,7 @@ const defaultClosingTime = () => new Date().setHours(22, 0, 0, 0);
 
 const AddVenue: FC<AddVenueProps> = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [name, setName] = useState<string>('');
+  const [name, setName] = useState<string | null>(null);
   const [city, setCity] = useState<string | null>(null);
   const [street, setStreet] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
@@ -39,7 +36,6 @@ const AddVenue: FC<AddVenueProps> = () => {
     cocktails: false,
   });
   const [isWorkingHoursValid, setIsWorkingHoursValid] = useState<boolean>(true);
-  const [isDataValid, setIsDataValid] = useState<boolean>(false);
 
   const [workingHours, setWorkingHours] = useState<WorkingHours>({
     monday: { openAt: defaultOpeningTime(), closeAt: defaultClosingTime() },
@@ -55,31 +51,50 @@ const AddVenue: FC<AddVenueProps> = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
-  useEffect(() => {}, [name, city, coordinates, images, isWorkingHoursValid]);
-
   useEffect(() => {
     const setData = async () => {
       if (venueId !== undefined) {
-        const docRef = doc(firestore, 'venues', venueId);
-        const docSnap = await getDoc(docRef);
-        const venue = docSnap.data() as Venue;
-        const { name, city, street, coordinates, description, venueTypes, perks, workingHours } =
-          venue;
-        setName(name);
-        setCity(city);
-        setStreet(street);
-        setCoordinates(coordinates);
-        setDescription(description);
-        setSelectedVenueTypes(venueTypes);
-        setSelectedPerks(perks);
-        setWorkingHours(workingHours);
+        const venue = await getVenueById(venueId);
 
-        setIsDataValid(true);
+        if (venue !== null) {
+          const {
+            name,
+            city,
+            street,
+            images,
+            coordinates,
+            description,
+            venueTypes,
+            perks,
+            workingHours,
+          } = venue;
+          setName(name);
+          setCity(city);
+          setStreet(street);
+          setImages(images);
+          setCoordinates(coordinates);
+          setDescription(description);
+          setSelectedVenueTypes(venueTypes);
+          setSelectedPerks(perks);
+          setWorkingHours(workingHours);
+        }
       }
     };
 
     setData();
   }, []);
+
+  const onSubmitCreate = async (venue: VenueCreate) => {
+    const createdVenueId = await createVenue(venue, files!);
+
+    navigate(`/Places/${createdVenueId}`);
+  };
+
+  const onSubmitUpdate = async (venue: Venue) => {
+    await updateVenue(venueId!, venue);
+
+    navigate(`/Places/${venueId}`);
+  };
 
   return (
     <div className="flex align-middle justify-center items-center w-full">
@@ -101,7 +116,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                 required
                 fullWidth
                 value={name}
-                onChange={(event) => setName(event.target.value)}
+                onChange={(event) => setName(event.target.value ? event.target.value : null)}
               />
             </div>
             <div className="flex-1 ">
@@ -193,7 +208,6 @@ const AddVenue: FC<AddVenueProps> = () => {
                     openAt: date && !isNaN(date.getTime()) ? date.getTime() : null,
                   },
                 }));
-                console.log(date && !isNaN(date.getTime()) ? date.getTime() : null);
               }}
               onCloseAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
                 console.log(date);
@@ -209,49 +223,38 @@ const AddVenue: FC<AddVenueProps> = () => {
           </div>
           <div className="flex justify-end gap-5">
             <Button
-              disabled={isDataValid}
+              disabled={!currentUser || !city || !coordinates || !name || !isWorkingHoursValid}
               variant="contained"
               onClick={async () => {
                 setIsLoading(true);
-                if (city && coordinates && currentUser && currentUser.uid) {
+                if (currentUser && city && coordinates && name && isWorkingHoursValid) {
                   if (venueId) {
-                    const result = await updateVenue({
-                      city: city,
-                      street: street,
-                      coordinates: coordinates,
-                      description: description,
-                      name: name,
-                      userId: currentUser.uid,
-                      perks: selectedPerks,
-                      venueTypes: selectedVenueTypes,
-                      workingHours: workingHours,
+                    onSubmitUpdate({
                       id: venueId,
+                      perks: selectedPerks,
+                      userId: currentUser.uid,
+                      venueTypes: selectedVenueTypes,
+                      city,
+                      coordinates,
+                      description,
+                      images,
+                      name,
+                      street,
+                      workingHours,
                     });
-
-                    if (result.status === 'success') {
-                      navigate(`/Places/${venueId}`);
-                    }
                   } else {
-                    const result = await saveVenue(
-                      {
-                        city: city,
-                        street: street,
-                        coordinates: coordinates,
-                        description: description,
-                        name: name,
-                        userId: currentUser.uid,
-                        perks: selectedPerks,
-                        venueTypes: selectedVenueTypes,
-                        workingHours: workingHours,
-                      },
-                      files
-                    );
-
-                    if (result.status === 'success') {
-                      navigate(`/Places/${result.data?.id}`);
-                    }
+                    onSubmitCreate({
+                      perks: selectedPerks,
+                      userId: currentUser.uid,
+                      venueTypes: selectedVenueTypes,
+                      city,
+                      coordinates,
+                      description,
+                      name,
+                      street,
+                      workingHours,
+                    });
                   }
-                } else {
                 }
                 setIsLoading(false);
               }}
