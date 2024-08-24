@@ -1,51 +1,63 @@
-import { Avatar, Divider, IconButton, OutlinedInput, TextField, Tooltip } from '@mui/material';
+import {
+  Avatar,
+  Divider,
+  IconButton,
+  LinearProgress,
+  OutlinedInput,
+  TextField,
+  Tooltip,
+} from '@mui/material';
 import { FC, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import clsx from 'clsx';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { useAuth } from '../../contexts/authContext';
-import { firestore } from '../../firebase/firebase';
-import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
-import { getUserById } from '../../firebase/services/UserService';
-import { uniqueId } from 'lodash';
-import moment from 'moment';
+import { Timestamp } from 'firebase/firestore';
+import { getUsersByIds } from '../../firebase/services/UserService';
 import UserChat from '../../global/models/messages/UserChat';
 import Message from '../../global/models/messages/Message';
 import UserDetails from '../../global/models/users/UserDetails';
 import {
   appendMessages,
+  getUserChats,
   subscribeToMessages,
   subscribeToUserChats,
   updateUserChat,
 } from '../../firebase/services/MessagesService';
+import { getDateStringFromTimestamp, getTimeFromNowFromTimestamp } from '../../utils/dateUtil';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
   const [text, setText] = useState('');
-  const [chats, setChats] = useState<
-    {
-      chatId: string;
-      userId: string;
-      lastSenderId: string;
-      lastMessage: string;
-      date: Timestamp;
-    }[]
-  >([]);
+  const [chats, setChats] = useState<UserChat[]>([]);
   const [users, setUsers] = useState<UserDetails[]>([]);
-
   const [search, setSearch] = useState<string>('');
-
   const [selectedChat, setSelectedChat] = useState<UserChat | null>(null);
-  const [messages, setMessages] = useState<
-    { date: Timestamp; id: string; senderId: string; text: string }[]
-  >([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
-  const { currentUser, currentUserDetails: userDetails } = useAuth();
+  const { currentUserDetails } = useAuth();
 
   const selectedChatUser = useMemo(() => {
     return users.find((user) => user.id === selectedChat?.userId);
   }, [users, selectedChat]);
+
+  const chatsToShow = useMemo(() => {
+    const chatsCopy = structuredClone(chats);
+
+    const filteredUsers = users.filter((user: UserDetails) =>
+      user.displayName.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const filteredUserIds = filteredUsers.map((user: UserDetails) => user.id);
+
+    const filteredChats =
+      search === ''
+        ? chatsCopy
+        : chatsCopy.filter((chat: UserChat) => filteredUserIds.includes(chat.userId));
+
+    return filteredChats;
+  }, [search, chats, users]);
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
@@ -57,31 +69,26 @@ const Messages: FC<MessagesProps> = () => {
     }
   };
 
-  //@ts-ignore
   useEffect(() => {
     const fetchUsers = async () => {
-      const users = await Promise.all(
-        chats.map(async (chat) => {
-          const user = await getUserById(chat.userId);
-          return user;
-        })
-      );
+      const userIds = chats.map((chat) => chat.userId);
+      const users = await getUsersByIds(userIds);
 
-      setUsers(users as UserDetails[]);
+      setUsers(users);
     };
 
     fetchUsers();
   }, [chats]);
 
   useEffect(() => {
-    if (currentUser) {
-      const unSub = subscribeToUserChats(currentUser.uid, setChats);
+    if (currentUserDetails) {
+      const unSub = subscribeToUserChats(currentUserDetails.id, setChats);
 
       return () => {
         unSub();
       };
     }
-  }, [currentUser]);
+  }, [currentUserDetails]);
 
   useEffect(() => {
     if (selectedChat) {
@@ -93,61 +100,40 @@ const Messages: FC<MessagesProps> = () => {
     }
   }, [selectedChat]);
 
-  const chatsToShow = useMemo(() => {
-    const chatsCopy = structuredClone(chats);
-
-    const filteredUsers = users.filter((u: UserDetails) =>
-      u.displayName?.toLowerCase().includes(search.toLowerCase())
-    );
-
-    const filteredUserIds = filteredUsers.map((u: UserDetails) => u.id);
-
-    const filteredChats =
-      search === ''
-        ? chatsCopy
-        : chatsCopy.filter((chat: UserChat) => filteredUserIds.includes(chat.userId));
-
-    return filteredChats;
-  }, [search, chats, users]);
-
   const handleSendMessage = async () => {
-    if (currentUser && selectedChat) {
+    if (currentUserDetails && selectedChat) {
       try {
-        await appendMessages(selectedChat.chatId, currentUser.uid, text);
+        await appendMessages(selectedChat.chatId, currentUserDetails.id, text);
 
-        const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
-        const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', selectedChat.userId));
+        const senderUserChats = await getUserChats(currentUserDetails.id);
+        const receiverUserChats = await getUserChats(selectedChat.userId);
 
         const senderChat: UserChat = {
           chatId: selectedChat.chatId,
           userId: selectedChat.userId,
-          lastSenderId: currentUser.uid,
+          lastSenderId: currentUserDetails.id,
           lastMessage: text,
           date: Timestamp.now(),
         };
 
         const receiverChat: UserChat = {
           chatId: selectedChat.chatId,
-          userId: currentUser.uid,
-          lastSenderId: currentUser.uid,
+          userId: currentUserDetails.id,
+          lastSenderId: currentUserDetails.id,
           lastMessage: text,
           date: Timestamp.now(),
         };
 
-        if (senderUserChatsRes.exists()) {
-          const chats = senderUserChatsRes.data().chats || [];
-
-          const updatedChats = chats.map((chat: UserChat) =>
+        if (senderUserChats !== null) {
+          const updatedChats = senderUserChats.map((chat: UserChat) =>
             chat.chatId === selectedChat.chatId ? { ...chat, ...senderChat } : chat
           );
 
-          await updateUserChat(currentUser.uid, updatedChats);
+          await updateUserChat(currentUserDetails.id, updatedChats);
         }
 
-        if (receiverUserChatsRes.exists()) {
-          const chats = receiverUserChatsRes.data().chats || [];
-
-          const updatedChats = chats.map((chat: UserChat) =>
+        if (receiverUserChats !== null) {
+          const updatedChats = receiverUserChats.map((chat: UserChat) =>
             chat.chatId === selectedChat.chatId ? { ...chat, ...receiverChat } : chat
           );
 
@@ -162,11 +148,12 @@ const Messages: FC<MessagesProps> = () => {
       console.log('Current user or selected chat not found.');
     }
   };
+
   useEffect(() => {
     endOfMessagesRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  if (currentUser === null) return <></>;
+  if (currentUserDetails === null) return <LinearProgress />;
 
   return (
     <div className="flex flex-col items-center justify-center flex-grow bg-white bg-opacity-60 backdrop-blur-lg p-4 ">
@@ -196,12 +183,12 @@ const Messages: FC<MessagesProps> = () => {
                   <div className="flex flex-col flex-grow">
                     <div className="font-bold">{user?.displayName}</div>
                     <div className="text-sm text-gray-800">
-                      {chat.lastSenderId === currentUser.uid ? 'You: ' : 'Them: '}
+                      {chat.lastSenderId === currentUserDetails.id ? 'You: ' : 'Them: '}
                       {chat.lastMessage}
                     </div>
                   </div>
                   <div className="text-sm text-gray-500">
-                    {new Date(chat.date?.seconds * 1000).toDateString()}
+                    {getDateStringFromTimestamp(chat.date)}
                   </div>
                 </div>
               );
@@ -209,27 +196,27 @@ const Messages: FC<MessagesProps> = () => {
           </div>
         </div>
         <div className="w-2/3 flex-grow flex flex-col justify-end ">
-          {selectedChat && (
+          {selectedChat && selectedChatUser && (
             <>
               <div className="flex flex-col px-16 gap-4 overflow-auto">
-                {messages.map((m: Message) => {
+                {messages.map((message: Message) => {
                   return (
                     <div
                       className={clsx(
                         'flex gap-5 items-end mt-2',
-                        m.senderId === currentUser?.uid
+                        message.senderId === currentUserDetails.id
                           ? 'justify-start mr-20 '
                           : 'justify-end ml-20 '
                       )}
                     >
                       <Avatar
                         src={
-                          m.senderId === currentUser.uid
-                            ? userDetails?.photoURL || ''
-                            : selectedChatUser?.photoURL || ''
+                          message.senderId === currentUserDetails.id
+                            ? currentUserDetails.photoURL || ''
+                            : selectedChatUser.photoURL || ''
                         }
                         className={clsx(
-                          m.senderId === currentUser?.uid
+                          message.senderId === currentUserDetails.id
                             ? 'order-first left-0'
                             : 'order-last right-0',
                           'shadow-black shadow-sm'
@@ -238,26 +225,26 @@ const Messages: FC<MessagesProps> = () => {
                       <div
                         className={clsx(
                           'flex flex-col',
-                          m.senderId === currentUser?.uid ? 'items-start' : 'items-end'
+                          message.senderId === currentUserDetails.id ? 'items-start' : 'items-end'
                         )}
                       >
                         <div
                           className={clsx(
-                            m.senderId === currentUser?.uid
+                            message.senderId === currentUserDetails.id
                               ? 'bg-blue-200 rounded-br-xl'
                               : 'bg-[#e3e7db] rounded-bl-xl ',
                             'p-1 px-3 rounded-t-xl w-fit'
                           )}
                         >
-                          {m.text}
+                          {message.text}
                         </div>
                         <Tooltip
-                          title={new Date(m.date.seconds * 1000).toDateString()}
+                          title={getDateStringFromTimestamp(message.date)}
                           placement="top"
                           enterDelay={1000}
                         >
                           <div className="text-xs text-gray-600">
-                            {moment(new Date(m.date.seconds * 1000)).fromNow()}
+                            {getTimeFromNowFromTimestamp(message.date)}
                           </div>
                         </Tooltip>
                       </div>

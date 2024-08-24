@@ -4,10 +4,25 @@ import { getDownloadURL, ref, uploadBytes, UploadResult } from 'firebase/storage
 import UserDetails from '../../global/models/users/UserDetails';
 
 const getUserById = async (userId: string) => {
-  const userRef = doc(firestore, 'users', userId);
-  const userDoc = await getDoc(userRef);
+  const userDoc = await getDoc(doc(firestore, 'users', userId));
 
   return userDoc.exists() ? (userDoc.data() as UserDetails) : null;
+};
+
+const getUsersByIds = async (userIds: string[]): Promise<UserDetails[]> => {
+  if (userIds.length === 0) {
+    return [];
+  }
+
+  const userDocs = await Promise.all(
+    userIds.map((userId) => getDoc(doc(firestore, 'users', userId)))
+  );
+
+  const users = userDocs
+    .filter((userDoc) => userDoc.exists())
+    .map((userDoc) => userDoc.data() as UserDetails);
+
+  return users;
 };
 
 const uploadProfilePictureToStorage = async (userId: string, file: File) => {
@@ -53,6 +68,7 @@ const updateUser = async (userId: string, user: UserDetails) => {
 
 export {
   getUserById,
+  getUsersByIds,
   uploadProfilePictureToStorage,
   createUserInDB,
   updateProfilePicture,
