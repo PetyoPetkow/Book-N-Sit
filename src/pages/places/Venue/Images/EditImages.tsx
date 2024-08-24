@@ -3,9 +3,6 @@ import Button from '@mui/material/Button';
 import { DragDropContext, Droppable, Draggable, DroppableProps } from 'react-beautiful-dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { firestore, storage } from '../../../../firebase/firebase';
-import { deleteObject, ref } from 'firebase/storage';
-import { arrayRemove, doc, updateDoc } from 'firebase/firestore';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 
 export default function EditImages({ images, onSave, venueId, onClose }: UploadImagesProps) {

@@ -2,6 +2,6 @@ export default interface UserDetails {
   id: string;
   displayName: string;
   language: string;
-  photoUrl?: string;
+  photoURL?: string;
   phoneNumber?: string;
 }

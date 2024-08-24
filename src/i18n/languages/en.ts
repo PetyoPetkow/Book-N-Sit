@@ -43,6 +43,13 @@ const en = {
   already_have_an_account: 'Already have an account?',
   login_here_link: 'Login here!',
 
+  //=============================//
+  //           BUTTONS           //
+  //=============================//
+  btn_edit: 'Edit',
+  btn_upload_images: 'Upload images',
+  btn_edit_images: 'Edit images',
+
   city: 'City',
   filters: 'Filters',
 

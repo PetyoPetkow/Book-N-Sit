@@ -292,7 +292,7 @@ const Header: FC<HeaderProps> = () => {
                     navigate('/Login');
                   }}
                 >
-                  Login
+                  {t('login')}
                 </Button>
                 <Button
                   className="text-white font-bold font-sans"
@@ -300,7 +300,7 @@ const Header: FC<HeaderProps> = () => {
                     navigate('/Register');
                   }}
                 >
-                  Register
+                  {t('register')}
                 </Button>
               </>
             )}

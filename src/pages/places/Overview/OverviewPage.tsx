@@ -1,7 +1,7 @@
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImagesOverview/ImageGalery';
-import { Button, Divider, IconButton, Modal } from '@mui/material';
+import { Divider } from '@mui/material';
 import ReviewsSection from './Reviews/ReviewsSection';
 import PerksList from './Perks/PerksList';
 import WriteReviewSection from './Reviews/WriteReviewSection';
@@ -13,28 +13,34 @@ import {
   arrayUnion,
   collection,
   doc,
-  DocumentData,
   getDoc,
   onSnapshot,
   setDoc,
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
-import OwnerInfo from './Owner/OwnerInfo';
 import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
 import { useAuth } from '../../../contexts/authContext';
 import Review from '../../../global/models/Review';
-import CloseIcon from '@mui/icons-material/Close';
 import { uploadImages } from '../../../firebase/queries/AddVenueQueries';
-import styled from '@emotion/styled';
-import EditImages from '../Venue/Images/EditImages';
 import MapComponent from '../Venue/MapComponent';
 import { getUserById } from '../../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
 import { deleteObject, ref } from 'firebase/storage';
 import { useTranslation } from 'react-i18next';
 import ChatBox from './ChatBox';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import UserDetails from '../../../global/models/users/UserDetails';
+import OwnerControls from './OwnerControls';
+import EditImagesModal from './EditImagesModal';
+import OwnerInfo from './Owner/OwnerInfo';
+import UserChat from '../../../global/models/messages/UserChat';
+import {
+  appendMessages,
+  appendUserChat,
+  createUserChat,
+  removeUserChat,
+} from '../../../firebase/services/MessagesService';
+import Message from '../../../global/models/messages/Message';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -43,17 +49,19 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const [comment, setComment] = useState<string>('');
   const [openImagesModal, setOpenImagesModal] = useState<boolean>(false);
   const [isChatOpen, setIsChatOpen] = useState<boolean>(false);
-  const [owner, setOwner] = useState<DocumentData>();
-  const [text, setText] = useState<string>('');
+  const [owner, setOwner] = useState<UserDetails>();
   const [messages, setMessages] = useState<
     { date: Date; id: string; senderId: string; text: string }[] | null
   >(null);
   const [hasReviewed, setHasReviewed] = useState<boolean>(false);
 
   const { t } = useTranslation();
-  const { currentUser } = useAuth();
+  const { currentUser, userInfo } = useAuth();
   const { venueId } = useParams();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(owner, venue, currentUser);
+  }, [owner, venue, currentUser]);
 
   useEffect(() => {
     const checkDocumentExists = async () => {
@@ -76,18 +84,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     }
     setReviews(reviews);
   }, [venueId]);
-
-  const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
 
   const onFinishReviewClick = (rating: number, comment: string) => {
     if (currentUser && venueId) {
@@ -143,7 +139,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   useEffect(() => {
     const fetchOwner = async () => {
       if (venue) {
-        const user = await getUserById(venue.userId);
+        const user = (await getUserById(venue.userId)) as UserDetails;
         setOwner(user);
       }
     };
@@ -151,37 +147,22 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     fetchOwner();
   }, [venue]);
 
-  async function addArrayToImages(docRef: any, newImagesArray: any) {
-    try {
-      // Use arrayUnion to add each element of newImagesArray to the 'images' array
-      await updateDoc(docRef, {
-        images: arrayUnion(...newImagesArray), // Spread operator to add each item separately
-      });
-      console.log('Array added to images successfully!');
-    } catch (error) {
-      console.error('Error adding array to images:', error);
+  async function addArrayToImages(files: FileList) {
+    if (venueId) {
+      try {
+        const imageUrls = await uploadImages(files, venueId);
+        const venueRef = doc(firestore, 'venues', venueId);
+        // Use arrayUnion to add each element of newImagesArray to the 'images' array
+        imageUrls &&
+          (await updateDoc(venueRef, {
+            images: arrayUnion(...imageUrls), // Spread operator to add each item separately
+          }));
+        console.log('Array added to images successfully!');
+      } catch (error) {
+        console.error('Error adding array to images:', error);
+      }
     }
   }
-
-  const updateUserChats = async (combinedId: string, userId: string) => {
-    const userChatsRef = doc(firestore, 'userChats', userId);
-    const userChatsRes = await getDoc(userChatsRef);
-    const chats = userChatsRes.data()?.chats || [];
-
-    const updatedChats = chats.map((chat: any) =>
-      chat.chatId === combinedId
-        ? {
-            chatId: combinedId,
-            userId: userId,
-            lastSenderId: currentUser!.uid,
-            lastMessage: text,
-            date: Timestamp.now(),
-          }
-        : chat
-    );
-
-    await updateDoc(userChatsRef, { chats: updatedChats });
-  };
 
   const handleOpenChat = async () => {
     if (currentUser && venue) {
@@ -242,83 +223,83 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           ? currentUser.uid + venue.userId
           : venue.userId + currentUser.uid;
 
-      const messageRes = await getDoc(doc(firestore, 'messages', combinedId));
+      const chatPair = await getDoc(doc(firestore, 'messages', combinedId));
       const senderUserChatsRes = await getDoc(doc(firestore, 'userChats', currentUser.uid));
       const receiverUserChatsRes = await getDoc(doc(firestore, 'userChats', venue.userId));
 
-      if (!messageRes.exists()) {
+      const senderChat: UserChat = {
+        chatId: combinedId,
+        userId: venue.userId,
+        lastSenderId: currentUser.uid,
+        lastMessage: text,
+        date: Timestamp.now(),
+      };
+
+      const receiverChat: UserChat = {
+        chatId: combinedId,
+        userId: currentUser.uid,
+        lastSenderId: currentUser.uid,
+        lastMessage: text,
+        date: Timestamp.now(),
+      };
+
+      const message: Message = {
+        id: uniqueId(),
+        text: text,
+        senderId: currentUser.uid,
+        date: Timestamp.now(),
+      };
+
+      if (!chatPair.exists()) {
         await setDoc(doc(firestore, 'messages', combinedId), { messages: [] });
       }
 
       if (!senderUserChatsRes.exists()) {
-        await setDoc(doc(firestore, 'userChats', currentUser.uid), {
-          chats: [
-            {
-              chatId: combinedId,
-              userId: venue.userId,
-              lastSenderId: currentUser.uid,
-              lastMessage: text,
-              date: Timestamp.now(),
-            },
-          ],
-        });
+        await createUserChat(currentUser.uid, senderChat);
       } else {
-        if (senderUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
-          await updateUserChats(combinedId, currentUser.uid);
+        if (senderUserChatsRes.data().chats.find((c: UserChat) => c.chatId === combinedId)) {
+          const chats = senderUserChatsRes.data().chats || [];
+          const chatToRemove = chats.find((chat: UserChat) => chat.chatId === combinedId);
+
+          await removeUserChat(currentUser.uid, chatToRemove);
+          await appendUserChat(currentUser.uid, senderChat);
         } else {
-          await updateDoc(doc(firestore, 'userChats', currentUser.uid), {
-            chats: arrayUnion({
-              chatId: combinedId,
-              userId: venue.userId,
-              lastSenderId: currentUser.uid,
-              lastMessage: text,
-              date: Timestamp.now(),
-            }),
-          });
+          await appendUserChat(currentUser.uid, senderChat);
         }
       }
 
       if (!receiverUserChatsRes.exists()) {
-        await setDoc(doc(firestore, 'userChats', venue.userId), {
-          chats: [
-            {
-              chatId: combinedId,
-              userId: currentUser.uid,
-              lastSenderId: currentUser.uid,
-              lastMessage: text,
-              date: Timestamp.now(),
-            },
-          ],
-        });
+        await createUserChat(venue.userId, receiverChat);
       } else {
         if (receiverUserChatsRes.data().chats.find((c: any) => c.chatId === combinedId)) {
-          await updateUserChats(combinedId, venue.userId);
+          const chats = receiverUserChatsRes.data().chats || [];
+          const chatToRemove = chats.find((chat: UserChat) => chat.chatId === combinedId);
+
+          await removeUserChat(venue.userId, chatToRemove);
+          await appendUserChat(venue.userId, receiverChat);
         } else {
-          await updateDoc(doc(firestore, 'userChats', venue.userId), {
-            chats: arrayUnion({
-              chatId: combinedId,
-              userId: currentUser.uid,
-              lastSenderId: currentUser.uid,
-              lastMessage: text,
-              date: Timestamp.now(),
-            }),
-          });
+          await appendUserChat(venue.userId, receiverChat);
         }
       }
 
-      await updateDoc(doc(firestore, 'messages', combinedId), {
-        messages: arrayUnion({
-          id: uniqueId(),
-          text,
-          senderId: currentUser!.uid,
-          date: Timestamp.now(),
-        }),
-      });
+      await appendMessages(combinedId, message);
     }
   };
 
+  if (venue === null || venueId === undefined) return <></>;
+
   return (
     <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4 relative">
+      <EditImagesModal
+        images={venue.images}
+        venueId={venueId}
+        open={openImagesModal}
+        onClose={() => setOpenImagesModal(false)}
+        onSave={(images: string[], imagesToDelete: string[]) =>
+          handleImagesSave(images, imagesToDelete)
+        }
+      />
+
       <ChatBox
         isOpen={isChatOpen}
         messages={messages}
@@ -329,146 +310,92 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         onClose={() => setIsChatOpen(false)}
         sendMessage={handleSendMessage}
       />
-      {venue && (
-        <div className="flex flex-col gap-3 pb-10">
-          <Modal
-            open={openImagesModal}
-            onClose={() => setOpenImagesModal(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <div className="bg-white w-[600px] absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 rounded-lg p-5">
-              <IconButton
-                className="absolute right-1 top-1"
-                onClick={() => setOpenImagesModal(false)}
-              >
-                <CloseIcon />
-              </IconButton>
-              <div className="text-lg font-bold text-center w-full">Images</div>
-              <EditImages
-                images={venue.images as string[]}
-                onSave={handleImagesSave}
-                venueId={venue.id!}
-                onClose={() => setOpenImagesModal(false)}
-              />
-            </div>
-          </Modal>
-          <div>
-            <div className="flex justify-between">
-              <div className="font-extrabold font-sans text-6xl rounded-lg p-2 text-sky-950 ">
-                {venue.name}
-              </div>
-            </div>
-            <Location
-              className="bg-[#F3F7EC] w-fit pr-3 my-2 rounded-full"
-              city={venue.city}
-              street={venue.street}
-            />
-            <div className="mb-4 bg-white rounded-md w-fit px-2">
-              {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
-            </div>
-            <div className="grid grid-cols-4 gap-2 h-full w-full">
-              <div className="col-span-3 bg-black bg-opacity-50">
-                <ImageGallery images={venue.images as string[]}></ImageGallery>
-              </div>
-              <div className="col-span-1 flex flex-col gap-2">
-                {/* <RatingDisplay reviews={reviews} /> */}
 
-                {currentUser?.uid === venue.userId ? (
-                  <div className="flex flex-col gap-2 flex-grow">
-                    <Button
-                      className="text-white font-bold bg-black bg-opacity-60"
-                      variant="outlined"
-                      color="secondary"
-                      onClick={(event) => {
-                        navigate(`/addVenue/${venueId}`);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      className="text-white font-bold bg-black bg-opacity-60"
-                      variant="outlined"
-                      color="secondary"
-                      component="label"
-                      role={undefined}
-                      tabIndex={-1}
-                      startIcon={<CloudUploadIcon />}
-                    >
-                      Upload Images
-                      <VisuallyHiddenInput
-                        disabled={venueId === undefined}
-                        type="file"
-                        multiple
-                        onChange={async (event: any) => {
-                          if (venueId) {
-                            const imageUrls = await uploadImages(event.target.files, venueId);
-                            const venueRef = doc(firestore, 'venues', venueId);
-                            await addArrayToImages(venueRef, imageUrls);
-                          }
-                        }}
-                      />
-                    </Button>
-                    <Button
-                      className="text-white font-bold bg-black bg-opacity-60"
-                      variant="outlined"
-                      color="secondary"
-                      onClick={() => setOpenImagesModal(true)}
-                    >
-                      Edit images
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex-1">
-                    <OwnerInfo
-                      owner={owner}
-                      onChatOpen={() => {
-                        handleOpenChat();
-                        setIsChatOpen(true);
-                      }}
-                    />
-                  </div>
-                )}
-                <MapComponent
-                  lat={venue.coordinates[0]}
-                  lng={venue.coordinates[1]}
-                  setCoordinates={() => {}}
-                  draggable={false}
-                  height={currentUser?.uid === venue.userId ? 350 : 250}
-                />
-              </div>
+      <div className="flex flex-col gap-3 pb-10">
+        <div>
+          <div className="flex justify-between">
+            <div className="font-extrabold font-sans text-6xl rounded-lg p-2 text-sky-950 ">
+              {venue.name}
             </div>
           </div>
-          <Divider />
-          <PerksList perksList={venue.perks} />
-          {venue.description && (
-            <div className="my-5 flex flex-col gap-2 bg-white p-3">
-              <div className="text-lg font-bold">
-                About <span className="text-sky-900">{venue.name}</span>
-              </div>
-              <Divider className="bg-[#006989]" />
-              <div>{venue.description}</div>
+          <Location
+            className="bg-[#F3F7EC] w-fit pr-3 my-2 rounded-full"
+            city={venue.city}
+            street={venue.street}
+          />
+          <div className="mb-4 bg-white rounded-md w-fit px-2">
+            {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
+          </div>
+          <div className="grid grid-cols-4 gap-2 h-full w-full">
+            <div className="col-span-3 bg-black bg-opacity-50">
+              <ImageGallery images={venue.images as string[]}></ImageGallery>
             </div>
-          )}
-          <Divider className="mb-5" />
-          {currentUser && venue.userId !== currentUser.uid && hasReviewed && (
-            <>
-              <WriteReviewSection
-                rating={rating}
-                comment={comment}
-                onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
-                  setRating(rating)
-                }
-                onCommentChange={setComment}
-                postReview={onFinishReviewClick}
-              />
-              <Divider />
-            </>
-          )}
+            <div className="col-span-1 flex flex-col gap-2">
+              {venue.userId === currentUser?.uid && (
+                <OwnerControls
+                  images={venue.images}
+                  open={openImagesModal}
+                  venueId={venueId}
+                  onClose={() => setOpenImagesModal(false)}
+                  onOpen={() => setOpenImagesModal(true)}
+                  onSave={(images: string[], imagesToDelete: string[]) =>
+                    handleImagesSave(images, imagesToDelete)
+                  }
+                  onImagesAdded={addArrayToImages}
+                />
+              )}
+              {owner && venue.userId !== currentUser?.uid && (
+                <div className="flex-1">
+                  <OwnerInfo
+                    owner={owner}
+                    onChatOpen={() => {
+                      handleOpenChat();
+                      setIsChatOpen(true);
+                    }}
+                  />
+                </div>
+              )}
+              {/* <RatingDisplay reviews={reviews} /> */}
 
-          <ReviewsSection reviews={reviews} />
+              <MapComponent
+                lat={venue.coordinates[0]}
+                lng={venue.coordinates[1]}
+                setCoordinates={() => {}}
+                draggable={false}
+                height={currentUser?.uid === venue.userId ? 350 : 250}
+              />
+            </div>
+          </div>
         </div>
-      )}
+        <Divider />
+        <PerksList perksList={venue.perks} />
+        {venue.description && (
+          <div className="my-5 flex flex-col gap-2 bg-white p-3">
+            <div className="text-lg font-bold">
+              About <span className="text-sky-900">{venue.name}</span>
+            </div>
+            <Divider className="bg-[#006989]" />
+            <div>{venue.description}</div>
+          </div>
+        )}
+        <Divider className="mb-5" />
+        {currentUser && venue.userId !== currentUser.uid && hasReviewed && (
+          <>
+            <WriteReviewSection
+              rating={rating}
+              comment={comment}
+              onRatingChanged={(event: SyntheticEvent<Element, Event>, rating: number | null) =>
+                setRating(rating)
+              }
+              onCommentChange={setComment}
+              postReview={onFinishReviewClick}
+            />
+            <Divider />
+          </>
+        )}
+
+        <ReviewsSection reviews={reviews} />
+      </div>
     </div>
   );
 };

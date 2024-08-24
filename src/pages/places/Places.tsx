@@ -63,8 +63,6 @@ const Places: FC<PlacesProps> = () => {
   const dayOfWeek = useMemo(() => daysOfWeek[today.getDay()], [today]);
 
   useEffect(() => {
-    if (currentUser === null) return;
-
     const getPlaces = async (firestore: Firestore) => {
       const conditions = [];
 
@@ -84,7 +82,7 @@ const Places: FC<PlacesProps> = () => {
       }
 
       if (location.pathname === '/MyVenues') {
-        conditions.push(where('userId', '==', currentUser.uid));
+        currentUser !== null && conditions.push(where('userId', '==', currentUser.uid));
       }
 
       const placesCol = collection(firestore, 'venues');

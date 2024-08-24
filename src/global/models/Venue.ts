@@ -5,7 +5,21 @@ export default interface Venue {
   city: string;
   street: string | null;
   coordinates: [number, number];
-  images: FileList | string[];
+  images: string[];
+  description: string;
+  perks: PerksMap;
+  venueTypes: VenueType[];
+  workingHours: WorkingHours;
+  userId: string;
+  id: string;
+}
+
+export interface VenueUpdate {
+  name: string;
+  city: string;
+  street: string | null;
+  coordinates: [number, number];
+  images: FileList;
   description: string;
   perks: PerksMap;
   venueTypes: VenueType[];

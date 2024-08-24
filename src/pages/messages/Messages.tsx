@@ -8,7 +8,6 @@ import { firestore } from '../../firebase/firebase';
 import { arrayUnion, doc, getDoc, onSnapshot, Timestamp, updateDoc } from 'firebase/firestore';
 import { getUserById } from '../../firebase/services/UserService';
 import { uniqueId } from 'lodash';
-import { format } from 'date-fns';
 import moment from 'moment';
 
 const Messages: FC<MessagesProps> = () => {
@@ -33,7 +32,7 @@ const Messages: FC<MessagesProps> = () => {
     { date: Timestamp; id: string; senderId: string; text: string }[]
   >([]);
 
-  const { currentUser } = useAuth();
+  const { currentUser, userInfo } = useAuth();
 
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>): void => {
     if (e.key === 'Enter' && e.nativeEvent.shiftKey === false) {
@@ -192,7 +191,7 @@ const Messages: FC<MessagesProps> = () => {
                   )}
                   onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
                 >
-                  <Avatar src={user?.photoURL} />
+                  <Avatar className="shadow-black shadow-sm" src={user?.photoURL} />
                   <div className="flex flex-col flex-grow">
                     <div className="font-bold">{user?.displayName}</div>
                     <div className="text-sm text-gray-800">
@@ -212,53 +211,60 @@ const Messages: FC<MessagesProps> = () => {
           {selectedChat && (
             <>
               <div className="flex flex-col px-16 gap-4 overflow-auto">
-                {messages &&
-                  messages.map((m, i) => {
-                    const user = users.find((u: any) => u.id === selectedChat.userId);
-                    return (
+                {messages.map((m: any) => {
+                  const user = users.find((u: any) => u.id === selectedChat.userId);
+                  console.log(user);
+                  return (
+                    <div
+                      className={clsx(
+                        'flex gap-5 items-end mt-2',
+                        m.senderId === currentUser?.uid
+                          ? 'justify-start mr-20 '
+                          : 'justify-end ml-20 '
+                      )}
+                    >
+                      <Avatar
+                        src={
+                          m.senderId === currentUser.uid
+                            ? userInfo?.photoURL || ''
+                            : user?.photoURL || ''
+                        }
+                        className={clsx(
+                          m.senderId === currentUser?.uid
+                            ? 'order-first left-0'
+                            : 'order-last right-0',
+                          'shadow-black shadow-sm'
+                        )}
+                      />
                       <div
                         className={clsx(
-                          'flex gap-5 items-end',
-                          m.senderId === currentUser.uid
-                            ? 'justify-start mr-20 '
-                            : 'justify-end ml-20 '
+                          'flex flex-col',
+                          m.senderId === currentUser?.uid ? 'items-start' : 'items-end'
                         )}
                       >
-                        <Avatar
-                          src={
-                            m.senderId === currentUser.uid
-                              ? currentUser.photoURL || ''
-                              : user?.photoURL || ''
-                          }
+                        <div
                           className={clsx(
-                            m.senderId === currentUser.uid
-                              ? 'order-first left-0'
-                              : 'order-last right-0'
+                            m.senderId === currentUser?.uid
+                              ? 'bg-blue-200 rounded-br-xl'
+                              : 'bg-[#e3e7db] rounded-bl-xl ',
+                            'p-1 px-3 rounded-t-xl w-fit'
                           )}
-                        />
-                        <Tooltip
-                          title={format(new Date(m.date.seconds * 1000), 'HH:mm dd/MM/yyyy')}
-                          placement="top"
                         >
-                          <div className="flex flex-col">
-                            <div
-                              className={clsx(
-                                m.senderId === currentUser.uid
-                                  ? 'bg-blue-200 rounded-br-xl'
-                                  : 'bg-[#F3F7EC] rounded-bl-xl',
-                                'rounded-t-xl p-1 px-3 w-fit'
-                              )}
-                            >
-                              {m.text}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              {moment(new Date(m.date.seconds * 1000)).fromNow()}
-                            </div>
+                          {m.text}
+                        </div>
+                        <Tooltip
+                          title={new Date(m.date.seconds * 1000).toDateString()}
+                          placement="top"
+                          enterDelay={1000}
+                        >
+                          <div className="text-xs text-gray-600">
+                            {moment(new Date(m.date.seconds * 1000)).fromNow()}
                           </div>
                         </Tooltip>
                       </div>
-                    );
-                  })}
+                    </div>
+                  );
+                })}
                 <div ref={endOfMessagesRef} />
               </div>
 

@@ -1,6 +1,6 @@
 import { Button, Divider } from '@mui/material';
 import { FC, ReactNode } from 'react';
-import { NavLink, Path } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 const AuthFormBase: FC<AuthFormBaseProps> = ({
   children,
