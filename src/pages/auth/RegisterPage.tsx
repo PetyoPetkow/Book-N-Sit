@@ -4,7 +4,7 @@ import { FirebaseError } from 'firebase/app';
 import { generateFirebaseAuthErrorMessage } from '../../firebase/errorHandler';
 import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
-import { createUserInDB } from '../../firebase/services/UserService';
+import { createUser } from '../../firebase/services/UserService';
 import { useTranslation } from 'react-i18next';
 import AuthFormBase from './AuthFormBase';
 
@@ -21,7 +21,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
     try {
       const { user } = await doCreateUserWithEmailAndPassword(email, password);
 
-      await createUserInDB({
+      await createUser({
         id: user.uid,
         language: 'en',
         displayName: user.email!.split('@')[0],

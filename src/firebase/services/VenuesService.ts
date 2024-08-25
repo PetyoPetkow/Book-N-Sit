@@ -7,9 +7,9 @@ import {
   getDoc,
   updateDoc,
 } from 'firebase/firestore';
-import { firebase, firestore, storage } from '../firebase';
+import { firestore, storage } from '../firebase';
 import Venue, { VenueCreate } from '../../global/models/Venue';
-import { deleteObject, getDownloadURL, ref, uploadBytes, UploadResult } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const getVenueById = async (venueId: string): Promise<Venue | null> => {
   try {
@@ -38,19 +38,6 @@ const updateVenue = async (venueId: string, venue: Venue): Promise<string> => {
   return venue.id;
 };
 
-const updateVenueImages = async (venueId: string, imagesUrls: string[]): Promise<void> => {
-  const venueRef = doc(collection(firestore, 'venues'), venueId);
-  await updateDoc(venueRef, { images: imagesUrls });
-};
-
-const appendImages = async (venueId: string, imageUrls: string[]): Promise<void> => {
-  await updateDoc(doc(firestore, 'venues', venueId), { images: arrayUnion(...imageUrls) });
-};
-
-const removeImages = async (venueId: string, imageUrls: string[]): Promise<void> => {
-  await updateDoc(doc(firestore, 'venues', venueId), { images: arrayRemove(...imageUrls) });
-};
-
 const uploadImagesToStorage = async (files: FileList, venueId: string) => {
   const metadata = {
     contentType: 'image/jpeg',
@@ -70,6 +57,19 @@ const deleteImagesFromStorage = async (imagesToDelete: string[]) => {
     const fileToDeleteRef = ref(storage, image);
     await deleteObject(fileToDeleteRef);
   });
+};
+
+const appendImages = async (venueId: string, imageUrls: string[]): Promise<void> => {
+  await updateDoc(doc(firestore, 'venues', venueId), { images: arrayUnion(...imageUrls) });
+};
+
+const removeImages = async (venueId: string, imageUrls: string[]): Promise<void> => {
+  await updateDoc(doc(firestore, 'venues', venueId), { images: arrayRemove(...imageUrls) });
+};
+
+const updateVenueImages = async (venueId: string, imagesUrls: string[]): Promise<void> => {
+  const venueRef = doc(collection(firestore, 'venues'), venueId);
+  await updateDoc(venueRef, { images: imagesUrls });
 };
 
 export {

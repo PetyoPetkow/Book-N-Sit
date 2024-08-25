@@ -19,7 +19,7 @@ const LoginPage: FC<LoginPageProps> = () => {
   const onLogin = async () => {
     try {
       await doSignInWithEmailAndPassword(email, password);
-      navigate('/Places');
+      navigate('/all');
     } catch (error) {
       if (error instanceof FirebaseError) {
         setErrorMsg(generateFirebaseAuthErrorMessage(error));

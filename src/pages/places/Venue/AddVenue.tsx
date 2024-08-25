@@ -87,13 +87,13 @@ const AddVenue: FC<AddVenueProps> = () => {
   const onSubmitCreate = async (venue: VenueCreate) => {
     const createdVenueId = await createVenue(venue, files!);
 
-    navigate(`/Places/${createdVenueId}`);
+    navigate(`/all/${createdVenueId}`);
   };
 
   const onSubmitUpdate = async (venue: Venue) => {
     await updateVenue(venueId!, venue);
 
-    navigate(`/Places/${venueId}`);
+    navigate(`/all/${venueId}`);
   };
 
   return (

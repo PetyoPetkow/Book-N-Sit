@@ -25,17 +25,13 @@ const getUsersByIds = async (userIds: string[]): Promise<UserDetails[]> => {
   return users;
 };
 
-const uploadProfilePictureToStorage = async (userId: string, file: File) => {
-  const metadata = {
-    contentType: 'image/jpeg',
-  };
+const createUser = async (user: UserDetails) => {
+  await setDoc(doc(firestore, 'users', user.id), user);
+};
 
-  const storageRef = ref(storage, `profileImages/${userId}`);
-  const uploadPromise = uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
-    return getDownloadURL(storageRef);
-  });
-
-  return uploadPromise;
+const updateUser = async (userId: string, user: UserDetails) => {
+  const userDoc = doc(firestore, 'users', userId);
+  await setDoc(userDoc, user, { merge: true });
 };
 
 const updateProfilePicture = async (userId: string, imageURL: string) => {
@@ -43,10 +39,6 @@ const updateProfilePicture = async (userId: string, imageURL: string) => {
   await updateDoc(userRef, {
     photoURL: imageURL,
   });
-};
-
-const createUserInDB = async (user: UserDetails) => {
-  await setDoc(doc(firestore, 'users', user.id), user);
 };
 
 const subscribeToUser = (userId: string, onUserUpdate: (user: UserDetails) => void) => {
@@ -61,17 +53,25 @@ const subscribeToUser = (userId: string, onUserUpdate: (user: UserDetails) => vo
   return unsubscribe;
 };
 
-const updateUser = async (userId: string, user: UserDetails) => {
-  const userDoc = doc(firestore, 'users', userId);
-  await setDoc(userDoc, user, { merge: true });
+const uploadProfilePictureToStorage = async (userId: string, file: File) => {
+  const metadata = {
+    contentType: 'image/jpeg',
+  };
+
+  const storageRef = ref(storage, `profileImages/${userId}`);
+  const uploadPromise = uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
+    return getDownloadURL(storageRef);
+  });
+
+  return uploadPromise;
 };
 
 export {
   getUserById,
   getUsersByIds,
-  uploadProfilePictureToStorage,
-  createUserInDB,
+  createUser,
+  updateUser,
   updateProfilePicture,
   subscribeToUser,
-  updateUser,
+  uploadProfilePictureToStorage,
 };
