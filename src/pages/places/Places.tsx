@@ -81,7 +81,7 @@ const Places: FC<PlacesProps> = () => {
         });
       }
 
-      if (location.pathname === '/MyVenues') {
+      if (location.pathname === '/myVenues') {
         currentUser !== null && conditions.push(where('userId', '==', currentUser.uid));
       }
 

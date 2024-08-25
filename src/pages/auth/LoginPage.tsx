@@ -32,7 +32,7 @@ const LoginPage: FC<LoginPageProps> = () => {
       title={t('login')}
       submitBtnLabel={t('log_in_btn')}
       redirectLinkLabel={t('register_now_link')}
-      redirectPath="/Register"
+      redirectPath="/register"
       errorMsg={errorMsg}
       forgotPasswordlabel={t('forgot_password_link')}
       onSubmit={onLogin}

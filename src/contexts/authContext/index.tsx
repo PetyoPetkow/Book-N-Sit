@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { auth, firestore } from '../../firebase/firebase';
+import { auth } from '../../firebase/firebase';
 import { NextOrObserver, User, onAuthStateChanged } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
 import UserDetails from '../../global/models/users/UserDetails';
 import { subscribeToUser } from '../../firebase/services/UserService';
 

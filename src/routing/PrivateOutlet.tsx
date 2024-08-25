@@ -8,7 +8,7 @@ const PrivateOutlet = () => {
 
   useEffect(() => {
     if (currentUser === null) {
-      navigate('/Login');
+      navigate('/login');
     }
   }, [currentUser, navigate]);
 

@@ -228,7 +228,7 @@ const Header: FC<HeaderProps> = () => {
                     className="flex gap-2"
                     key={'setting'}
                     onClick={() => {
-                      navigate('/Messages');
+                      navigate('/messages');
                       handleCloseUserMenu();
                     }}
                   >
@@ -240,7 +240,7 @@ const Header: FC<HeaderProps> = () => {
                     className="flex gap-2"
                     key={'setting'}
                     onClick={() => {
-                      navigate('/MyVenues');
+                      navigate('/myVenues');
                       handleCloseUserMenu();
                     }}
                   >
@@ -252,7 +252,7 @@ const Header: FC<HeaderProps> = () => {
                     className="flex gap-2"
                     key={'setting'}
                     onClick={() => {
-                      navigate('/AddVenue');
+                      navigate('/addVenue');
                       handleCloseUserMenu();
                     }}
                   >
@@ -264,7 +264,7 @@ const Header: FC<HeaderProps> = () => {
                     className="flex gap-2"
                     key={'setting'}
                     onClick={() => {
-                      navigate('/ManageAccount');
+                      navigate('/manageAccount');
                       handleCloseUserMenu();
                     }}
                   >
@@ -289,7 +289,7 @@ const Header: FC<HeaderProps> = () => {
                 <Button
                   className="text-white font-bold font-sans"
                   onClick={() => {
-                    navigate('/Login');
+                    navigate('/login');
                   }}
                 >
                   {t('login')}
@@ -297,7 +297,7 @@ const Header: FC<HeaderProps> = () => {
                 <Button
                   className="text-white font-bold font-sans"
                   onClick={() => {
-                    navigate('/Register');
+                    navigate('/register');
                   }}
                 >
                   {t('register')}

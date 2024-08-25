@@ -40,7 +40,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
       title={t('register')}
       submitBtnLabel={t('sign_up_btn')}
       redirectLinkLabel={t('login_here_link')}
-      redirectPath="/Login"
+      redirectPath="/login"
       errorMsg={errorMsg}
       onSubmit={onRegister}
       disabled={isPasswordMismatch}

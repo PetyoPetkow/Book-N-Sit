@@ -60,16 +60,16 @@ const App = () => {
         <Container disableGutters className="flex-grow flex flex-col ">
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
-              <Route path="/AddVenue" element={<AddVenue />} />
-              <Route path="/MyVenues" element={<Places />} />
-              <Route path="/AddVenue/:venueId" element={<AddVenue />} />
-              <Route path="Messages" element={<Messages />} />
-              <Route path="/ManageAccount" element={<ManageAccount />} />
+              <Route path="/addVenue" element={<AddVenue />} />
+              <Route path="/myVenues" element={<Places />} />
+              <Route path="/editVenue/:venueId" element={<AddVenue />} />
+              <Route path="messages" element={<Messages />} />
+              <Route path="/manageAccount" element={<ManageAccount />} />
             </Route>
 
             <Route path="/" element={<PublicOutlet />}>
-              <Route path="/Login" element={<LoginPage />} />
-              <Route path="/Register" element={<RegisterPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
             </Route>
 
             <Route path="/">

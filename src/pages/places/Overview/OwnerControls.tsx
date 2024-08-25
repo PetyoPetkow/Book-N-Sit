@@ -15,7 +15,7 @@ const OwnerControls: FC<OwnerControlsProps> = ({ venueId, onOpen, onImagesAdded 
         variant="outlined"
         color="secondary"
         onClick={() => {
-          navigate(`/addVenue/${venueId}`);
+          navigate(`/editVenue/${venueId}`);
         }}
       >
         {t('btn_edit')}
