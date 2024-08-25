@@ -1,4 +1,13 @@
-import { collection, where, query, doc, setDoc, getDocs, getDoc } from 'firebase/firestore';
+import {
+  collection,
+  where,
+  query,
+  doc,
+  setDoc,
+  getDocs,
+  getDoc,
+  Timestamp,
+} from 'firebase/firestore';
 import { firestore } from '../firebase';
 import Review from '../../global/models/Review';
 import ReviewDto from '../../global/models/ReviewDto';
@@ -37,7 +46,7 @@ const getVenueReviews = async (venueId: string) => {
 };
 
 const setReview = (userId: string, venueId: string, rating: number, comment: string) => {
-  const review: ReviewDto = { userId, venueId, rating, comment };
+  const review: ReviewDto = { userId, venueId, rating, comment, timestamp: Timestamp.now() };
 
   const reviewPath = `reviews/${userId}_${venueId}`;
 

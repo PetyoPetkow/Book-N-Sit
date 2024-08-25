@@ -304,7 +304,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           </div>
         )}
         <Divider className="mb-5" />
-        {currentUser && venue.userId !== currentUser.uid && hasReviewed && (
+        {currentUser && venue.userId !== currentUser.uid && !hasReviewed && (
           <>
             <WriteReviewSection
               rating={rating}
