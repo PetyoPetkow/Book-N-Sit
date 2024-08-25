@@ -1,8 +1,6 @@
-import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { DragDropContext, Droppable, Draggable, DroppableProps } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { storage } from '../../../../firebase/firebase';
@@ -60,7 +58,7 @@ export default function InputFileUpload({
       </Button>
       <div style={{ marginTop: '20px' }}>
         <DragDropContext onDragEnd={onDragEnd}>
-          <StrictModeDroppable droppableId="droppable" direction="horizontal">
+          <Droppable droppableId="droppable" direction="horizontal">
             {(provided) => (
               <div
                 {...provided.droppableProps}
@@ -105,27 +103,12 @@ export default function InputFileUpload({
                 {provided.placeholder}
               </div>
             )}
-          </StrictModeDroppable>
+          </Droppable>
         </DragDropContext>
       </div>
     </div>
   );
 }
-
-export const StrictModeDroppable = ({ children, ...props }: DroppableProps) => {
-  const [enabled, setEnabled] = useState(false);
-  useEffect(() => {
-    const animation = requestAnimationFrame(() => setEnabled(true));
-    return () => {
-      cancelAnimationFrame(animation);
-      setEnabled(false);
-    };
-  }, []);
-  if (!enabled) {
-    return null;
-  }
-  return <Droppable {...props}>{children}</Droppable>;
-};
 
 interface UploadImagesProps {
   disabled?: boolean;

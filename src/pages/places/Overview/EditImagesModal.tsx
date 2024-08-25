@@ -1,9 +1,36 @@
-import { IconButton, Modal } from '@mui/material';
+import { FC, useState } from 'react';
+import { Badge, Button, IconButton, Modal } from '@mui/material';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import CloseIcon from '@mui/icons-material/Close';
-import EditImages from '../Venue/Images/EditImages';
-import { FC } from 'react';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import ControlPointIcon from '@mui/icons-material/ControlPoint';
 
 const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onClose, onSave }) => {
+  const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
+  const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
+  const onDragEnd = (result: any) => {
+    if (!result.destination) return;
+
+    const items = reorder(images, result.source.index, result.destination.index);
+
+    setEditedImages(items);
+  };
+
+  const reorder = (list: string[], startIndex: number, endIndex: number) => {
+    const result = list;
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+
+    return result;
+  };
+
+  const toggleImageToDelete = (image: string) => {
+    setImagesToDelete((prev) =>
+      prev.includes(image) ? prev.filter((img) => img !== image) : [...prev, image]
+    );
+  };
+
   return (
     <Modal
       open={open}
@@ -16,7 +43,80 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onCl
           <CloseIcon />
         </IconButton>
         <div className="text-lg font-bold text-center w-full">Images</div>
-        <EditImages images={images} onSave={onSave} venueId={venueId} onClose={onClose} />
+        <div>
+          <div style={{ marginTop: '20px' }}>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="droppable" direction="horizontal">
+                {(provided) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    style={{ display: 'flex', flexWrap: 'wrap' }}
+                  >
+                    {editedImages.map((image: string, index: number) => {
+                      const isGrayedOut = imagesToDelete.includes(image);
+                      return (
+                        <Draggable key={'images' + image} draggableId={image} index={index}>
+                          {(provided) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={{
+                                userSelect: 'none',
+                                padding: '10px',
+                                margin: '10px',
+                                opacity: isGrayedOut ? 0.5 : 1,
+                                ...provided.draggableProps.style,
+                              }}
+                            >
+                              <Badge
+                                badgeContent={
+                                  <IconButton
+                                    className="bg-white p-0"
+                                    onClick={() => toggleImageToDelete(image)}
+                                  >
+                                    {isGrayedOut ? (
+                                      <ControlPointIcon className="hover:text-green-400" />
+                                    ) : (
+                                      <HighlightOffIcon className="hover:text-red-500" />
+                                    )}
+                                  </IconButton>
+                                }
+                              >
+                                <img
+                                  src={image}
+                                  alt={`file-preview-${index}`}
+                                  style={{ maxWidth: '100px', maxHeight: '100px' }}
+                                />
+                              </Badge>
+                            </div>
+                          )}
+                        </Draggable>
+                      );
+                    })}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+            <div className="flex justify-end gap-5">
+              <Button
+                color="success"
+                variant="outlined"
+                onClick={() => {
+                  onSave(editedImages, imagesToDelete);
+                  onClose();
+                }}
+              >
+                Save
+              </Button>
+              <Button color="error" variant="outlined" onClick={onClose}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </Modal>
   );
