@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { Avatar, Divider, Pagination, Rating } from '@mui/material';
-import Review from '../../global/models/Review';
+import Review from '../../models/Review';
 import { getDateStringFromTimestamp } from '../../utils/dateUtil';
 
 const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {

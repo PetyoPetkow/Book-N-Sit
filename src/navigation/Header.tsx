@@ -22,7 +22,7 @@ import logo from './logos/logo.png';
 import { firestore } from '../firebase/firebase';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
-import Language from '../global/models/Language';
+import Language from '../models/Language';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import LocalCafeOutlinedIcon from '@mui/icons-material/LocalCafeOutlined';
 import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';

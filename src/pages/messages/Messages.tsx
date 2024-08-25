@@ -14,9 +14,9 @@ import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import { useAuth } from '../../contexts/authContext';
 import { Timestamp } from 'firebase/firestore';
 import { getUsersByIds } from '../../firebase/services/UserService';
-import UserChat from '../../global/models/messages/UserChat';
-import Message from '../../global/models/messages/Message';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserChat from '../../models/UserChat';
+import Message from '../../models/Message';
+import UserDetails from '../../models/UserDetails';
 import {
   appendMessages,
   getUserChats,

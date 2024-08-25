@@ -2,7 +2,7 @@ import { IconButton, InputLabel } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { FC, useEffect, useState } from 'react';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { DayOfWeek } from '../../../global/models/DaysOfWeek';
+import { DayOfWeek } from '../../../models/DaysOfWeek';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
   disabled,

@@ -4,13 +4,13 @@ import { FC, useEffect, useState } from 'react';
 import AddressAutocomplete from '../venue/AddressAutocomplete';
 import WorkigHoursPicker from '../venue/WorkingHours/WorkingHoursPicker';
 import InputFileUpload from './UploadImages';
-import WorkingHours from '../../global/models/WorkingHours';
-import { DayOfWeek } from '../../global/models/DaysOfWeek';
+import WorkingHours from '../../models/WorkingHours';
+import { DayOfWeek } from '../../models/DaysOfWeek';
 import { useAuth } from '../../contexts/authContext';
 import VenueTypeSelector from './VenueTypeSelector';
 import VenuePerksSelector from './VenuePerksSelector';
 import { useNavigate, useParams } from 'react-router-dom';
-import Venue, { PerksMap, VenueCreate, VenueType } from '../../global/models/Venue';
+import Venue, { PerksMap, VenueCreate, VenueType } from '../../models/Venue';
 import MapComponent from './MapComponent';
 import { createVenue, getVenueById, updateVenue } from '../../firebase/services/VenuesService';
 

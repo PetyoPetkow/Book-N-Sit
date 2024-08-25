@@ -7,20 +7,20 @@ import PerksList from './PerksList';
 import WriteReviewSection from './WriteReviewSection';
 import { firestore } from '../../firebase/firebase';
 import { useParams } from 'react-router-dom';
-import Venue from '../../global/models/Venue';
+import Venue from '../../models/Venue';
 import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { getVenueReviews, setReview } from '../../firebase/services/ReviewsService';
 import { useAuth } from '../../contexts/authContext';
-import Review from '../../global/models/Review';
+import Review from '../../models/Review';
 import MapComponent from '../venue/MapComponent';
 import { getUserById } from '../../firebase/services/UserService';
 import { useTranslation } from 'react-i18next';
 import ChatBox from './ChatBox';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserDetails from '../../models/UserDetails';
 import OwnerControls from './OwnerControls';
 import EditImagesModal from './EditImagesModal';
 import OwnerInfo from './OwnerInfo';
-import UserChat from '../../global/models/messages/UserChat';
+import UserChat from '../../models/UserChat';
 import {
   appendMessages,
   appendUserChat,
@@ -30,7 +30,7 @@ import {
   getUserChats,
   updateUserChat,
 } from '../../firebase/services/MessagesService';
-import Message from '../../global/models/messages/Message';
+import Message from '../../models/Message';
 import {
   appendImages,
   deleteImagesFromStorage,

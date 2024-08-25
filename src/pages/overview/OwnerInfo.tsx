@@ -2,7 +2,7 @@ import { Avatar, Button, Divider } from '@mui/material';
 import { FC } from 'react';
 import PhoneEnabledIcon from '@mui/icons-material/PhoneEnabled';
 import { useAuth } from '../../contexts/authContext';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserDetails from '../../models/UserDetails';
 
 const OwnerInfo: FC<OwnerInfoProps> = ({ owner, onChatOpen }) => {
   const { currentUser } = useAuth();

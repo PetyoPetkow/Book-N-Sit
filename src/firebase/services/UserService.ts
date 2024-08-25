@@ -1,7 +1,7 @@
 import { doc, getDoc, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../firebase';
 import { getDownloadURL, ref, uploadBytes, UploadResult } from 'firebase/storage';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserDetails from '../../models/UserDetails';
 
 const getUserById = async (userId: string) => {
   const userDoc = await getDoc(doc(firestore, 'users', userId));

@@ -10,11 +10,11 @@ import {
   Divider,
   TextField,
 } from '@mui/material';
-import Venue, { VenueType } from '../../global/models/Venue';
+import Venue, { VenueType } from '../../models/Venue';
 import { useNavigate, useParams } from 'react-router-dom';
 import Location from '../overview/Location';
 import { useAuth } from '../../contexts/authContext';
-import { DayOfWeek } from '../../global/models/DaysOfWeek';
+import { DayOfWeek } from '../../models/DaysOfWeek';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';

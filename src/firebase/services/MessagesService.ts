@@ -8,9 +8,9 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import UserChat from '../../global/models/messages/UserChat';
+import UserChat from '../../models/UserChat';
 import { uniqueId } from 'lodash';
-import Message from '../../global/models/messages/Message';
+import Message from '../../models/Message';
 
 const getMessages = async (combinedId: string) => {
   try {

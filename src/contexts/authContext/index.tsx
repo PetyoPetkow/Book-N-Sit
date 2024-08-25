@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../../firebase/firebase';
 import { NextOrObserver, User, onAuthStateChanged } from 'firebase/auth';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserDetails from '../../models/UserDetails';
 import { subscribeToUser } from '../../firebase/services/UserService';
 
 const AuthContext = createContext<AuthContextProps>({

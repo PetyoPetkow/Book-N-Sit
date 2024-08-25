@@ -1,16 +1,7 @@
-import {
-  collection,
-  where,
-  query,
-  doc,
-  setDoc,
-  getDocs,
-  getDoc,
-  Timestamp,
-} from 'firebase/firestore';
+import { collection, where, query, doc, setDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import Review from '../../global/models/Review';
-import ReviewDto from '../../global/models/ReviewDto';
+import Review from '../../models/Review';
+import ReviewDto from '../../models/ReviewDto';
 import { getUserById } from './UserService';
 
 const getUserReviews = async (userId: string) => {

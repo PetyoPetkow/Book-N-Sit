@@ -6,7 +6,7 @@ import {
   updateUser,
   uploadProfilePictureToStorage,
 } from '../../firebase/services/UserService';
-import UserDetails from '../../global/models/users/UserDetails';
+import UserDetails from '../../models/UserDetails';
 
 const ManageAccount: FC<ManageAccountProps> = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);

@@ -8,7 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { firestore, storage } from '../firebase';
-import Venue, { VenueCreate } from '../../global/models/Venue';
+import Venue, { VenueCreate } from '../../models/Venue';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 const getVenueById = async (venueId: string): Promise<Venue | null> => {

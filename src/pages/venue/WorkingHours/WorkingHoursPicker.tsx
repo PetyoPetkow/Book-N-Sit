@@ -1,7 +1,7 @@
 import WorkigHoursDay from './WorkingHoursDay';
 import { FC } from 'react';
-import WorkingHours from '../../../global/models/WorkingHours';
-import { DayOfWeek, DayOfWeekEnum } from '../../../global/models/DaysOfWeek';
+import WorkingHours from '../../../models/WorkingHours';
+import { DayOfWeek, DayOfWeekEnum } from '../../../models/DaysOfWeek';
 
 const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
   disabled = false,

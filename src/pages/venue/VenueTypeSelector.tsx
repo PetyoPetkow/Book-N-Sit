@@ -1,6 +1,6 @@
 import { Checkbox, Divider, FormControlLabel } from '@mui/material';
 import { ChangeEvent, FC } from 'react';
-import { VenueType, VenueTypeEnum } from '../../global/models/Venue';
+import { VenueType, VenueTypeEnum } from '../../models/Venue';
 import { useTranslation } from 'react-i18next';
 
 const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
