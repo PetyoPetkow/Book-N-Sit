@@ -18,7 +18,7 @@ const OwnerControls: FC<OwnerControlsProps> = ({ venueId, onOpen, onImagesAdded 
           navigate(`/addVenue/${venueId}`);
         }}
       >
-        {t('edit')}
+        {t('btn_edit')}
       </Button>
       <Button
         className="font-bold bg-black bg-opacity-60"
