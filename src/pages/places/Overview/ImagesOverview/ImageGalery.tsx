@@ -3,15 +3,9 @@ import clsx from 'clsx';
 import FsLightbox from 'fslightbox-react';
 import ReactDOM from 'react-dom';
 
-//@ts-ignore
-const LightboxPortal = ({ toggler, currentImageIndex, images }) => {
+const LightboxPortal: FC<LightboxPortalProps> = ({ toggler, currentImageIndex, images }) => {
   return ReactDOM.createPortal(
-    <FsLightbox
-      toggler={toggler}
-      sourceIndex={currentImageIndex}
-      sources={images}
-      type={'image'}
-    />,
+    <FsLightbox toggler={toggler} sourceIndex={currentImageIndex} sources={images} type="image" />,
     document.body
   );
 };
@@ -55,7 +49,7 @@ const ImageDisplay = ({
 
 const Single = ({ image, onClick }: { image: string; onClick: () => void }) => {
   return (
-    <div className="rounded-lg shadow-lg col-span-12 row-span-12" onClick={onClick}>
+    <div className="rounded-lg shadow-lg col-span-12 row-span-12 cursor-pointer" onClick={onClick}>
       <img className="object-cover w-full h-full" src={image} />
     </div>
   );
@@ -68,7 +62,7 @@ const Middle = ({ images, onClick }: { images: string[]; onClick: (index: number
         return (
           <div
             className={clsx(
-              'rounded-lg shadow-lg',
+              'rounded-lg shadow-lg cursor-pointer',
               index === 0 ? 'col-span-9 row-span-12' : 'col-span-3 row-span-3'
             )}
             onClick={() => onClick(index)}
@@ -82,33 +76,35 @@ const Middle = ({ images, onClick }: { images: string[]; onClick: (index: number
 };
 
 const Many = ({ images, onClick }: { images: string[]; onClick: (index: number) => void }) => {
-  const maxDisplayImages = 6;
+  const maxDisplayImages = 7;
   const moreImagesCount = images.length - maxDisplayImages;
 
   return (
     <>
       {images.map((image, index) => {
+        if (index >= maxDisplayImages) return;
+
         return (
-          index <= maxDisplayImages - 1 && (
-            <div
-              className={clsx(
-                'rounded-lg shadow-lg',
-                index === 0
-                  ? 'col-span-8 row-span-8'
-                  : index === 1 || index === 2
-                    ? 'col-span-4 row-span-4'
-                    : 'col-span-3 row-span-4'
-              )}
-              onClick={() => onClick(index)}
-            >
-              <img className="object-cover w-full h-full" src={image} />
-              {/* {index === maxDisplayImages - 1 && moreImagesCount > 0 && (
-                <div className="absolute inset-0 bg-black bg-opacity-60 flex justify-center items-center text-white text-2xl font-bold">
-                  +{moreImagesCount}
-                </div>
-              )} */}
-            </div>
-          )
+          <div
+            key={index}
+            className={clsx(
+              'relative rounded-lg shadow-lg cursor-pointer',
+              index === 0
+                ? 'col-span-8 row-span-8'
+                : index === 1 || index === 2
+                  ? 'col-span-4 row-span-4'
+                  : 'col-span-3 row-span-4'
+            )}
+            onClick={() => onClick(index)}
+          >
+            <img className="object-cover w-full h-full" src={image} />
+
+            {index === maxDisplayImages - 1 && moreImagesCount > 0 && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+                <span className="text-white text-lg font-bold">+{moreImagesCount}</span>
+              </div>
+            )}
+          </div>
         );
       })}
     </>
@@ -118,5 +114,11 @@ const Many = ({ images, onClick }: { images: string[]; onClick: (index: number) 
 export default ImageGallery;
 
 interface ImageGalleryProps {
+  images: string[];
+}
+
+interface LightboxPortalProps {
+  toggler: boolean;
+  currentImageIndex: number;
   images: string[];
 }

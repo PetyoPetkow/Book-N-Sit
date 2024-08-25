@@ -6,8 +6,8 @@ const ImagesList: FC<ImagesListProps> = ({ images, currentImageIndex, handleThum
   const scrollToCenter = (index: number) => {
     const container = containerRef.current;
     if (!container) return;
-    const thumbnailWidth = 130; // Width of each thumbnail
-    const containerWidth = container.clientWidth; // Width of the thumbnails container
+    const thumbnailWidth = 130;
+    const containerWidth = container.clientWidth;
     const scrollLeft = thumbnailWidth * index - containerWidth / 2 + thumbnailWidth / 2;
     container.scrollTo({
       left: scrollLeft,
@@ -35,9 +35,9 @@ const ImagesList: FC<ImagesListProps> = ({ images, currentImageIndex, handleThum
             maxHeight: '100px',
             marginRight: '10px',
             opacity: index === currentImageIndex ? 1 : 0.5,
-            cursor: 'pointer', // Add cursor pointer to indicate it's clickable
+            cursor: 'pointer',
           }}
-          onClick={() => handleThumbnailClick(index)} // Handle thumbnail click
+          onClick={() => handleThumbnailClick(index)}
         />
       ))}
     </div>

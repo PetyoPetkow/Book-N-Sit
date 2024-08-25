@@ -4,8 +4,6 @@ import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
 import SetMealOutlinedIcon from '@mui/icons-material/SetMealOutlined';
 import { Perk } from '../../../../global/models/Venue';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { SvgIconTypeMap } from '@mui/material';
 import { ReactElement } from 'react';
 
 export const perksIcons: Record<Perk, ReactElement> = {

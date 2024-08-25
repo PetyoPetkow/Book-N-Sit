@@ -9,7 +9,9 @@ const Location: FC<LocationProps> = ({ city, street, className, iconSize }) => {
       <IconButton size="small">
         <LocationOnIcon fontSize={iconSize} />
       </IconButton>
-      {[city, street].join(', ')}
+      <span>
+        {city} {street && `, ${street}`}
+      </span>
     </div>
   );
 };
