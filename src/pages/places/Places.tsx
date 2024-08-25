@@ -1,17 +1,6 @@
-import { cloneElement, FC, useEffect, useMemo, useState, useTransition } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { firestore } from '../../firebase/firebase';
-import {
-  Firestore,
-  collection,
-  endAt,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  startAfter,
-  startAt,
-  where,
-} from 'firebase/firestore';
+import { collection, endAt, getDocs, orderBy, query, startAt, where } from 'firebase/firestore';
 import {
   Autocomplete,
   Card,
@@ -23,7 +12,6 @@ import {
 } from '@mui/material';
 import Venue, { VenueType } from '../../global/models/Venue';
 import { useNavigate, useParams } from 'react-router-dom';
-import CityAutocomplete from './CityAutocomplete';
 import { perksIcons } from './Overview/Perks/PerksMock';
 import Location from './Overview/Location';
 import { useAuth } from '../../contexts/authContext';
@@ -63,7 +51,7 @@ const Places: FC<PlacesProps> = () => {
   const dayOfWeek = useMemo(() => daysOfWeek[today.getDay()], [today]);
 
   useEffect(() => {
-    const getPlaces = async (firestore: Firestore) => {
+    const getPlaces = async () => {
       const conditions = [];
 
       if (city !== '' && city !== null) {
@@ -121,7 +109,7 @@ const Places: FC<PlacesProps> = () => {
       setPlaces(venues);
     };
 
-    getPlaces(firestore);
+    getPlaces();
   }, [city, perks, category]);
 
   return (

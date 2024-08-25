@@ -5,7 +5,7 @@ import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 
-export default function EditImages({ images, onSave, venueId, onClose }: UploadImagesProps) {
+export default function EditImages({ images, onSave, onClose }: UploadImagesProps) {
   const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
