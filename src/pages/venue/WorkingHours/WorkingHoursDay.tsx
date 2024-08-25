@@ -1,8 +1,8 @@
-import { FormControl, IconButton, InputLabel } from '@mui/material';
+import { IconButton, InputLabel } from '@mui/material';
 import { TimePicker } from '@mui/x-date-pickers';
 import { FC, useEffect, useState } from 'react';
-import DayOfWeek from '../../../../global/models/DaysOfWeek';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import { DayOfWeek } from '../../../global/models/DaysOfWeek';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
   disabled,

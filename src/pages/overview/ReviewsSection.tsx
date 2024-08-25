@@ -1,7 +1,7 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { Avatar, Divider, Pagination, Rating } from '@mui/material';
-import Review from '../../../global/models/Review';
-import { getDateStringFromTimestamp } from '../../../utils/dateUtil';
+import Review from '../../global/models/Review';
+import { getDateStringFromTimestamp } from '../../utils/dateUtil';
 
 const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
   const [page, setPage] = useState<number>(1);

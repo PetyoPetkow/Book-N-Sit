@@ -12,13 +12,13 @@ import {
 } from '@mui/material';
 import Venue, { VenueType } from '../../global/models/Venue';
 import { useNavigate, useParams } from 'react-router-dom';
-import Location from './Overview/Location';
+import Location from '../overview/Location';
 import { useAuth } from '../../contexts/authContext';
-import DayOfWeek from '../../global/models/DaysOfWeek';
+import { DayOfWeek } from '../../global/models/DaysOfWeek';
 import clsx from 'clsx';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { perksIcons } from './Overview/PerksList';
+import { perksIcons } from '../overview/PerksList';
 
 const Places: FC<PlacesProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);

@@ -1,7 +1,6 @@
 import { Checkbox, Divider, FormControlLabel } from '@mui/material';
 import { ChangeEvent, FC } from 'react';
-import { venueTypes } from './VenueTypeMock';
-import { VenueType } from '../../../../global/models/Venue';
+import { VenueType, VenueTypeEnum } from '../../global/models/Venue';
 import { useTranslation } from 'react-i18next';
 
 const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
@@ -16,7 +15,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
       <div className="text-lg font-bold">Venue Type</div>
       <Divider />
       <div className="grid grid-cols-4 max-md:grid-cols-2 my-4">
-        {venueTypes.map((venueType) => {
+        {Object.values(VenueTypeEnum).map((venueType) => {
           return (
             <FormControlLabel
               control={

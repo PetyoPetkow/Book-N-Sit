@@ -2,7 +2,7 @@ import { Avatar, Divider, Rating, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import Review from '../../../global/models/Review';
+import Review from '../../global/models/Review';
 import _ from 'lodash';
 
 const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {

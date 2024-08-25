@@ -1,21 +1,18 @@
 import { FC, MouseEvent } from 'react';
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { Perk, PerksMap } from '../../../../global/models/Venue';
-import { perksIcons } from '../../Overview/PerksList';
+import { Perk, PerksMap } from '../../global/models/Venue';
+import { perksIcons } from '../overview/PerksList';
 
 const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
   disabled = false,
   selectedPerks,
   onSelectedPerksChanged,
 }) => {
-  // Convert the selectedPerks map into an array of selected perk names
   const selectedPerkNames = Object.entries(selectedPerks)
     .filter(([, value]) => value)
     .map(([perk]) => perk);
 
-  // Event handler for toggling perks
   const handlePerkChange = (event: MouseEvent<HTMLElement>, newPerkNames: Perk[]) => {
-    // Build a new PerksMap based on toggled perks
     const newPerksMap = Object.keys(selectedPerks).reduce<PerksMap>(
       (acc, perk) => ({
         ...acc,
@@ -24,7 +21,6 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
       {} as PerksMap
     );
 
-    // Call the parent onSelectedPerksChanged handler with the updated map
     onSelectedPerksChanged(event, newPerksMap);
   };
 
@@ -36,7 +32,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
         disabled={disabled}
         className="flex flex-wrap gap-3 my-5"
         value={selectedPerkNames}
-        onChange={handlePerkChange} // Updated handler
+        onChange={handlePerkChange}
       >
         {Object.entries(selectedPerks).map(([perk, value]) => {
           return (

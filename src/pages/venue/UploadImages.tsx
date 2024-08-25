@@ -3,7 +3,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { storage } from '../../../../firebase/firebase';
+import { storage } from '../../firebase/firebase';
 import { deleteObject, ref } from 'firebase/storage';
 
 export default function InputFileUpload({
@@ -13,17 +13,11 @@ export default function InputFileUpload({
   files,
   onAddFiles,
 }: UploadImagesProps) {
-  const removeFile = (idToRemove: string) => {
+  const removeFile = async (idToRemove: string) => {
     onImagesChanged(images.filter((file: string) => file !== idToRemove));
     const fileToDeleteRef = ref(storage, idToRemove);
 
-    deleteObject(fileToDeleteRef)
-      .then(() => {
-        console.log('file deleted successfully');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    await deleteObject(fileToDeleteRef);
   };
 
   const onDragEnd = (result: any) => {

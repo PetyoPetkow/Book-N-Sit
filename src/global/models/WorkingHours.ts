@@ -1,4 +1,4 @@
-import DayOfWeek from './DaysOfWeek';
+import { DayOfWeek } from './DaysOfWeek';
 
 export type DailySchedule = {
   openAt: number | null;

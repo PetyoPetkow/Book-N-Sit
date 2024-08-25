@@ -5,22 +5,22 @@ import { Divider, LinearProgress } from '@mui/material';
 import ReviewsSection from './ReviewsSection';
 import PerksList from './PerksList';
 import WriteReviewSection from './WriteReviewSection';
-import { firestore } from '../../../firebase/firebase';
+import { firestore } from '../../firebase/firebase';
 import { useParams } from 'react-router-dom';
-import Venue from '../../../global/models/Venue';
+import Venue from '../../global/models/Venue';
 import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
-import { getVenueReviews, setReview } from '../../../firebase/services/ReviewsService';
-import { useAuth } from '../../../contexts/authContext';
-import Review from '../../../global/models/Review';
-import MapComponent from '../Venue/MapComponent';
-import { getUserById } from '../../../firebase/services/UserService';
+import { getVenueReviews, setReview } from '../../firebase/services/ReviewsService';
+import { useAuth } from '../../contexts/authContext';
+import Review from '../../global/models/Review';
+import MapComponent from '../venue/MapComponent';
+import { getUserById } from '../../firebase/services/UserService';
 import { useTranslation } from 'react-i18next';
 import ChatBox from './ChatBox';
-import UserDetails from '../../../global/models/users/UserDetails';
+import UserDetails from '../../global/models/users/UserDetails';
 import OwnerControls from './OwnerControls';
 import EditImagesModal from './EditImagesModal';
 import OwnerInfo from './OwnerInfo';
-import UserChat from '../../../global/models/messages/UserChat';
+import UserChat from '../../global/models/messages/UserChat';
 import {
   appendMessages,
   appendUserChat,
@@ -29,8 +29,8 @@ import {
   getMessages,
   getUserChats,
   updateUserChat,
-} from '../../../firebase/services/MessagesService';
-import Message from '../../../global/models/messages/Message';
+} from '../../firebase/services/MessagesService';
+import Message from '../../global/models/messages/Message';
 import {
   appendImages,
   deleteImagesFromStorage,
@@ -38,7 +38,7 @@ import {
   removeImages,
   updateVenueImages,
   uploadImagesToStorage,
-} from '../../../firebase/services/VenuesService';
+} from '../../firebase/services/VenuesService';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);

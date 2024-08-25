@@ -36,5 +36,16 @@ export type VenueType =
   | 'brewery'
   | 'night_club';
 
+export enum VenueTypeEnum {
+  restaurant = 'restaurant',
+  cafe = 'cafe',
+  bar = 'bar',
+  pub = 'pub',
+  bakery = 'bakery',
+  winery = 'winery',
+  brewery = 'brewery',
+  night_club = 'night_club',
+}
+
 export type Perk = 'free_wifi' | 'cocktails' | 'sushi_menu' | 'wine_list' | 'personalized_events';
 export type PerksMap = Record<Perk, boolean>;

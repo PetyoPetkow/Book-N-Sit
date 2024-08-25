@@ -1,5 +1,5 @@
 import { FC, ReactElement } from 'react';
-import { Perk, PerksMap } from '../../../global/models/Venue';
+import { Perk, PerksMap } from '../../global/models/Venue';
 import WifiIcon from '@mui/icons-material/Wifi';
 import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
 import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';

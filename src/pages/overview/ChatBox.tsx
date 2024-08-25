@@ -5,8 +5,8 @@ import { createPortal } from 'react-dom';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import moment from 'moment';
-import UserDetails from '../../../global/models/users/UserDetails';
-import Message from '../../../global/models/messages/Message';
+import UserDetails from '../../global/models/users/UserDetails';
+import Message from '../../global/models/messages/Message';
 
 const ChatBox: FC<ChatBoxProps> = ({
   isOpen,
