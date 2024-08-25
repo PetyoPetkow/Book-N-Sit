@@ -62,11 +62,11 @@ const en = {
   brewery: 'Brewery',
   night_club: 'Night Club',
 
-  filters_free_wifi: 'free WiFi',
-  filters_personalized_events: 'Personalized events',
-  filters_sushi_menu: 'Sushi menu',
-  filters_wine_list: 'Wine list',
-  filters_cocktails: 'Cocktails',
+  free_wifi: 'free WiFi',
+  personalized_events: 'Personalized events',
+  sushi_menu: 'Sushi menu',
+  wine_list: 'Wine list',
+  cocktails: 'Cocktails',
 };
 
 export default en;

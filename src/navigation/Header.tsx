@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { FC, MouseEvent, useMemo, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { doSingOut } from '../firebase/auth';
 import {
@@ -6,21 +6,17 @@ import {
   Avatar,
   Button,
   Container,
-  IconButton,
   Menu,
   MenuItem,
   Toolbar,
   Typography,
 } from '@mui/material';
-import RestoreIcon from '@mui/icons-material/Restore';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useAuth } from '../contexts/authContext';
-import flagBG from './flagsImages/bulgaria.png';
-import flagUK from './flagsImages/united-kingdom.png';
-import logo from './logos/logo.png';
+import flagBG from '../assets/flagsImages/bulgaria.png';
+import flagUK from '../assets/flagsImages/united-kingdom.png';
+import logo from '../assets/logos/logo.png';
 import { firestore } from '../firebase/firebase';
-import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import Language from '../models/Language';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
@@ -28,20 +24,15 @@ import LocalCafeOutlinedIcon from '@mui/icons-material/LocalCafeOutlined';
 import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
 import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
 import RestaurantMenuOutlinedIcon from '@mui/icons-material/RestaurantMenuOutlined';
-import TableRestaurantOutlinedIcon from '@mui/icons-material/TableRestaurantOutlined';
 import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
 import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';
 import LocalDrinkOutlinedIcon from '@mui/icons-material/LocalDrinkOutlined';
-import FastfoodOutlinedIcon from '@mui/icons-material/FastfoodOutlined';
 import NightlifeOutlinedIcon from '@mui/icons-material/NightlifeOutlined';
-import { getUserById } from '../firebase/services/UserService';
-import { User } from 'firebase/auth';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
 import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
-import MenuIcon from '@mui/icons-material/Menu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 

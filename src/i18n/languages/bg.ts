@@ -63,10 +63,10 @@ const bg = {
   night_club: 'Нощен клуб',
 
   free_wifi: 'Безплатен WiFi',
-  personalized_events: 'Персонализирани събития',
-  sushi_menu: 'Суши меню',
-  wine_list: 'Винена листа',
-  cocktails: 'Коктейли',
+  personalized_event: 'Персонализирани събития',
+  sushi_men: 'Суши меню',
+  wine_lis: 'Винена листа',
+  cocktail: 'Коктейли',
 };
 
 export default bg;

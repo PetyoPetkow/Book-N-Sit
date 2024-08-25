@@ -55,7 +55,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <ScrollToTop />
-      <div className="min-h-[100vh] flex flex-col overflow-hidden bg-[url('./images/stockImg3.jpg')] bg-no-repeat bg-fixed bg-cover">
+      <div className="min-h-[100vh] flex flex-col overflow-hidden bg-[url('./assets/stockImg3.jpg')] bg-no-repeat bg-fixed bg-cover">
         <Header />
         <Container disableGutters className="flex-grow flex flex-col ">
           <Routes>
