@@ -99,16 +99,16 @@ const Places: FC<PlacesProps> = () => {
 
       let venues: Venue[] = [];
 
-      if (category !== undefined && category !== 'All') {
+      if (category !== undefined && category !== 'all') {
         const routeToCategoryMapper: Record<string, VenueType> = {
-          Restaurants: 'restaurant',
-          Cafes: 'cafe',
-          Bars: 'bar',
-          Pubs: 'pub',
-          Bakeries: 'bakery',
-          Wineries: 'winery',
-          Breweries: 'brewery',
-          NightClubs: 'night_club',
+          restaurants: 'restaurant',
+          cafes: 'cafe',
+          bars: 'bar',
+          pubs: 'pub',
+          bakeries: 'bakery',
+          wineries: 'winery',
+          breweries: 'brewery',
+          nightClubs: 'night_club',
         };
 
         venues = placeList.filter((venue) =>

@@ -86,46 +86,46 @@ const Header: FC<HeaderProps> = () => {
   const menuConfig = [
     {
       label: t('header_btn_all'),
-      path: '/All',
+      path: '/all',
     },
     {
       label: t('header_btn_restaurants'),
-      path: '/Restaurants',
+      path: '/restaurants',
       icon: RestaurantMenuOutlinedIcon,
     },
     {
       label: t('header_btn_cafes'),
-      path: '/Cafes',
+      path: '/cafes',
       icon: LocalCafeOutlinedIcon,
     },
     {
       label: t('header_btn_bars'),
-      path: '/Bars',
+      path: '/bars',
       icon: LocalBarOutlinedIcon,
     },
     {
       label: t('header_btn_pubs'),
-      path: '/Pubs',
+      path: '/pubs',
       icon: SportsBarOutlinedIcon,
     },
     {
       label: t('header_btn_bakeries'),
-      path: '/Bakeries',
+      path: '/bakeries',
       icon: CakeOutlinedIcon,
     },
     {
       label: t('header_btn_wineries'),
-      path: '/Wineries',
+      path: '/wineries',
       icon: WineBarOutlinedIcon,
     },
     {
       label: t('header_btn_breweries'),
-      path: '/Breweries',
+      path: '/breweries',
       icon: LocalDrinkOutlinedIcon,
     },
     {
       label: t('header_btn_night_clubs'),
-      path: '/NightClubs',
+      path: '/nightClubs',
       icon: NightlifeOutlinedIcon,
     },
   ];
