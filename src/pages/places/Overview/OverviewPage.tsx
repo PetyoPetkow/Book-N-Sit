@@ -1,10 +1,10 @@
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import Location from './Location';
-import ImageGallery from './ImagesOverview/ImageGalery';
+import ImageGallery from './ImageGalery';
 import { Divider, LinearProgress } from '@mui/material';
-import ReviewsSection from './Reviews/ReviewsSection';
-import PerksList from './Perks/PerksList';
-import WriteReviewSection from './Reviews/WriteReviewSection';
+import ReviewsSection from './ReviewsSection';
+import PerksList from './PerksList';
+import WriteReviewSection from './WriteReviewSection';
 import { firestore } from '../../../firebase/firebase';
 import { useParams } from 'react-router-dom';
 import Venue from '../../../global/models/Venue';
@@ -19,7 +19,7 @@ import ChatBox from './ChatBox';
 import UserDetails from '../../../global/models/users/UserDetails';
 import OwnerControls from './OwnerControls';
 import EditImagesModal from './EditImagesModal';
-import OwnerInfo from './Owner/OwnerInfo';
+import OwnerInfo from './OwnerInfo';
 import UserChat from '../../../global/models/messages/UserChat';
 import {
   appendMessages,

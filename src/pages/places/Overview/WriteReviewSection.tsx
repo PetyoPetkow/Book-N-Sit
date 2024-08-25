@@ -1,6 +1,6 @@
 import { Badge, Button, Rating, TextField } from '@mui/material';
 import { FC, SyntheticEvent } from 'react';
-import { MAX_COMMENT_LENGTH } from './ReviewConstants';
+import { MAX_COMMENT_LENGTH } from './constants';
 
 const WriteReviewSection: FC<WriteReviewSectionProps> = ({
   rating,
