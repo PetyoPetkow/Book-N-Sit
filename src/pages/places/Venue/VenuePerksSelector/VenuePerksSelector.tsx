@@ -1,7 +1,7 @@
 import { FC, MouseEvent } from 'react';
-import { perksIcons } from '../../Overview/Perks/PerksMock';
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Perk, PerksMap } from '../../../../global/models/Venue';
+import { perksIcons } from '../../Overview/PerksList';
 
 const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
   disabled = false,
