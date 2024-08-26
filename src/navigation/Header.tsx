@@ -15,19 +15,9 @@ import { useAuth } from '../contexts/authContext';
 import flagBG from '../assets/flagsImages/bulgaria.png';
 import flagUK from '../assets/flagsImages/united-kingdom.png';
 import logo from '../assets/logos/logo.png';
-import { firestore } from '../firebase/firebase';
-import { doc, setDoc } from 'firebase/firestore';
 import { useTranslation } from 'react-i18next';
 import Language from '../models/Language';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
-import LocalCafeOutlinedIcon from '@mui/icons-material/LocalCafeOutlined';
-import LocalBarOutlinedIcon from '@mui/icons-material/LocalBarOutlined';
-import SportsBarOutlinedIcon from '@mui/icons-material/SportsBarOutlined';
-import RestaurantMenuOutlinedIcon from '@mui/icons-material/RestaurantMenuOutlined';
-import CakeOutlinedIcon from '@mui/icons-material/CakeOutlined';
-import WineBarOutlinedIcon from '@mui/icons-material/WineBarOutlined';
-import LocalDrinkOutlinedIcon from '@mui/icons-material/LocalDrinkOutlined';
-import NightlifeOutlinedIcon from '@mui/icons-material/NightlifeOutlined';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import clsx from 'clsx';
@@ -35,6 +25,8 @@ import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import AddBusinessOutlinedIcon from '@mui/icons-material/AddBusinessOutlined';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import menuConfig from './MenuConfig';
+import { updateUser } from '../firebase/services/UserService';
 
 const Header: FC<HeaderProps> = () => {
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
@@ -54,7 +46,7 @@ const Header: FC<HeaderProps> = () => {
 
   const changeLanguage = (lng: Language) => {
     if (currentUser) {
-      setDoc(doc(firestore, 'users', currentUser.uid), { language: lng }, { merge: true });
+      updateUser(currentUser.uid, { language: lng });
     }
   };
 
@@ -73,53 +65,6 @@ const Header: FC<HeaderProps> = () => {
   const handleCloseLanguageMenu = () => {
     setAnchorElLanguage(null);
   };
-
-  const menuConfig = [
-    {
-      label: t('header_btn_all'),
-      path: '/all',
-    },
-    {
-      label: t('header_btn_restaurants'),
-      path: '/restaurants',
-      icon: RestaurantMenuOutlinedIcon,
-    },
-    {
-      label: t('header_btn_cafes'),
-      path: '/cafes',
-      icon: LocalCafeOutlinedIcon,
-    },
-    {
-      label: t('header_btn_bars'),
-      path: '/bars',
-      icon: LocalBarOutlinedIcon,
-    },
-    {
-      label: t('header_btn_pubs'),
-      path: '/pubs',
-      icon: SportsBarOutlinedIcon,
-    },
-    {
-      label: t('header_btn_bakeries'),
-      path: '/bakeries',
-      icon: CakeOutlinedIcon,
-    },
-    {
-      label: t('header_btn_wineries'),
-      path: '/wineries',
-      icon: WineBarOutlinedIcon,
-    },
-    {
-      label: t('header_btn_breweries'),
-      path: '/breweries',
-      icon: LocalDrinkOutlinedIcon,
-    },
-    {
-      label: t('header_btn_night_clubs'),
-      path: '/nightClubs',
-      icon: NightlifeOutlinedIcon,
-    },
-  ];
 
   return (
     <AppBar className="bg-[#006989]" position="relative">
@@ -311,7 +256,7 @@ const Header: FC<HeaderProps> = () => {
               >
                 <div className="flex items-center justify-center gap-2">
                   {Icon && <Icon className="flex items-center" fontSize="small" />}
-                  <div className="flex items-center ">{label}</div>
+                  <div className="flex items-center ">{t(label)}</div>
                 </div>
               </NavLink>
             ))}

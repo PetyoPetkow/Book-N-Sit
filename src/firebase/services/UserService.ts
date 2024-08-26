@@ -29,7 +29,7 @@ const createUser = async (user: UserDetails) => {
   await setDoc(doc(firestore, 'users', user.id), user);
 };
 
-const updateUser = async (userId: string, user: UserDetails) => {
+const updateUser = async (userId: string, user: Partial<UserDetails>) => {
   const userDoc = doc(firestore, 'users', userId);
   await setDoc(userDoc, user, { merge: true });
 };
