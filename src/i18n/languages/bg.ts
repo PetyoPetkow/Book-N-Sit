@@ -63,8 +63,20 @@ const bg = {
   warning_images_required: 'Качете задължително поне една снимка',
   label_venue_description: 'Описание на обект',
   label_venue_type: 'Вид на обекта',
-  label_venue_perks: 'Екстри',
+  label_venue_perks: 'Удобства',
   label_venue_working_hours: 'Работно време',
+
+  //=============================//
+  //       RESET PASSWORD        //
+  //=============================//
+  reset_password_check_email: 'Линк за смяна на паролата беше изпратен на вашия имейл',
+  reset_password: 'Възстановяване на парола',
+  reset_password_btn: 'Изпрати',
+
+  //=============================//
+  //        OVERVIEW PAGE        //
+  //=============================//
+  about: 'Относно',
 
   //=============================//
   //         DAYS OF WEEK        //

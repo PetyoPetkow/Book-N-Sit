@@ -49,6 +49,45 @@ const en = {
   btn_edit: 'Edit',
   btn_upload_images: 'Upload images',
   btn_edit_images: 'Edit images',
+  btn_publish: 'Publish',
+  btn_cancel: 'Cancel',
+
+  //=============================//
+  //       REGISTER VENUE        //
+  //=============================//
+  header_title: 'Register your venue',
+  header_text: 'Plese fill out relevant information about your venue.',
+  label_venue_name: 'Venue name',
+  label_venue_city: 'Location',
+  label_venue_street: 'Street',
+  warning_images_required: 'Upload at least one picture',
+  label_venue_description: 'Venue description',
+  label_venue_type: 'Venue type',
+  label_venue_perks: 'Perks',
+  label_venue_working_hours: 'Working hours',
+
+  //=============================//
+  //       RESET PASSWORD        //
+  //=============================//
+  reset_password_check_email: 'A reset password link was send to your email address',
+  reset_password: 'Reset password',
+  reset_password_btn: 'Send',
+
+  //=============================//
+  //        OVERVIEW PAGE        //
+  //=============================//
+  about: 'About',
+
+  //=============================//
+  //         DAYS OF WEEK        //
+  //=============================//
+  monday: 'Monday',
+  tuesday: 'Tuesday',
+  wednesday: 'Wednesday',
+  thursday: 'Thursday',
+  friday: 'Friday',
+  saturday: 'Saturday',
+  sunday: 'Sunday',
 
   city: 'City',
   filters: 'Filters',

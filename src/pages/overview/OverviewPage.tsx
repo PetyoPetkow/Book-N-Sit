@@ -294,7 +294,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         {venue.description && (
           <div className="my-5 flex flex-col gap-2 bg-white p-3">
             <div className="text-lg font-bold">
-              Относно <span className="text-sky-900">{venue.name}</span>
+              {t('about')} <span className="text-sky-900">{venue.name}</span>
             </div>
             <Divider className="bg-[#006989]" />
             <div>{venue.description}</div>
