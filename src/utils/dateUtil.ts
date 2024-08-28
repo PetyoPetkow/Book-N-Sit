@@ -1,8 +1,11 @@
+import { format } from 'date-fns';
+import { bg } from 'date-fns/locale/bg';
 import { Timestamp } from 'firebase/firestore';
 import moment from 'moment';
 
 const getDateStringFromTimestamp = (timestamp: Timestamp) => {
-  return new Date(timestamp.seconds * 1000).toDateString();
+  const date = new Date(timestamp.seconds * 1000);
+  return format(date, 'd MMM yyyy', { locale: bg });
 };
 
 const getTimeFromNowFromTimestamp = (timestamp: Timestamp) => {

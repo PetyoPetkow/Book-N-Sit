@@ -1,47 +1,54 @@
 import { collection, where, query, doc, setDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { firestore } from '../firebase';
-import Review from '../../models/Review';
-import ReviewDto from '../../models/ReviewDto';
+import UserReview from '../../models/UserReview';
 import { getUserById } from './UserService';
+import Review from '../../models/Review';
 
 const getUserReviews = async (userId: string) => {
   const reviewsRef = collection(firestore, 'reviews');
   const reviewsQuery = query(reviewsRef, where('userId', '==', userId));
   const reviewsSnapshot = await getDocs(reviewsQuery);
-  const reviewsList = reviewsSnapshot.docs.map((doc) => doc.data() as Review);
+  const reviewsList = reviewsSnapshot.docs.map((doc) => doc.data() as UserReview);
   return reviewsList;
 };
 
 const getVenueReviews = async (venueId: string) => {
-  const reviewsRef = collection(firestore, 'reviews');
-  const reviewsQuery = query(reviewsRef, where('venueId', '==', venueId));
-  const reviewsSnapshot = await getDocs(reviewsQuery);
-  const reviewsList: Review[] = [];
+  const reviewsList: UserReview[] = [];
 
-  for (const reviewDoc of reviewsSnapshot.docs) {
-    const reviewData = reviewDoc.data() as ReviewDto;
-    const user = await getUserById(reviewData.userId);
+  const venueReviews = await getReviewsByVenueId(venueId);
+
+  for (const review of venueReviews) {
+    const user = await getUserById(review.userId);
 
     if (user) {
-      const reviewWithDisplayName: Review = {
-        ...reviewData,
+      const userReview: UserReview = {
+        ...review,
         displayName: user.displayName,
+        photoURL: user.photoURL,
       };
-      reviewsList.push(reviewWithDisplayName);
+      reviewsList.push(userReview);
     } else {
-      console.error(`User with ID ${reviewData.userId} does not exist.`);
+      console.error(`User with ID ${review.userId} does not exist.`);
     }
   }
 
   return reviewsList;
 };
 
+const getReviewsByVenueId = async (venueId: string): Promise<Review[]> => {
+  const reviewsCol = collection(firestore, 'reviews');
+  const reviewsQuery = query(reviewsCol, where('venueId', '==', venueId));
+  const reviewsSnapshot = await getDocs(reviewsQuery);
+
+  return reviewsSnapshot.docs.map((reviewDoc) => reviewDoc.data() as Review);
+};
+
 const setReview = (userId: string, venueId: string, rating: number, comment: string) => {
-  const review: ReviewDto = { userId, venueId, rating, comment, timestamp: Timestamp.now() };
+  const review: Review = { userId, venueId, rating, comment, timestamp: Timestamp.now() };
 
   const reviewPath = `reviews/${userId}_${venueId}`;
 
   return setDoc(doc(firestore, reviewPath), review);
 };
 
-export { getUserReviews, getVenueReviews, setReview };
+export { getUserReviews, getVenueReviews, setReview, getReviewsByVenueId };

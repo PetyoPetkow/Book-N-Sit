@@ -3,6 +3,7 @@ import { TimePicker } from '@mui/x-date-pickers';
 import { FC, useEffect, useState } from 'react';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import { DayOfWeek } from '../../../models/DaysOfWeek';
+import { useTranslation } from 'react-i18next';
 
 const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
   disabled,
@@ -15,6 +16,8 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
 }) => {
   const [openAtError, setOpenAtError] = useState<boolean>(false);
   const [closeAtError, setCloseAtError] = useState<boolean>(false);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.log(openAtError);
@@ -37,7 +40,7 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
 
   return (
     <div className="grid grid-cols-3 items-center">
-      <InputLabel>{dayOfWeek}</InputLabel>
+      <InputLabel>{t(dayOfWeek)}</InputLabel>
       <div className="flex gap-5 col-span-2">
         <TimePicker
           disabled={disabled}

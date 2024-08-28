@@ -13,6 +13,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Venue, { PerksMap, VenueCreate, VenueType } from '../../models/Venue';
 import MapComponent from './MapComponent';
 import { createVenue, getVenueById, updateVenue } from '../../firebase/services/VenuesService';
+import { useTranslation } from 'react-i18next';
 
 // TODO protect editing of venues that are not property of the current user
 const defaultOpeningTime = () => new Date().setHours(8, 0, 0, 0);
@@ -25,7 +26,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   const [street, setStreet] = useState<string | null>(null);
   const [coordinates, setCoordinates] = useState<[number, number] | null>(null);
   const [images, setImages] = useState<string[]>([]);
-  const [files, setFiles] = useState<FileList | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [description, setDescription] = useState<string>('');
   const [selectedVenueTypes, setSelectedVenueTypes] = useState<VenueType[]>([]);
   const [selectedPerks, setSelectedPerks] = useState<PerksMap>({
@@ -50,6 +51,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   const { venueId } = useParams();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const setData = async () => {
@@ -85,7 +87,7 @@ const AddVenue: FC<AddVenueProps> = () => {
   }, []);
 
   const onSubmitCreate = async (venue: VenueCreate) => {
-    const createdVenueId = await createVenue(venue, files!);
+    const createdVenueId = await createVenue(venue, files);
 
     navigate(`/all/${createdVenueId}`);
   };
@@ -102,8 +104,8 @@ const AddVenue: FC<AddVenueProps> = () => {
         {venueId === undefined && (
           <>
             <div className="flex flex-col gap-5 ">
-              <div className="text-5xl">Register you venue</div>
-              <div>Please fill out the form with relevant information about your venue.</div>
+              <div className="text-5xl">{t('header_title')}</div>
+              <div>{t('header_text')}</div>
             </div>
             <Divider className="my-5" />
           </>
@@ -111,7 +113,7 @@ const AddVenue: FC<AddVenueProps> = () => {
         <div className="flex flex-col gap-5">
           <div className="flex gap-10">
             <div className="flex-1 ">
-              <InputLabel required>Name</InputLabel>
+              <InputLabel required>{t('label_venue_name')}</InputLabel>
               <TextField
                 required
                 fullWidth
@@ -130,7 +132,7 @@ const AddVenue: FC<AddVenueProps> = () => {
               />
             </div>
             <div className="flex-1">
-              <InputLabel>Street</InputLabel>
+              <InputLabel>{t('label_venue_street')}</InputLabel>
               <TextField
                 value={street}
                 onChange={(event) => setStreet(event.target.value || null)}
@@ -152,16 +154,19 @@ const AddVenue: FC<AddVenueProps> = () => {
             <div>
               <InputFileUpload
                 disabled={isLoading}
-                images={images}
-                onImagesChanged={setImages}
                 files={files}
-                onAddFiles={setFiles}
+                onFilesChanged={setFiles}
+                onAddFiles={(newFiles) => setFiles([...files, ...newFiles])}
               />
-              {files === null && <span className="text-red-800">*Images are required</span>}
+              {files === null && (
+                <span className="text-red-800">*{t('warning_images_required')}</span>
+              )}
             </div>
           )}
           <div>
-            <InputLabel className="text-lg font-bold text-black">Description</InputLabel>
+            <InputLabel className="text-lg font-bold text-black">
+              {t('label_venue_description')}
+            </InputLabel>
             <TextField
               className="w-full"
               disabled={isLoading}
@@ -262,7 +267,7 @@ const AddVenue: FC<AddVenueProps> = () => {
               {
                 <div className="flex gap-3 items-center">
                   {isLoading && <CircularProgress size={20} color="info" />}
-                  Publish
+                  {t('btn_publish')}
                 </div>
               }
             </Button>
@@ -273,7 +278,7 @@ const AddVenue: FC<AddVenueProps> = () => {
                 navigate(-1);
               }}
             >
-              Cancel
+              {t('btn_cancel')}
             </Button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { TextField } from '@mui/material';
 import 'leaflet/dist/leaflet.css';
+import { useTranslation } from 'react-i18next';
 
 // Remove default icon settings
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,6 +18,8 @@ L.Icon.Default.mergeOptions({
 const MapComponent = ({ lat, lng, setCoordinates, draggable, height = 400 }) => {
   // Initialize state with props for latitude and longitude
   const [position, setPosition] = useState([lat, lng]);
+
+  const { t } = useTranslation();
 
   // Effect to update position when props change
   useEffect(() => {
@@ -56,12 +59,10 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable, height = 400 }) => 
         style={{ height: height }}
       >
         <RecenterAutomatically lat={lat} lng={lng} />
-        {/* TileLayer for map background */}
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
-        {/* Marker with draggable functionality */}
         <Marker
           position={position}
           draggable={draggable}
@@ -82,14 +83,14 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable, height = 400 }) => 
             value={position[0]}
             onChange={handleLatChange}
             type="number"
-            label="Latitude"
+            label={t('latitude')}
             size="small"
           />
           <TextField
             value={position[1]}
             onChange={handleLngChange}
             type="number"
-            label="Longitude"
+            label={t('longitude')}
             size="small"
           />
         </div>

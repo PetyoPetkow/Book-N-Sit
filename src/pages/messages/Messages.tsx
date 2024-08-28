@@ -183,7 +183,7 @@ const Messages: FC<MessagesProps> = () => {
                   <div className="flex flex-col flex-grow">
                     <div className="font-bold">{user?.displayName}</div>
                     <div className="text-sm text-gray-800">
-                      {chat.lastSenderId === currentUserDetails.id ? 'You: ' : 'Them: '}
+                      {chat.lastSenderId === currentUserDetails.id ? 'Вие: ' : 'Те: '}
                       {chat.lastMessage}
                     </div>
                   </div>

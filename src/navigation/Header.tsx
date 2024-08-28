@@ -34,7 +34,7 @@ const Header: FC<HeaderProps> = () => {
 
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
-  const { userLoggedIn, currentUser, currentUserDetails: userDetails } = useAuth();
+  const { currentUser, currentUserDetails: userDetails } = useAuth();
 
   const prefferedLanguageFlag = useMemo(() => {
     if (i18n.language === 'bg') {
@@ -72,7 +72,7 @@ const Header: FC<HeaderProps> = () => {
         <div className="w-full flex justify-between items-center mt-2">
           <img className="h-14" src={logo} />
           <div className="flex">
-            {userLoggedIn && currentUser ? (
+            {currentUser ? (
               <div>
                 <Button
                   className="h-full hover:backdrop-contrast-150"

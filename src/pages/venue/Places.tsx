@@ -55,17 +55,17 @@ const Places: FC<PlacesProps> = () => {
       const conditions = [];
 
       if (city !== '' && city !== null) {
-        const cityToCapitalized = _.startCase(_.toLower(city));
+        const cityToStartCase = _.startCase(_.toLower(city));
 
         conditions.push(
           orderBy('city'),
-          startAt(cityToCapitalized),
-          endAt(`${cityToCapitalized}\uf8ff`)
+          startAt(cityToStartCase),
+          endAt(`${cityToStartCase}\uf8ff`)
         );
       }
       if (perks.length !== 0) {
-        perks.map((p) => {
-          conditions.push(where(`perks.${p.name}`, '==', true));
+        perks.map((perk) => {
+          conditions.push(where(`perks.${perk.name}`, '==', true));
         });
       }
 
@@ -154,7 +154,7 @@ const Places: FC<PlacesProps> = () => {
                 value.map((option, index) => (
                   <Chip
                     size="small"
-                    label={option.name}
+                    label={t(option.name)}
                     icon={option.icon}
                     {...getTagProps({ index })}
                   />

@@ -11,9 +11,9 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-lg font-bold">Leave a review</div>
+      <div className="text-lg font-bold">Остави ревю</div>
       <div className="flex gap-3">
-        Rate: <Rating value={rating} onChange={onRatingChanged} />
+        Оценка: <Rating value={rating} onChange={onRatingChanged} />
       </div>
       <Badge color="primary" badgeContent={`${comment.length}/${MAX_COMMENT_LENGTH}`}>
         <TextField
@@ -37,7 +37,7 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({
             }
           }}
         >
-          Leave review
+          Изпрати
         </Button>
       </div>
     </div>

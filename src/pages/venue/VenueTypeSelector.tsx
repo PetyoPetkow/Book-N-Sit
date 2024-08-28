@@ -12,7 +12,7 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
 
   return (
     <div>
-      <div className="text-lg font-bold">Venue Type</div>
+      <div className="text-lg font-bold">{t('label_venue_type')}</div>
       <Divider />
       <div className="grid grid-cols-4 max-md:grid-cols-2 my-4">
         {Object.values(VenueTypeEnum).map((venueType) => {

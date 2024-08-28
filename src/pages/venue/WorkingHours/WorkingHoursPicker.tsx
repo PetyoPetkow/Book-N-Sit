@@ -2,6 +2,7 @@ import WorkigHoursDay from './WorkingHoursDay';
 import { FC } from 'react';
 import WorkingHours from '../../../models/WorkingHours';
 import { DayOfWeek, DayOfWeekEnum } from '../../../models/DaysOfWeek';
+import { useTranslation } from 'react-i18next';
 
 const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
   disabled = false,
@@ -10,9 +11,10 @@ const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
   onOpenAtChanged,
   onCloseAtChanged,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2 m-auto">
-      <div className="text-lg font-bold">Working hours</div>
+      <div className="text-lg font-bold">{t('label_venue_working_hours')}</div>
       <div className="flex flex-col gap-3">
         {Object.values(DayOfWeekEnum).map((day) => {
           if (workingHours[day] !== undefined) {

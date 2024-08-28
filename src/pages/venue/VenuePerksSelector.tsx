@@ -2,12 +2,15 @@ import { FC, MouseEvent } from 'react';
 import { Divider, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Perk, PerksMap } from '../../models/Venue';
 import { perksIcons } from '../overview/PerksList';
+import { useTranslation } from 'react-i18next';
 
 const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
   disabled = false,
   selectedPerks,
   onSelectedPerksChanged,
 }) => {
+  const { t } = useTranslation();
+
   const selectedPerkNames = Object.entries(selectedPerks)
     .filter(([, value]) => value)
     .map(([perk]) => perk);
@@ -26,7 +29,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
 
   return (
     <div>
-      <div className="text-lg font-bold">Venue Perks</div>
+      <div className="text-lg font-bold">{t('label_venue_perks')}</div>
       <Divider />
       <ToggleButtonGroup
         disabled={disabled}
@@ -49,7 +52,7 @@ const VenuePerksSelector: FC<VenuePerksSelectorProps> = ({
               }}
             >
               <div>{perksIcons[perk as Perk]}</div>
-              <div>{perk}</div>
+              <div>{t(perk)}</div>
             </ToggleButton>
           );
         })}

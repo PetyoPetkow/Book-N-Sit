@@ -2,13 +2,13 @@ import { Avatar, Divider, Rating, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
-import Review from '../../models/Review';
+import UserReview from '../../models/UserReview';
 import _ from 'lodash';
 
 const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const [currentReview, setCurrentReview] = useState<Review | null>();
+  const [currentReview, setCurrentReview] = useState<UserReview | null>();
 
   const averageRating = useMemo(() => {
     const ratings = reviews.map((review) => review.rating);
@@ -110,7 +110,7 @@ const RatingDisplay: FC<RatingDisplayProps> = ({ reviews }) => {
 };
 
 interface RatingDisplayProps {
-  reviews: Review[];
+  reviews: UserReview[];
 }
 
 enum Ratings {

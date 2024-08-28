@@ -1,33 +1,32 @@
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Badge, IconButton } from '@mui/material';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import { storage } from '../../firebase/firebase';
-import { deleteObject, ref } from 'firebase/storage';
+import { useTranslation } from 'react-i18next';
 
 export default function InputFileUpload({
   disabled = false,
-  images,
-  onImagesChanged,
   files,
+  onFilesChanged,
   onAddFiles,
-}: UploadImagesProps) {
-  const removeFile = async (idToRemove: string) => {
-    onImagesChanged(images.filter((file: string) => file !== idToRemove));
-    const fileToDeleteRef = ref(storage, idToRemove);
+}: UploadFilesProps) {
+  const { t } = useTranslation();
 
-    await deleteObject(fileToDeleteRef);
+  const removeFile = (fileNameToRemove: string) => {
+    const filesCopy = structuredClone(files);
+    const updatedFiles = filesCopy.filter((file: File) => file.name !== fileNameToRemove);
+    onFilesChanged(updatedFiles);
   };
 
-  const onDragEnd = (result: any) => {
+  const onDragEnd = (result: DropResult) => {
     if (!result.destination) return;
 
-    const reorderedFiles = Array.from(images);
-    const [removed] = reorderedFiles.splice(result.source.index, 1);
-    reorderedFiles.splice(result.destination.index, 0, removed);
+    const items = structuredClone(files);
+    const [removed] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, removed);
 
-    onImagesChanged(reorderedFiles);
+    onFilesChanged(items);
   };
 
   return (
@@ -40,13 +39,15 @@ export default function InputFileUpload({
         tabIndex={-1}
         startIcon={<CloudUploadIcon />}
       >
-        Upload Images
+        {t('btn_upload_files')}
         <input
           className="hidden"
           type="file"
           multiple
           onChange={(event) => {
-            onAddFiles(event.target.files);
+            if (event.target.files) {
+              onAddFiles(Array.from(event.target.files));
+            }
           }}
         />
       </Button>
@@ -59,41 +60,40 @@ export default function InputFileUpload({
                 ref={provided.innerRef}
                 style={{ display: 'flex', flexWrap: 'wrap' }}
               >
-                {files &&
-                  Array.from(files).map((file: File, index: number) => (
-                    <Draggable key={'image' + index} draggableId={file.name} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={{
-                            userSelect: 'none',
-                            padding: '10px',
-                            margin: '10px',
-                            ...provided.draggableProps.style,
-                          }}
+                {files.map((file: File, index: number) => (
+                  <Draggable key={file.name} draggableId={file.name} index={index}>
+                    {(provided) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={{
+                          userSelect: 'none',
+                          padding: '10px',
+                          margin: '10px',
+                          ...provided.draggableProps.style,
+                        }}
+                      >
+                        <Badge
+                          badgeContent={
+                            <IconButton
+                              className="bg-white p-0"
+                              onClick={() => removeFile(file.name)}
+                            >
+                              <HighlightOffIcon />
+                            </IconButton>
+                          }
                         >
-                          <Badge
-                            badgeContent={
-                              <IconButton
-                                className="bg-white p-0"
-                                onClick={() => removeFile(file.name)}
-                              >
-                                <HighlightOffIcon />
-                              </IconButton>
-                            }
-                          >
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={`file-preview-${index}`}
-                              style={{ maxWidth: '100px', maxHeight: '100px' }}
-                            />
-                          </Badge>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                          <img
+                            className="max-w-36 max-h-36"
+                            src={URL.createObjectURL(file)}
+                            alt={`file-preview-${index}`}
+                          />
+                        </Badge>
+                      </div>
+                    )}
+                  </Draggable>
+                ))}
                 {provided.placeholder}
               </div>
             )}
@@ -104,10 +104,9 @@ export default function InputFileUpload({
   );
 }
 
-interface UploadImagesProps {
+interface UploadFilesProps {
   disabled?: boolean;
-  images: string[];
-  onImagesChanged: (images: string[]) => void;
-  files: FileList | null;
-  onAddFiles: (files: FileList | null) => void;
+  files: File[];
+  onFilesChanged: (files: File[]) => void;
+  onAddFiles: (files: File[]) => void;
 }

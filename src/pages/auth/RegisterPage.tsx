@@ -6,7 +6,7 @@ import PasswordTextField from './components/PasswordTextField';
 import EmailTextField from './components/EmailTextField';
 import { createUser } from '../../firebase/services/UserService';
 import { useTranslation } from 'react-i18next';
-import AuthFormBase from './AuthFormBase';
+import AuthFormFrame from './AuthFormFrame';
 
 const RegisterPage: FC<RegisterPageProps> = () => {
   const [email, setEmail] = useState<string>('');
@@ -36,7 +36,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
   };
 
   return (
-    <AuthFormBase
+    <AuthFormFrame
       title={t('register')}
       submitBtnLabel={t('sign_up_btn')}
       redirectLinkLabel={t('login_here_link')}
@@ -59,7 +59,7 @@ const RegisterPage: FC<RegisterPageProps> = () => {
         }}
         onChange={(event) => setConfirmPassword(event.target.value)}
       />
-    </AuthFormBase>
+    </AuthFormFrame>
   );
 };
 

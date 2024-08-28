@@ -35,7 +35,7 @@ const OwnerControls: FC<OwnerControlsProps> = ({ venueId, onOpen, onImagesAdded 
           disabled={venueId === undefined}
           type="file"
           multiple
-          onChange={async (event: any) => onImagesAdded(event.target.files)}
+          onChange={async (event: any) => onImagesAdded(Array.from(event.target.files))}
         />
       </Button>
       <Button
@@ -51,13 +51,9 @@ const OwnerControls: FC<OwnerControlsProps> = ({ venueId, onOpen, onImagesAdded 
 };
 
 interface OwnerControlsProps {
-  images: string[];
   venueId: string;
-  open: boolean;
   onOpen: () => void;
-  onClose: () => void;
-  onSave: (images: string[], imagesToDelete: string[]) => void;
-  onImagesAdded: (files: FileList) => void;
+  onImagesAdded: (files: File[]) => void;
 }
 
 export default OwnerControls;

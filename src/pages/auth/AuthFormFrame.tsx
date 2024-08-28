@@ -2,7 +2,7 @@ import { Button, Divider } from '@mui/material';
 import { FC, ReactNode } from 'react';
 import { NavLink } from 'react-router-dom';
 
-const AuthFormBase: FC<AuthFormBaseProps> = ({
+const AuthFormFrame: FC<AuthFormFrameProps> = ({
   children,
   onSubmit,
   title,
@@ -10,7 +10,6 @@ const AuthFormBase: FC<AuthFormBaseProps> = ({
   redirectLinkLabel,
   redirectPath,
   errorMsg,
-  forgotPasswordlabel,
   disabled,
 }) => {
   return (
@@ -23,11 +22,6 @@ const AuthFormBase: FC<AuthFormBaseProps> = ({
         <div className="p-10 pt-20">
           <div className="flex flex-col gap-10">{children}</div>
           <div className="flex flex-col">
-            {forgotPasswordlabel && (
-              <NavLink className="ml-auto text-[#028391] no-underline" to="">
-                {forgotPasswordlabel}
-              </NavLink>
-            )}
             {errorMsg && <div className="text-red-500 text-center mt-4">{errorMsg}</div>}
             <Button
               disabled={disabled}
@@ -39,9 +33,11 @@ const AuthFormBase: FC<AuthFormBaseProps> = ({
               {submitBtnLabel}
             </Button>
 
-            <NavLink className="text-[#028391] no-underline mt-2" to={redirectPath}>
-              {redirectLinkLabel}
-            </NavLink>
+            {redirectLinkLabel && redirectPath && (
+              <NavLink className="text-[#028391] no-underline mt-2" to={redirectPath}>
+                {redirectLinkLabel}
+              </NavLink>
+            )}
           </div>
         </div>
       </div>
@@ -49,16 +45,15 @@ const AuthFormBase: FC<AuthFormBaseProps> = ({
   );
 };
 
-interface AuthFormBaseProps {
+interface AuthFormFrameProps {
   children: ReactNode;
   onSubmit: () => void;
   title: string;
   submitBtnLabel: string;
-  redirectLinkLabel: string;
-  redirectPath: string;
+  redirectLinkLabel?: string;
+  redirectPath?: string;
   errorMsg: string | null;
   disabled?: boolean;
-  forgotPasswordlabel?: string;
 }
 
-export default AuthFormBase;
+export default AuthFormFrame;

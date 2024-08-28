@@ -59,11 +59,8 @@ const uploadProfilePictureToStorage = async (userId: string, file: File) => {
   };
 
   const storageRef = ref(storage, `profileImages/${userId}`);
-  const uploadPromise = uploadBytes(storageRef, file, metadata).then((value: UploadResult) => {
-    return getDownloadURL(storageRef);
-  });
-
-  return uploadPromise;
+  await uploadBytes(storageRef, file, metadata);
+  return getDownloadURL(storageRef);
 };
 
 export {

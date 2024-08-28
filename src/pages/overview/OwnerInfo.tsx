@@ -11,7 +11,7 @@ const OwnerInfo: FC<OwnerInfoProps> = ({ owner, onChatOpen }) => {
   return (
     <div className="flex flex-col h-full overflow-hidden  bg-white">
       <div className=" flex items-center justify-center text-xl font-bold  w-full h-14 text-[#006989]">
-        Contacts
+        Контакти
       </div>
       <Divider className="mx-4 bg-[#006989]" />
 
@@ -30,7 +30,7 @@ const OwnerInfo: FC<OwnerInfoProps> = ({ owner, onChatOpen }) => {
 
         {currentUser && (
           <Button className="w-fit self-center" variant="outlined" onClick={onChatOpen}>
-            Open chat
+            Започни чат
           </Button>
         )}
       </section>

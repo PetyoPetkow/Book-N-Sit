@@ -2,6 +2,7 @@ import { Autocomplete, InputLabel, TextField } from '@mui/material';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { FC, useCallback, useEffect, useState } from 'react';
 import _ from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
   city,
@@ -10,6 +11,8 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState<string>('');
   const [options, setOptions] = useState<LocationOption[]>([]);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (city) {
@@ -60,7 +63,7 @@ const AddressAutocomplete: FC<AddressAutocompleteProps> = ({
 
   return (
     <>
-      <InputLabel required>City</InputLabel>
+      <InputLabel required>{t('label_venue_city')}</InputLabel>
       <Autocomplete
         disabled={disabled}
         clearOnBlur={false}

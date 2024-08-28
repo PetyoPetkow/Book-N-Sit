@@ -11,7 +11,7 @@ import Venue from '../../models/Venue';
 import { doc, getDoc, onSnapshot, Timestamp } from 'firebase/firestore';
 import { getVenueReviews, setReview } from '../../firebase/services/ReviewsService';
 import { useAuth } from '../../contexts/authContext';
-import Review from '../../models/Review';
+import UserReview from '../../models/UserReview';
 import MapComponent from '../venue/MapComponent';
 import { getUserById } from '../../firebase/services/UserService';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ import {
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<UserReview[]>([]);
   const [rating, setRating] = useState<number | null>(null);
   const [comment, setComment] = useState<string>('');
   const [openImagesModal, setOpenImagesModal] = useState<boolean>(false);
@@ -63,7 +63,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
       };
 
       fetchVenue();
-      refetchReviews();
     }
   }, [venueId]);
 
@@ -82,12 +81,16 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   }, [currentUser, venue, firestore]);
 
   const refetchReviews = useCallback(async () => {
-    let reviews: Review[] = [];
+    let reviews: UserReview[] = [];
     if (venueId) {
       reviews = await getVenueReviews(venueId);
     }
     setReviews(reviews);
   }, [venueId]);
+
+  useEffect(() => {
+    refetchReviews();
+  }, [refetchReviews]);
 
   const onFinishReviewClick = (rating: number, comment: string) => {
     if (currentUser && venueId) {
@@ -131,7 +134,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     fetchOwner();
   }, [venue]);
 
-  const handleUploadImages = async (files: FileList) => {
+  const handleUploadImages = async (files: File[]) => {
     if (venueId) {
       try {
         const imageUrls = await uploadImagesToStorage(files, venueId);
@@ -264,14 +267,8 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             <div className="col-span-1 flex flex-col gap-2">
               {venue.userId === currentUser?.uid && (
                 <OwnerControls
-                  images={venue.images}
-                  open={openImagesModal}
                   venueId={venueId}
-                  onClose={() => setOpenImagesModal(false)}
                   onOpen={() => setOpenImagesModal(true)}
-                  onSave={(images: string[], imagesToDelete: string[]) =>
-                    handleImagesUpdate(images, imagesToDelete)
-                  }
                   onImagesAdded={handleUploadImages}
                 />
               )}
@@ -297,7 +294,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
         {venue.description && (
           <div className="my-5 flex flex-col gap-2 bg-white p-3">
             <div className="text-lg font-bold">
-              About <span className="text-sky-900">{venue.name}</span>
+              Относно <span className="text-sky-900">{venue.name}</span>
             </div>
             <Divider className="bg-[#006989]" />
             <div>{venue.description}</div>

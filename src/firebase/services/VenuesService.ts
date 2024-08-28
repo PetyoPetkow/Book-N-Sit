@@ -23,7 +23,7 @@ const getVenueById = async (venueId: string): Promise<Venue | null> => {
   }
 };
 
-const createVenue = async (venue: VenueCreate, imageFiles: FileList): Promise<string> => {
+const createVenue = async (venue: VenueCreate, imageFiles: File[]): Promise<string> => {
   const venueRef = await addDoc(collection(firestore, 'venues'), venue);
   const imageUrls = await uploadImagesToStorage(imageFiles, venueRef.id);
   await updateDoc(doc(firestore, 'venues', venueRef.id), { images: imageUrls });
@@ -38,12 +38,12 @@ const updateVenue = async (venueId: string, venue: Venue): Promise<string> => {
   return venue.id;
 };
 
-const uploadImagesToStorage = async (files: FileList, venueId: string) => {
+const uploadImagesToStorage = async (files: File[], venueId: string) => {
   const metadata = {
     contentType: 'image/jpeg',
   };
 
-  const uploadPromises = Array.from(files).map(async (file) => {
+  const uploadPromises = files.map(async (file) => {
     const storageRef = ref(storage, `images/${venueId}/${file.name}`);
     await uploadBytes(storageRef, file, metadata);
     return await getDownloadURL(storageRef);

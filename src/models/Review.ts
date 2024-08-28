@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
 
 export default interface Review {
-  displayName: string;
+  userId: string;
   venueId: string;
   rating: number;
   comment: string;

@@ -49,9 +49,36 @@ const bg = {
   btn_edit: 'Редактиране',
   btn_upload_images: 'Качване на снимки',
   btn_edit_images: 'Редактиране на снимки',
+  btn_publish: 'Публикувай',
+  btn_cancel: 'Отказ',
 
-  city: 'Град',
-  filters: 'Филтри',
+  //=============================//
+  //       REGISTER VENUE        //
+  //=============================//
+  header_title: 'Регистрирайте вашия обект',
+  header_text: 'Моля попълнете формулята с актуална информация за вашия обект.',
+  label_venue_name: 'Име на обект',
+  label_venue_city: 'Населено място',
+  label_venue_street: 'Улица',
+  warning_images_required: 'Качете задължително поне една снимка',
+  label_venue_description: 'Описание на обект',
+  label_venue_type: 'Вид на обекта',
+  label_venue_perks: 'Екстри',
+  label_venue_working_hours: 'Работно време',
+
+  //=============================//
+  //         DAYS OF WEEK        //
+  //=============================//
+  monday: 'Понеделник',
+  tuesday: 'Вторник',
+  wednesday: 'Сряда',
+  thursday: 'Четвъртък',
+  friday: 'Петък',
+  saturday: 'Събота',
+  sunday: 'Неделя',
+
+  city: 'Населено място',
+  filters: 'Предлагани услуги',
 
   restaurant: 'Ресторант',
   cafe: 'Кафене',
@@ -63,10 +90,13 @@ const bg = {
   night_club: 'Нощен клуб',
 
   free_wifi: 'Безплатен WiFi',
-  personalized_event: 'Персонализирани събития',
-  sushi_men: 'Суши меню',
-  wine_lis: 'Винена листа',
-  cocktail: 'Коктейли',
+  personalized_events: 'Персонализирани събития',
+  sushi_menu: 'Суши меню',
+  wine_list: 'Винена листа',
+  cocktails: 'Коктейли',
+
+  latitude: 'Географска ширина',
+  longitude: 'Географска дължина',
 };
 
 export default bg;
