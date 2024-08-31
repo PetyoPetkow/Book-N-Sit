@@ -12,7 +12,7 @@ import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
 import { useTranslation } from 'react-i18next';
 
-const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onClose, onSave }) => {
+const EditImagesModal: FC<EditImagesModalProps> = ({ images, open, onClose, onSave }) => {
   const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
 
@@ -126,7 +126,6 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onCl
 
 interface EditImagesModalProps {
   images: string[];
-  venueId: string;
   open: boolean;
   onClose: () => void;
   onSave: (images: string[], imagesToDelete: string[]) => void;

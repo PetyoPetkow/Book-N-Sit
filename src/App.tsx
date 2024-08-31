@@ -1,7 +1,7 @@
 import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Header from './navigation/Header';
-import Places from './pages/venue/Places';
+import VenuesPage from './pages/venue/VenuesPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import PrivateOutlet from './routing/PrivateOutlet';
@@ -62,7 +62,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<PrivateOutlet />}>
               <Route path="addVenue" element={<AddVenue />} />
-              <Route path="myVenues" element={<Places />} />
+              <Route path="myVenues" element={<VenuesPage />} />
               <Route path="editVenue/:venueId" element={<AddVenue />} />
               <Route path="messages" element={<Messages />} />
               <Route path="manageAccount" element={<ManageAccount />} />
@@ -76,7 +76,7 @@ const App = () => {
 
             <Route path="/">
               <Route path=":category?">
-                <Route index element={<Places />} />
+                <Route index element={<VenuesPage />} />
                 <Route path=":venueId" element={<OverviewPage />} />
               </Route>
             </Route>

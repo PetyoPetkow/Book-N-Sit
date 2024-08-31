@@ -4,9 +4,9 @@ import { FC, KeyboardEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import SendOutlinedIcon from '@mui/icons-material/SendOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import moment from 'moment';
 import UserDetails from '../../models/UserDetails';
 import Message from '../../models/Message';
+import { getDateStringFromTimestamp, getTimeFromNowFromTimestamp } from '../../utils/dateUtil';
 
 const ChatBox: FC<ChatBoxProps> = ({
   isOpen,
@@ -42,43 +42,45 @@ const ChatBox: FC<ChatBoxProps> = ({
       <Divider />
       <div className="overflow-auto flex flex-col-reverse flex-grow">
         <div className="p-2 justify-end">
-          {messages.map((m: any) => (
+          {messages.map((message: Message) => (
             <div
               className={clsx(
                 'flex gap-5 items-center mt-2',
-                m.senderId === senderUser.id ? 'justify-start mr-20 ' : 'justify-end ml-20 '
+                message.senderId === senderUser.id ? 'justify-start mr-20 ' : 'justify-end ml-20 '
               )}
             >
               <Avatar
                 className={clsx(
-                  m.senderId === senderUser.id ? 'order-first left-0' : 'order-last right-0',
+                  message.senderId === senderUser.id ? 'order-first left-0' : 'order-last right-0',
                   'shadow-sm shadow-black'
                 )}
-                src={m.senderId === senderUser.id ? senderUser.photoURL : receiverUser.photoURL}
+                src={
+                  message.senderId === senderUser.id ? senderUser.photoURL : receiverUser.photoURL
+                }
               />
               <div
                 className={clsx(
                   'flex flex-col',
-                  m.senderId === senderUser.id ? 'items-start' : 'items-end'
+                  message.senderId === senderUser.id ? 'items-start' : 'items-end'
                 )}
               >
                 <div
                   className={clsx(
-                    m.senderId === senderUser.id
+                    message.senderId === senderUser.id
                       ? 'bg-blue-200 rounded-br-xl'
                       : 'bg-[#e3e7db] rounded-bl-xl ',
                     'p-1 px-3 rounded-t-xl w-fit'
                   )}
                 >
-                  {m.text}
+                  {message.text}
                 </div>
                 <Tooltip
-                  title={new Date(m.date.seconds * 1000).toDateString()}
+                  title={getDateStringFromTimestamp(message.date)}
                   placement="top"
                   enterDelay={1000}
                 >
                   <div className="text-xs text-gray-600">
-                    {moment(new Date(m.date.seconds * 1000)).fromNow()}
+                    {getTimeFromNowFromTimestamp(message.date)}
                   </div>
                 </Tooltip>
               </div>

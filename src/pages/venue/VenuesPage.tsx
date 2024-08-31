@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { perksIcons } from '../overview/PerksList';
 
-const Places: FC<PlacesProps> = () => {
+const VenuesPage: FC<VenuesPageProps> = () => {
   const [places, setPlaces] = useState<Venue[]>([]);
   const [city, setCity] = useState<string | null>(null);
   const [perks, setPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
@@ -144,7 +144,6 @@ const Places: FC<PlacesProps> = () => {
               )}
               value={perks}
               onChange={(event, value) => {
-                // Filter out duplicates by checking if the option is already in the value array
                 const uniqueValue = value.filter(
                   (v, index, self) => index === self.findIndex((t) => t.name === v.name)
                 );
@@ -243,12 +242,6 @@ const Places: FC<PlacesProps> = () => {
   );
 };
 
-interface PlacesProps {}
+interface VenuesPageProps {}
 
-interface Place {
-  name: string;
-  address: string;
-  description: string;
-}
-
-export default Places;
+export default VenuesPage;

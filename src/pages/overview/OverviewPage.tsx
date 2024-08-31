@@ -225,7 +225,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
     <div className="bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 p-4 relative">
       <EditImagesModal
         images={venue.images}
-        venueId={venueId}
         open={openImagesModal}
         onClose={() => setOpenImagesModal(false)}
         onSave={(images: string[], imagesToDelete: string[]) =>

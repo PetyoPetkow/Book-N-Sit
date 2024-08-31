@@ -8,7 +8,7 @@ const PublicOutlet = () => {
 
   useEffect(() => {
     if (currentUser !== null) {
-      navigate('/login');
+      navigate('/all');
     }
   }, [currentUser, navigate]);
 

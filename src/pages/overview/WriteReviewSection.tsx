@@ -1,6 +1,7 @@
 import { Badge, Button, Rating, TextField } from '@mui/material';
 import { FC, SyntheticEvent } from 'react';
 import { MAX_COMMENT_LENGTH } from './constants';
+import { useTranslation } from 'react-i18next';
 
 const WriteReviewSection: FC<WriteReviewSectionProps> = ({
   rating,
@@ -9,11 +10,13 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({
   onCommentChange,
   postReview,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col gap-3">
-      <div className="text-lg font-bold">Остави ревю</div>
+      <div className="text-lg font-bold">{t('leave_review')}</div>
       <div className="flex gap-3">
-        Оценка: <Rating value={rating} onChange={onRatingChanged} />
+        {t('rating')}: <Rating value={rating} onChange={onRatingChanged} />
       </div>
       <Badge color="primary" badgeContent={`${comment.length}/${MAX_COMMENT_LENGTH}`}>
         <TextField
@@ -37,7 +40,7 @@ const WriteReviewSection: FC<WriteReviewSectionProps> = ({
             }
           }}
         >
-          Изпрати
+          {t('btn_submit')}
         </Button>
       </div>
     </div>

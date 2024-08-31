@@ -52,6 +52,7 @@ const en = {
   btn_publish: 'Publish',
   btn_save: 'Save',
   btn_cancel: 'Cancel',
+  btn_submit: 'Submit',
 
   //=============================//
   //       REGISTER VENUE        //
@@ -72,12 +73,14 @@ const en = {
   //=============================//
   reset_password_check_email: 'A reset password link was send to your email address',
   reset_password: 'Reset password',
-  reset_password_btn: 'Send',
 
   //=============================//
   //        OVERVIEW PAGE        //
   //=============================//
+  contacts: 'Contacts',
   about: 'About',
+  leave_review: 'Leave a review',
+  open_chat: 'Open chat',
 
   //=============================//
   //        MANAGE ACCOUNT       //
@@ -108,7 +111,7 @@ const en = {
   brewery: 'Brewery',
   night_club: 'Night Club',
 
-  free_wifi: 'free WiFi',
+  free_wifi: 'Free WiFi',
   personalized_events: 'Personalized events',
   sushi_menu: 'Sushi menu',
   wine_list: 'Wine list',
@@ -118,6 +121,8 @@ const en = {
   longitude: 'Longitude',
 
   upload_image: 'Upload an image',
+
+  you: 'You',
 };
 
 export default en;

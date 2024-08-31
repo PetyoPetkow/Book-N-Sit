@@ -52,6 +52,7 @@ const bg = {
   btn_publish: 'Публикувай',
   btn_save: 'Запази',
   btn_cancel: 'Отказ',
+  btn_submit: 'Изпрати',
 
   //=============================//
   //       REGISTER VENUE        //
@@ -72,12 +73,14 @@ const bg = {
   //=============================//
   reset_password_check_email: 'Линк за смяна на паролата беше изпратен на вашия имейл',
   reset_password: 'Възстановяване на парола',
-  reset_password_btn: 'Изпрати',
 
   //=============================//
   //        OVERVIEW PAGE        //
   //=============================//
+  constacts: 'Контакти',
   about: 'Относно',
+  leave_review: 'Остави ревю',
+  open_chat: 'Започни чат',
 
   //=============================//
   //        MANAGE ACCOUNT       //
@@ -118,6 +121,8 @@ const bg = {
   longitude: 'Географска дължина',
 
   upload_image: 'Качи снимка',
+
+  you: 'Вие',
 };
 
 export default bg;

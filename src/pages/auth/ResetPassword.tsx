@@ -27,7 +27,7 @@ const ResetPasswordPage: FC<ResetPasswordPageProps> = () => {
   return (
     <AuthFormFrame
       title={t('reset_password')}
-      submitBtnLabel={t('reset_password_btn')}
+      submitBtnLabel={t('btn_submit')}
       errorMsg={errorMsg}
       onSubmit={onPasswordReset}
     >

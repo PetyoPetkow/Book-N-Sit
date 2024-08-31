@@ -39,7 +39,7 @@ export default function InputFileUpload({
         tabIndex={-1}
         startIcon={<CloudUploadIcon />}
       >
-        {t('btn_upload_files')}
+        {t('btn_upload_images')}
         <input
           className="hidden"
           type="file"

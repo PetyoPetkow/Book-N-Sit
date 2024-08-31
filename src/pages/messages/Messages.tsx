@@ -25,6 +25,7 @@ import {
   updateUserChat,
 } from '../../firebase/services/MessagesService';
 import { getDateStringFromTimestamp, getTimeFromNowFromTimestamp } from '../../utils/dateUtil';
+import { useTranslation } from 'react-i18next';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -36,6 +37,7 @@ const Messages: FC<MessagesProps> = () => {
   const [selectedChat, setSelectedChat] = useState<UserChat | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const { t } = useTranslation();
   const { currentUserDetails } = useAuth();
 
   const selectedChatUser = useMemo(() => {
@@ -183,7 +185,7 @@ const Messages: FC<MessagesProps> = () => {
                   <div className="flex flex-col flex-grow">
                     <div className="font-bold">{user?.displayName}</div>
                     <div className="text-sm text-gray-800">
-                      {chat.lastSenderId === currentUserDetails.id ? 'Вие: ' : 'Те: '}
+                      {chat.lastSenderId === currentUserDetails.id && `${t('you')}: `}
                       {chat.lastMessage}
                     </div>
                   </div>
