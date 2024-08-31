@@ -10,10 +10,13 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import ControlPointIcon from '@mui/icons-material/ControlPoint';
+import { useTranslation } from 'react-i18next';
 
 const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onClose, onSave }) => {
   const [editedImages, setEditedImages] = useState<string[]>(structuredClone(images));
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+
+  const { t } = useTranslation();
 
   const onDragEnd = (result: any) => {
     if (!result.destination) return;
@@ -110,10 +113,10 @@ const EditImagesModal: FC<EditImagesModalProps> = ({ images, venueId, open, onCl
               onClose();
             }}
           >
-            Save
+            {t('btn_save')}
           </Button>
           <Button color="error" variant="outlined" onClick={onClose}>
-            Cancel
+            {t('btn_cancel')}
           </Button>
         </div>
       </div>

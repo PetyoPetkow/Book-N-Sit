@@ -50,6 +50,7 @@ const en = {
   btn_upload_images: 'Upload images',
   btn_edit_images: 'Edit images',
   btn_publish: 'Publish',
+  btn_save: 'Save',
   btn_cancel: 'Cancel',
 
   //=============================//
@@ -79,6 +80,12 @@ const en = {
   about: 'About',
 
   //=============================//
+  //        MANAGE ACCOUNT       //
+  //=============================//
+  username: 'Username',
+  phone_number: 'Phone number',
+
+  //=============================//
   //         DAYS OF WEEK        //
   //=============================//
   monday: 'Monday',
@@ -106,6 +113,11 @@ const en = {
   sushi_menu: 'Sushi menu',
   wine_list: 'Wine list',
   cocktails: 'Cocktails',
+
+  latitude: 'Latitude',
+  longitude: 'Longitude',
+
+  upload_image: 'Upload an image',
 };
 
 export default en;

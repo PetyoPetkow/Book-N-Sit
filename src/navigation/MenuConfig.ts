@@ -30,7 +30,7 @@ const menuConfig = [
   {
     label: 'header_btn_pubs',
     path: '/pubs',
-    icon: SportsBarOutlinedIcon,
+    icon: LocalDrinkOutlinedIcon,
   },
   {
     label: 'header_btn_bakeries',
@@ -45,7 +45,7 @@ const menuConfig = [
   {
     label: 'header_btn_breweries',
     path: '/breweries',
-    icon: LocalDrinkOutlinedIcon,
+    icon: SportsBarOutlinedIcon,
   },
   {
     label: 'header_btn_night_clubs',

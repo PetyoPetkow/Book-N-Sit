@@ -7,9 +7,12 @@ import {
   uploadProfilePictureToStorage,
 } from '../../firebase/services/UserService';
 import UserDetails from '../../models/UserDetails';
+import { useTranslation } from 'react-i18next';
 
 const ManageAccount: FC<ManageAccountProps> = () => {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+
+  const { t } = useTranslation();
   const { currentUserDetails } = useAuth();
 
   useEffect(() => {
@@ -40,7 +43,7 @@ const ManageAccount: FC<ManageAccountProps> = () => {
                 <img className="h-56" src={userDetails.photoURL} alt="Avatar" />
 
                 <Button component="label" role={undefined} tabIndex={-1}>
-                  Upload Images
+                  {t('upload_image')}
                   <input
                     className="hidden"
                     type="file"
@@ -57,7 +60,7 @@ const ManageAccount: FC<ManageAccountProps> = () => {
               <Divider className="h-4/6" orientation="vertical" />
               <div className="flex-1 flex flex-col gap-6 px-14">
                 <TextField
-                  label="Username"
+                  label={t('username')}
                   value={userDetails.displayName}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     const userDetailsCopy = structuredClone(userDetails);
@@ -66,7 +69,7 @@ const ManageAccount: FC<ManageAccountProps> = () => {
                   }}
                 />
                 <TextField
-                  label="Phone Number"
+                  label={t('phone_number')}
                   value={userDetails.phoneNumber}
                   onChange={(e: ChangeEvent<HTMLInputElement>) => {
                     const userDetailsCopy = structuredClone(userDetails);
@@ -75,7 +78,7 @@ const ManageAccount: FC<ManageAccountProps> = () => {
                   }}
                 />
                 <Button size="large" variant="contained" onClick={handleUpdate}>
-                  Save
+                  {t('btn_save')}
                 </Button>
               </div>
             </div>

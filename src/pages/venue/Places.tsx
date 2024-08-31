@@ -120,7 +120,7 @@ const Places: FC<PlacesProps> = () => {
             <TextField
               fullWidth
               size="small"
-              label={t('city')}
+              label={t('label_venue_city')}
               value={city}
               onChange={(e) => setCity(e.target.value)}
             />
