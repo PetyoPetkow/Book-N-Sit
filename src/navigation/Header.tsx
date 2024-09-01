@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/authContext';
 import flagBG from '../assets/flagsImages/bulgaria.png';
 import flagUK from '../assets/flagsImages/united-kingdom.png';
 import logo from '../assets/logos/logo.png';
+import logoMobile from '../assets/logos/logoMobile.png';
 import { useTranslation } from 'react-i18next';
 import Language from '../models/Language';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
@@ -44,25 +45,25 @@ const Header: FC<HeaderProps> = () => {
     }
   }, [i18n.language]);
 
-  const changeLanguage = (lng: Language) => {
+  const changeLanguage = (lng: Language): void => {
     if (currentUser) {
       updateUser(currentUser.uid, { language: lng });
     }
   };
 
-  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenUserMenu = (event: MouseEvent<HTMLElement>): void => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (): void => {
     setAnchorElUser(null);
   };
 
-  const handleOpenLanguageMenu = (event: MouseEvent<HTMLElement>) => {
+  const handleOpenLanguageMenu = (event: MouseEvent<HTMLElement>): void => {
     setAnchorElLanguage(event.currentTarget);
   };
 
-  const handleCloseLanguageMenu = () => {
+  const handleCloseLanguageMenu = (): void => {
     setAnchorElLanguage(null);
   };
 
@@ -70,10 +71,11 @@ const Header: FC<HeaderProps> = () => {
     <AppBar className="bg-[#006989]" position="relative">
       <Container>
         <div className="w-full flex justify-between items-center mt-2">
-          <img className="h-14" src={logo} />
+          <img className="h-14 hidden sm:block" src={logo} />
+          <img className="h-14 sm:hidden" src={logoMobile} />
           <div className="flex">
             {currentUser ? (
-              <div>
+              <div className="flex">
                 <Button
                   className="h-full hover:backdrop-contrast-150"
                   onClick={handleOpenLanguageMenu}
@@ -162,7 +164,6 @@ const Header: FC<HeaderProps> = () => {
                 >
                   <MenuItem
                     className="flex gap-2"
-                    key={'setting'}
                     onClick={() => {
                       navigate('/messages');
                       handleCloseUserMenu();
@@ -174,7 +175,6 @@ const Header: FC<HeaderProps> = () => {
 
                   <MenuItem
                     className="flex gap-2"
-                    key={'setting'}
                     onClick={() => {
                       navigate('/myVenues');
                       handleCloseUserMenu();
@@ -186,7 +186,6 @@ const Header: FC<HeaderProps> = () => {
 
                   <MenuItem
                     className="flex gap-2"
-                    key={'setting'}
                     onClick={() => {
                       navigate('/addVenue');
                       handleCloseUserMenu();
@@ -198,7 +197,6 @@ const Header: FC<HeaderProps> = () => {
 
                   <MenuItem
                     className="flex gap-2"
-                    key={'setting'}
                     onClick={() => {
                       navigate('/manageAccount');
                       handleCloseUserMenu();
@@ -209,7 +207,6 @@ const Header: FC<HeaderProps> = () => {
                   </MenuItem>
                   <MenuItem
                     className="flex gap-2"
-                    key={'s'}
                     onClick={() => {
                       handleCloseUserMenu();
                       doSingOut();
@@ -246,8 +243,9 @@ const Header: FC<HeaderProps> = () => {
           <div className="flex flex-wrap gap-3 my-2 whitespace-nowrap">
             {menuConfig.map(({ label, path, icon: Icon }) => (
               <NavLink
+                key={label}
                 to={path}
-                className={({ isActive, isPending }) =>
+                className={({ isActive }) =>
                   clsx(
                     isActive && 'border border-solid border-white font-bold',
                     'decoration-transparent text-white p-2 px-4 rounded-full hover:bg-white hover:bg-opacity-10'

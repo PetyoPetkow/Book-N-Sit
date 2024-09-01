@@ -3,7 +3,7 @@ import { Avatar, Divider, Pagination, Rating } from '@mui/material';
 import UserReview from '../../models/UserReview';
 import { getDateStringFromTimestamp } from '../../utils/dateUtil';
 
-const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
+const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }: ReviewsSectionProps) => {
   const [page, setPage] = useState<number>(1);
   const commentsPerPage = 5;
   const pageCount = Math.ceil(reviews.length / commentsPerPage);
@@ -11,10 +11,10 @@ const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }) => {
 
   return (
     <>
-      {reviewsOnPage.map((review) => {
+      {reviewsOnPage.map((review: UserReview) => {
         const { comment, displayName, photoURL, rating, timestamp } = review;
         return (
-          <div key={review.displayName} className="flex flex-col">
+          <div key={review.displayName + timestamp.toString()} className="flex flex-col">
             <div className="flex flex-col gap-2 h-fit bg-white p-4">
               <div className="flex justify-between">
                 <div className="flex gap-4 w-full font-bold">

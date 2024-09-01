@@ -255,7 +255,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
             city={venue.city}
             street={venue.street}
           />
-          <div className="mb-4 bg-white rounded-md w-fit px-2">
+          <div className="mb-4 bg-white rounded-md w-fit px-2 border border-solid border-gray-400">
             {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
           </div>
           <div className="grid grid-cols-4 gap-2 h-full w-full">

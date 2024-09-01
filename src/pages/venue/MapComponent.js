@@ -75,6 +75,7 @@ const MapComponent = ({ lat, lng, setCoordinates, draggable, height = 400 }) => 
           }}
         >
           <Popup>Drag me to change position!</Popup>
+          {/* TRANSLATE ! */}
         </Marker>
       </MapContainer>
       {draggable && (

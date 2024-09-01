@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { perksIcons } from '../overview/PerksList';
 
 const VenuesPage: FC<VenuesPageProps> = () => {
-  const [places, setPlaces] = useState<Venue[]>([]);
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [city, setCity] = useState<string | null>(null);
   const [perks, setPerks] = useState<{ icon: JSX.Element; name: string }[]>([]);
 
@@ -106,7 +106,7 @@ const VenuesPage: FC<VenuesPageProps> = () => {
         venues = placeList;
       }
 
-      setPlaces(venues);
+      setVenues(venues);
     };
 
     getPlaces();
@@ -169,7 +169,7 @@ const VenuesPage: FC<VenuesPageProps> = () => {
       </div>
 
       <div className="grid grid-cols-2 max-sm:grid-cols-1 justify-center  gap-10 px-4 pb-4">
-        {places.map(
+        {venues.map(
           ({ name, city, street, description, images, id, workingHours }: Venue, index: number) => {
             const openAt = workingHours[dayOfWeek].openAt;
             const closeAt = workingHours[dayOfWeek].closeAt;
@@ -196,7 +196,7 @@ const VenuesPage: FC<VenuesPageProps> = () => {
               >
                 <CardActionArea
                   className="flex flex-col justify-start items-start"
-                  onClick={(event) => {
+                  onClick={() => {
                     navigate(`${encodeURI(id!)}`);
                   }}
                 >
@@ -211,13 +211,12 @@ const VenuesPage: FC<VenuesPageProps> = () => {
                       <div className="flex justify-between flex-grow">
                         <Location
                           className="bg-[#F3F7EC] w-fit pr-3 py-0 -ml-2 rounded-full scale-90"
-                          iconSize="small"
                           city={city}
                           street={street}
                         />
                         <div>
                           <span className={clsx(isOpen ? 'text-green-800' : 'text-red-800')}>
-                            {isOpen ? 'Open ⋅ ' : 'Closed ⋅ '}
+                            {isOpen ? 'Отворено ⋅ ' : 'Closed ⋅ '}
                           </span>
                           <span>
                             {workingHours[dayOfWeek] &&

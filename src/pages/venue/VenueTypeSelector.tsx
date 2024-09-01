@@ -21,7 +21,6 @@ const VenueTypeSelector: FC<VenueTypeSelectorProps> = ({
               control={
                 <Checkbox
                   disabled={disabled}
-                  value={venueType}
                   checked={selectedVenueTypes.includes(venueType)}
                   onChange={onselectedVenueTypesChanged}
                 />

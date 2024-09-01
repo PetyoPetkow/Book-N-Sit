@@ -61,6 +61,7 @@ const Middle = ({ images, onClick }: { images: string[]; onClick: (index: number
       {images.map((image, index) => {
         return (
           <div
+            key={image}
             className={clsx(
               'rounded-lg shadow-lg cursor-pointer',
               index === 0 ? 'col-span-9 row-span-12' : 'col-span-3 row-span-3'
@@ -86,7 +87,7 @@ const Many = ({ images, onClick }: { images: string[]; onClick: (index: number) 
 
         return (
           <div
-            key={index}
+            key={image}
             className={clsx(
               'relative rounded-lg shadow-lg cursor-pointer',
               index === 0

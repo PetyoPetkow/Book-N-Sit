@@ -14,7 +14,7 @@ const AuthFormFrame: FC<AuthFormFrameProps> = ({
 }) => {
   return (
     <div className="flex flex-col items-center justify-center flex-grow">
-      <div className="w-[500px] overflow-hidden bg-white shadow-gray-500 shadow-md">
+      <div className="max-w-[500px] w-full overflow-hidden bg-white shadow-gray-500 shadow-md">
         <div className="min-h-20 font-bold text-[#028391] text-5xl font-sans flex items-center text-center justify-center h-fit">
           {title}
         </div>

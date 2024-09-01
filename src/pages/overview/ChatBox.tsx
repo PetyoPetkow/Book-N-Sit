@@ -44,6 +44,7 @@ const ChatBox: FC<ChatBoxProps> = ({
         <div className="p-2 justify-end">
           {messages.map((message: Message) => (
             <div
+              key={message.id + message.senderId}
               className={clsx(
                 'flex gap-5 items-center mt-2',
                 message.senderId === senderUser.id ? 'justify-start mr-20 ' : 'justify-end ml-20 '

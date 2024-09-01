@@ -1,14 +1,11 @@
 import { FC } from 'react';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import { IconButton } from '@mui/material';
 import clsx from 'clsx';
 
-const Location: FC<LocationProps> = ({ city, street, className, iconSize }) => {
+const Location: FC<LocationProps> = ({ city, street, className }) => {
   return (
-    <div className={clsx(className ? className : '')}>
-      <IconButton size="small">
-        <LocationOnIcon fontSize={iconSize} />
-      </IconButton>
+    <div className={clsx(className ? className : '', 'flex items-center shadow-sm shadow-black')}>
+      <LocationOnIcon className="text-gray-600" />
       <span>
         {city} {street && `, ${street}`}
       </span>
@@ -17,7 +14,6 @@ const Location: FC<LocationProps> = ({ city, street, className, iconSize }) => {
 };
 
 interface LocationProps {
-  iconSize?: 'small' | 'medium' | 'large' | 'inherit';
   className?: string;
   city: string;
   street: string | null;

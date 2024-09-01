@@ -6,9 +6,11 @@ const PrivateOutlet = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
-  useEffect(() => {
-    navigate('/all');
-  }, []);
+  // useEffect(() => {
+  //   if (true) {
+  //     console.log(window.location.pathname, 'asd');
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (currentUser === null) {

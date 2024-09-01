@@ -175,6 +175,7 @@ const Messages: FC<MessagesProps> = () => {
               const user = users.find((u) => u.id === chat.userId);
               return (
                 <div
+                  key={chat.chatId}
                   className={clsx(
                     chat.chatId === selectedChat?.chatId ? 'bg-opacity-80' : '',
                     'flex gap-3 p-2 mx-5 rounded-lg bg-white hover:bg-gray-300 hover:cursor-pointer'
@@ -204,6 +205,7 @@ const Messages: FC<MessagesProps> = () => {
                 {messages.map((message: Message) => {
                   return (
                     <div
+                      key={message.id + message.senderId}
                       className={clsx(
                         'flex gap-5 items-end mt-2',
                         message.senderId === currentUserDetails.id

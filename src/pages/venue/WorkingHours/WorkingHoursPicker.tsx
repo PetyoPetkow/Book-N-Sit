@@ -25,6 +25,7 @@ const WorkigHoursPicker: FC<WorkigHoursPickerProps> = ({
 
             return (
               <WorkigHoursDay
+                key={day}
                 disabled={disabled}
                 onValidityChange={onValidityChange}
                 openAt={openAt}
