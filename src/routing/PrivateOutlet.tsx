@@ -7,6 +7,10 @@ const PrivateOutlet = () => {
   const { currentUser } = useAuth();
 
   useEffect(() => {
+    navigate('/all');
+  }, []);
+
+  useEffect(() => {
     if (currentUser === null) {
       navigate('/login');
     }
