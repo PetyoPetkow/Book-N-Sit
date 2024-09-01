@@ -5,6 +5,7 @@ import {
   collection,
   doc,
   getDoc,
+  onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
 import { firestore, storage } from '../firebase';
@@ -72,6 +73,18 @@ const updateVenueImages = async (venueId: string, imagesUrls: string[]): Promise
   await updateDoc(venueRef, { images: imagesUrls });
 };
 
+const subscribeToVenue = (venueId: string, onVenueUpdate: (Venue: Venue) => void) => {
+  const docRef = doc(firestore, 'venues', venueId);
+
+  const unsubscribe = onSnapshot(docRef, (doc) => {
+    if (doc.exists()) {
+      onVenueUpdate(doc.data() as Venue);
+    }
+  });
+
+  return unsubscribe;
+};
+
 export {
   getVenueById,
   createVenue,
@@ -81,4 +94,5 @@ export {
   appendImages,
   removeImages,
   updateVenueImages,
+  subscribeToVenue,
 };

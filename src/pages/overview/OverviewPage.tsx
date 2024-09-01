@@ -34,8 +34,8 @@ import Message from '../../models/Message';
 import {
   appendImages,
   deleteImagesFromStorage,
-  getVenueById,
   removeImages,
+  subscribeToVenue,
   updateVenueImages,
   uploadImagesToStorage,
 } from '../../firebase/services/VenuesService';
@@ -57,12 +57,11 @@ const OverviewPage: FC<OverviewPageProps> = () => {
 
   useEffect(() => {
     if (venueId !== undefined) {
-      const fetchVenue = async () => {
-        const venue = await getVenueById(venueId);
-        setVenue(venue);
-      };
+      const unSub = subscribeToVenue(venueId, setVenue);
 
-      fetchVenue();
+      return () => {
+        unSub();
+      };
     }
   }, [venueId]);
 
@@ -276,7 +275,6 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                   <OwnerInfo owner={venueOwner} onChatOpen={() => setIsChatOpen(true)} />
                 </div>
               )}
-              {/* <RatingDisplay reviews={reviews} /> */}
 
               <MapComponent
                 lat={venue.coordinates[0]}
