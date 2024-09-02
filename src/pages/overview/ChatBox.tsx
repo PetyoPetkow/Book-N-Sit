@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import UserDetails from '../../models/UserDetails';
 import Message from '../../models/Message';
 import { getDateStringFromTimestamp, getTimeFromNowFromTimestamp } from '../../utils/dateUtil';
+import { Locale } from 'date-fns';
 
 const ChatBox: FC<ChatBoxProps> = ({
   isOpen,
@@ -15,6 +16,7 @@ const ChatBox: FC<ChatBoxProps> = ({
   onClose,
   senderUser,
   receiverUser,
+  locale,
 }) => {
   const [text, setText] = useState<string>('');
 
@@ -76,12 +78,12 @@ const ChatBox: FC<ChatBoxProps> = ({
                   {message.text}
                 </div>
                 <Tooltip
-                  title={getDateStringFromTimestamp(message.date)}
+                  title={getDateStringFromTimestamp(message.date, locale)}
                   placement="top"
                   enterDelay={1000}
                 >
                   <div className="text-xs text-gray-600">
-                    {getTimeFromNowFromTimestamp(message.date)}
+                    {getTimeFromNowFromTimestamp(message.date, locale)}
                   </div>
                 </Tooltip>
               </div>
@@ -131,6 +133,7 @@ interface ChatBoxProps {
   onClose: () => void;
   senderUser: UserDetails;
   receiverUser: UserDetails;
+  locale: Locale;
 }
 
 export default ChatBox;

@@ -9,7 +9,7 @@ const OwnerControls: FC<OwnerControlsProps> = ({ venueId, onOpen, onImagesAdded 
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col justify-evenly gap-2">
       <Button
         className="font-bold bg-black bg-opacity-60"
         variant="outlined"

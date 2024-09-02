@@ -1,13 +1,23 @@
-import { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useMemo, useState } from 'react';
 import { Avatar, Divider, Pagination, Rating } from '@mui/material';
 import UserReview from '../../models/UserReview';
 import { getDateStringFromTimestamp } from '../../utils/dateUtil';
+import { bg } from 'date-fns/locale/bg';
+import { enGB } from 'date-fns/locale/en-GB';
+import { useAuth } from '../../contexts/authContext';
 
 const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }: ReviewsSectionProps) => {
   const [page, setPage] = useState<number>(1);
+
   const commentsPerPage = 5;
   const pageCount = Math.ceil(reviews.length / commentsPerPage);
   const reviewsOnPage = reviews.slice((page - 1) * commentsPerPage, page * commentsPerPage);
+
+  const { currentUserDetails } = useAuth();
+
+  const userLocale = useMemo(() => {
+    return currentUserDetails?.language === 'en' ? enGB : bg;
+  }, [currentUserDetails]);
 
   return (
     <>
@@ -25,7 +35,7 @@ const ReviewsSection: FC<ReviewsSectionProps> = ({ reviews }: ReviewsSectionProp
                   </div>
                 </div>
                 <div className="justify-self-end text-nowrap">
-                  {getDateStringFromTimestamp(timestamp)}
+                  {getDateStringFromTimestamp(timestamp, userLocale)}
                 </div>
               </div>
               <Divider className="bg-[#006989] w-72" />

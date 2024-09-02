@@ -67,6 +67,8 @@ const en = {
   label_venue_type: 'Venue type',
   label_venue_perks: 'Perks',
   label_venue_working_hours: 'Working hours',
+  latitude: 'Latitude',
+  longitude: 'Longitude',
 
   //=============================//
   //       RESET PASSWORD        //
@@ -87,6 +89,7 @@ const en = {
   //=============================//
   username: 'Username',
   phone_number: 'Phone number',
+  upload_image: 'Upload an image',
 
   //=============================//
   //         DAYS OF WEEK        //
@@ -99,9 +102,16 @@ const en = {
   saturday: 'Saturday',
   sunday: 'Sunday',
 
-  city: 'City',
+  //=============================//
+  //          VENUES PAGE        //
+  //=============================//
   filters: 'Filters',
+  open: 'Open ⋅ ',
+  closed: 'Closed ⋅ ',
 
+  //=============================//
+  //         VENUE TYPES         //
+  //=============================//
   restaurant: 'Restaurant',
   cafe: 'Cafe',
   bar: 'Bar',
@@ -111,17 +121,18 @@ const en = {
   brewery: 'Brewery',
   night_club: 'Night Club',
 
+  //=============================//
+  //         VENUE PERKS         //
+  //=============================//
   free_wifi: 'Free WiFi',
   personalized_events: 'Personalized events',
   sushi_menu: 'Sushi menu',
   wine_list: 'Wine list',
   cocktails: 'Cocktails',
 
-  latitude: 'Latitude',
-  longitude: 'Longitude',
-
-  upload_image: 'Upload an image',
-
+  //=============================//
+  //          MESSAGES           //
+  //=============================//
   you: 'You',
 };
 

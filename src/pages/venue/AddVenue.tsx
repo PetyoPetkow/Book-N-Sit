@@ -182,6 +182,7 @@ const AddVenue: FC<AddVenueProps> = () => {
               selectedVenueTypes={selectedVenueTypes}
               onselectedVenueTypesChanged={(event, checked) => {
                 setSelectedVenueTypes((prevState) => {
+                  console.log(prevState, event.target.value, checked);
                   if (checked) {
                     return [...prevState, event.target.value as VenueType];
                   } else {

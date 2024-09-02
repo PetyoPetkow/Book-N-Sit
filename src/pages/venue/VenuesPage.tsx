@@ -212,7 +212,7 @@ const VenuesPage: FC<VenuesPageProps> = () => {
                         />
                         <div>
                           <span className={clsx(isOpen ? 'text-green-800' : 'text-red-800')}>
-                            {isOpen ? 'Отворено ⋅ ' : 'Closed ⋅ '}
+                            {isOpen ? t('open') : t('closed')}
                           </span>
                           <span>
                             {workingHours[dayOfWeek] &&

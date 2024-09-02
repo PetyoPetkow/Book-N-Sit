@@ -26,6 +26,8 @@ import {
 } from '../../firebase/services/MessagesService';
 import { getDateStringFromTimestamp, getTimeFromNowFromTimestamp } from '../../utils/dateUtil';
 import { useTranslation } from 'react-i18next';
+import { bg } from 'date-fns/locale/bg';
+import { enGB } from 'date-fns/locale/en-GB';
 
 const Messages: FC<MessagesProps> = () => {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -39,6 +41,10 @@ const Messages: FC<MessagesProps> = () => {
 
   const { t } = useTranslation();
   const { currentUserDetails } = useAuth();
+
+  const userLocale = useMemo(() => {
+    return currentUserDetails?.language === 'en' ? enGB : bg;
+  }, [currentUserDetails]);
 
   const selectedChatUser = useMemo(() => {
     return users.find((user) => user.id === selectedChat?.userId);
@@ -191,7 +197,7 @@ const Messages: FC<MessagesProps> = () => {
                     </div>
                   </div>
                   <div className="text-sm text-gray-500">
-                    {getDateStringFromTimestamp(chat.date)}
+                    {getDateStringFromTimestamp(chat.date, userLocale)}
                   </div>
                 </div>
               );
@@ -243,12 +249,12 @@ const Messages: FC<MessagesProps> = () => {
                           {message.text}
                         </div>
                         <Tooltip
-                          title={getDateStringFromTimestamp(message.date)}
+                          title={getDateStringFromTimestamp(message.date, userLocale)}
                           placement="top"
                           enterDelay={1000}
                         >
                           <div className="text-xs text-gray-600">
-                            {getTimeFromNowFromTimestamp(message.date)}
+                            {getTimeFromNowFromTimestamp(message.date, userLocale)}
                           </div>
                         </Tooltip>
                       </div>

@@ -1,15 +1,16 @@
-import { format } from 'date-fns';
-import { bg } from 'date-fns/locale/bg';
+import { format, formatDistanceToNow, Locale } from 'date-fns';
 import { Timestamp } from 'firebase/firestore';
-import moment from 'moment';
 
-const getDateStringFromTimestamp = (timestamp: Timestamp) => {
+const getDateStringFromTimestamp = (timestamp: Timestamp, locale?: Locale) => {
   const date = new Date(timestamp.seconds * 1000);
-  return format(date, 'd MMM yyyy', { locale: bg });
+  return format(date, 'd MMM yyyy', { locale: locale });
 };
 
-const getTimeFromNowFromTimestamp = (timestamp: Timestamp) => {
-  return moment(new Date(timestamp.seconds * 1000)).fromNow();
+const getTimeFromNowFromTimestamp = (timestamp: Timestamp, locale?: Locale) => {
+  return formatDistanceToNow(new Date(timestamp.seconds * 1000), {
+    addSuffix: true,
+    locale: locale,
+  });
 };
 
 export { getDateStringFromTimestamp, getTimeFromNowFromTimestamp };

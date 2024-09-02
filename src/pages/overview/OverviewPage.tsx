@@ -1,7 +1,7 @@
-import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import Location from './Location';
 import ImageGallery from './ImageGalery';
-import { Divider, LinearProgress } from '@mui/material';
+import { Divider, LinearProgress, Rating } from '@mui/material';
 import ReviewsSection from './ReviewsSection';
 import PerksList from './PerksList';
 import WriteReviewSection from './WriteReviewSection';
@@ -39,6 +39,9 @@ import {
   updateVenueImages,
   uploadImagesToStorage,
 } from '../../firebase/services/VenuesService';
+import _ from 'lodash';
+import { bg } from 'date-fns/locale/bg';
+import { enGB } from 'date-fns/locale/en-GB';
 
 const OverviewPage: FC<OverviewPageProps> = () => {
   const [venue, setVenue] = useState<Venue | null>(null);
@@ -54,6 +57,14 @@ const OverviewPage: FC<OverviewPageProps> = () => {
   const { t } = useTranslation();
   const { currentUser, currentUserDetails } = useAuth();
   const { venueId } = useParams();
+
+  const averageRating = useMemo(() => {
+    return reviews.length > 0 ? _.meanBy(reviews, 'rating') : null;
+  }, [reviews]);
+
+  const userLocale = useMemo(() => {
+    return currentUserDetails?.language === 'en' ? enGB : bg;
+  }, [currentUserDetails]);
 
   useEffect(() => {
     if (venueId !== undefined) {
@@ -240,6 +251,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           onOpen={() => setIsChatOpen(true)}
           onClose={() => setIsChatOpen(false)}
           onMessageSent={handleSendMessage}
+          locale={userLocale}
         />
       )}
 
@@ -258,6 +270,7 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           <div className="mb-4 bg-white rounded-md w-fit px-2 border border-solid border-gray-400">
             {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
           </div>
+          {typeof averageRating === 'number' && <Rating value={averageRating} readOnly />}
           <div className="flex max-xl:flex-col gap-2 h-full w-full">
             <ImageGallery images={venue.images as string[]} />
             <div className="flex flex-col max-xl:flex-row max-sm:flex-col gap-2 min-w-72">
