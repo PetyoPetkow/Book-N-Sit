@@ -115,55 +115,51 @@ const VenuesPage: FC<VenuesPageProps> = () => {
   return (
     <div className="flex-grow flex flex-col gap-10 bg-white backdrop-blur-md bg-opacity-50 shadow-lg shadow-gray-700 ">
       <div>
-        <div className="flex w-full min-h-20 h-fit gap-4 items-center">
-          <div className="flex-1 px-20">
-            <TextField
-              fullWidth
-              size="small"
-              label={t('label_venue_city')}
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-            />
-          </div>
-          <div className="flex-1 px-20">
-            <Autocomplete
-              className="flex-nowrap text-nowrap"
-              limitTags={2}
-              multiple
-              size="small"
-              options={perksOptions}
-              disableCloseOnSelect
-              getOptionLabel={(option) => option.name}
-              renderOption={(props, option, state) => (
-                <li {...props}>
-                  <div className="flex gap-2">
-                    <div className="mr-2">{option.icon}</div>
-                    <div>{t(option.name)}</div>
-                  </div>
-                </li>
-              )}
-              value={perks}
-              onChange={(event, value) => {
-                const uniqueValue = value.filter(
-                  (v, index, self) => index === self.findIndex((t) => t.name === v.name)
-                );
-                setPerks(uniqueValue);
-              }}
-              renderTags={(value, getTagProps) =>
-                value.map((option, index) => (
-                  <Chip
-                    size="small"
-                    label={t(option.name)}
-                    icon={option.icon}
-                    {...getTagProps({ index })}
-                  />
-                ))
-              }
-              renderInput={(params) => (
-                <TextField {...params} variant="outlined" label={t('filters')} />
-              )}
-            />
-          </div>
+        <div className="flex max-lg:flex-col min-h-20 h-fit items-center gap-10 p-4">
+          <TextField
+            fullWidth
+            size="small"
+            label={t('label_venue_city')}
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+          <Autocomplete
+            className="flex-nowrap text-nowrap"
+            fullWidth
+            multiple
+            size="small"
+            options={perksOptions}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option.name}
+            renderOption={(props, option, state) => (
+              <li {...props}>
+                <div className="flex gap-2">
+                  <div className="mr-2">{option.icon}</div>
+                  <div>{t(option.name)}</div>
+                </div>
+              </li>
+            )}
+            value={perks}
+            onChange={(event, value) => {
+              const uniqueValue = value.filter(
+                (v, index, self) => index === self.findIndex((t) => t.name === v.name)
+              );
+              setPerks(uniqueValue);
+            }}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => (
+                <Chip
+                  size="small"
+                  label={t(option.name)}
+                  icon={option.icon}
+                  {...getTagProps({ index })}
+                />
+              ))
+            }
+            renderInput={(params) => (
+              <TextField {...params} variant="outlined" label={t('filters')} />
+            )}
+          />
         </div>
         <Divider />
       </div>

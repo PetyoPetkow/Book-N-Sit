@@ -111,7 +111,7 @@ const AddVenue: FC<AddVenueProps> = () => {
           </>
         )}
         <div className="flex flex-col gap-5">
-          <div className="flex gap-10">
+          <div className="flex max-md:flex-col gap-10">
             <div className="flex-1 ">
               <InputLabel required>{t('label_venue_name')}</InputLabel>
               <TextField
@@ -215,7 +215,6 @@ const AddVenue: FC<AddVenueProps> = () => {
                 }));
               }}
               onCloseAtChanged={(dayOfWeek: DayOfWeek, date: Date | null) => {
-                console.log(date);
                 setWorkingHours((prevState) => ({
                   ...prevState,
                   [dayOfWeek]: {

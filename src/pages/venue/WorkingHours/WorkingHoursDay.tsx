@@ -20,10 +20,6 @@ const WorkigHoursDay: FC<WorkigHoursDayProps> = ({
   const { t } = useTranslation();
 
   useEffect(() => {
-    console.log(openAtError);
-  }, [openAtError]);
-
-  useEffect(() => {
     if ((openAt !== null && closeAt !== null) || (openAt === null && closeAt === null)) {
       onValidityChange(true);
       setOpenAtError(false);

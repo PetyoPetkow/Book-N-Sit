@@ -158,9 +158,9 @@ const Messages: FC<MessagesProps> = () => {
   if (currentUserDetails === null) return <LinearProgress />;
 
   return (
-    <div className="flex flex-col items-center justify-center flex-grow bg-white bg-opacity-60 backdrop-blur-lg p-4 ">
-      <div className="flex h-[80vh] w-full">
-        <div className="w-1/3 flex flex-col bg-gray-200 bg-opacity-80 drop-shadow-md shadow-black ">
+    <div className="flex flex-col items-center justify-center flex-grow bg-white bg-opacity-60 backdrop-blur-lg p-4">
+      <div className="flex flex-col md:flex-row h-[80vh] w-full">
+        <div className=" md:w-1/3 flex flex-col bg-gray-200 bg-opacity-80 drop-shadow-md shadow-black">
           <div className="flex">
             <OutlinedInput
               className="flex-1 rounded-full m-7 bg-white"
@@ -169,8 +169,8 @@ const Messages: FC<MessagesProps> = () => {
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <Divider className="mx-7" />
-          <div className="flex flex-col gap-5 mt-7">
+          <Divider className="mx-4" />
+          <div className="flex flex-col gap-5 mt-4 p-4">
             {chatsToShow.map((chat: UserChat) => {
               const user = users.find((u) => u.id === chat.userId);
               return (
@@ -178,7 +178,7 @@ const Messages: FC<MessagesProps> = () => {
                   key={chat.chatId}
                   className={clsx(
                     chat.chatId === selectedChat?.chatId ? 'bg-opacity-80' : '',
-                    'flex gap-3 p-2 mx-5 rounded-lg bg-white hover:bg-gray-300 hover:cursor-pointer'
+                    'flex gap-3 p-2 rounded-lg bg-white hover:bg-gray-300 hover:cursor-pointer'
                   )}
                   onClick={() => setSelectedChat(chats.find((c) => c.chatId === chat.chatId)!)}
                 >
@@ -198,10 +198,10 @@ const Messages: FC<MessagesProps> = () => {
             })}
           </div>
         </div>
-        <div className="w-2/3 flex-grow flex flex-col justify-end ">
+        <div className="w-full md:w-2/3 flex-grow flex flex-col justify-end p-4 max-sm:p-0">
           {selectedChat && selectedChatUser && (
             <>
-              <div className="flex flex-col px-16 gap-4 overflow-auto">
+              <div className="flex flex-col px-8 gap-4 overflow-auto">
                 {messages.map((message: Message) => {
                   return (
                     <div
@@ -209,8 +209,8 @@ const Messages: FC<MessagesProps> = () => {
                       className={clsx(
                         'flex gap-5 items-end mt-2',
                         message.senderId === currentUserDetails.id
-                          ? 'justify-start mr-20 '
-                          : 'justify-end ml-20 '
+                          ? 'justify-start mr-10'
+                          : 'justify-end ml-10'
                       )}
                     >
                       <Avatar
@@ -236,7 +236,7 @@ const Messages: FC<MessagesProps> = () => {
                           className={clsx(
                             message.senderId === currentUserDetails.id
                               ? 'bg-blue-200 rounded-br-xl'
-                              : 'bg-[#e3e7db] rounded-bl-xl ',
+                              : 'bg-[#e3e7db] rounded-bl-xl',
                             'p-1 px-3 rounded-t-xl w-fit'
                           )}
                         >

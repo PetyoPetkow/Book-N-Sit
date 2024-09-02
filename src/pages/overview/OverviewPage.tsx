@@ -258,11 +258,9 @@ const OverviewPage: FC<OverviewPageProps> = () => {
           <div className="mb-4 bg-white rounded-md w-fit px-2 border border-solid border-gray-400">
             {venue.venueTypes.map((venueType) => t(venueType)).join(', ')}
           </div>
-          <div className="grid grid-cols-4 gap-2 h-full w-full">
-            <div className="col-span-3 bg-black bg-opacity-50">
-              <ImageGallery images={venue.images as string[]}></ImageGallery>
-            </div>
-            <div className="col-span-1 flex flex-col gap-2">
+          <div className="flex max-xl:flex-col gap-2 h-full w-full">
+            <ImageGallery images={venue.images as string[]} />
+            <div className="flex flex-col max-xl:flex-row max-sm:flex-col gap-2 min-w-72">
               {venue.userId === currentUser?.uid && (
                 <OwnerControls
                   venueId={venueId}
@@ -276,13 +274,15 @@ const OverviewPage: FC<OverviewPageProps> = () => {
                 </div>
               )}
 
-              <MapComponent
-                lat={venue.coordinates[0]}
-                lng={venue.coordinates[1]}
-                setCoordinates={() => {}}
-                draggable={false}
-                height={currentUser?.uid === venue.userId ? 350 : 250}
-              />
+              <div className="flex-1">
+                <MapComponent
+                  lat={venue.coordinates[0]}
+                  lng={venue.coordinates[1]}
+                  setCoordinates={() => {}}
+                  draggable={false}
+                  height={currentUser?.uid === venue.userId ? 350 : 250}
+                />
+              </div>
             </div>
           </div>
         </div>

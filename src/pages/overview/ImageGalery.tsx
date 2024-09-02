@@ -21,8 +21,8 @@ const ImageGallery: FC<ImageGalleryProps> = ({ images }) => {
 
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto aspect-[16/10]">
-        <div className="grid grid-cols-12 grid-rows-12 gap-2 h-full">
+      <div className="w-full max-w-7xl bg-black bg-opacity-50">
+        <div className="grid grid-cols-12 grid-rows-12 gap-2 h-full mx-auto aspect-[16/10]">
           <ImageDisplay images={images} handleImageClick={handleImageClick} />
         </div>
       </div>

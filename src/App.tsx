@@ -1,5 +1,5 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import Header from './navigation/Header';
 import VenuesPage from './pages/venue/VenuesPage';
 import LoginPage from './pages/auth/LoginPage';
@@ -21,6 +21,7 @@ import ResetPasswordPage from './pages/auth/ResetPassword';
 
 const App = () => {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const setUserLanguage = async () => {
@@ -38,6 +39,12 @@ const App = () => {
 
     setUserLanguage();
   }, [currentUser, i18n]);
+
+  useEffect(() => {
+    if (window.location.pathname === '/') {
+      navigate('all');
+    }
+  }, [navigate, window.location.pathname]);
 
   const theme = createTheme({
     palette: {
