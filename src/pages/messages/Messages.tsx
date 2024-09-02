@@ -181,7 +181,7 @@ const Messages: FC<MessagesProps> = () => {
               const user = users.find((u) => u.id === chat.userId);
               return (
                 <div
-                  key={chat.chatId}
+                  key={chat.chatId + chat.date.toString()}
                   className={clsx(
                     chat.chatId === selectedChat?.chatId ? 'bg-opacity-80' : '',
                     'flex gap-3 p-2 rounded-lg bg-white hover:bg-gray-300 hover:cursor-pointer'

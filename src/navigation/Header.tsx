@@ -74,169 +74,174 @@ const Header: FC<HeaderProps> = () => {
           <img className="h-14 hidden sm:block" src={logo} />
           <img className="h-14 sm:hidden" src={logoMobile} />
           <div className="flex">
-            {currentUser ? (
-              <div className="flex">
-                <Button
-                  className="h-full hover:backdrop-contrast-150"
-                  onClick={handleOpenLanguageMenu}
+            <div className="flex">
+              <Button
+                className="h-full hover:backdrop-contrast-150"
+                onClick={handleOpenLanguageMenu}
+              >
+                <Avatar
+                  className="w-7 h-7 shadow-sm shadow-black"
+                  alt="Country flag"
+                  src={prefferedLanguageFlag}
+                />
+              </Button>
+              <Menu
+                anchorEl={anchorElLanguage}
+                keepMounted
+                open={Boolean(anchorElLanguage)}
+                onClose={handleCloseLanguageMenu}
+              >
+                <MenuItem
+                  className="flex gap-3"
+                  onClick={() => {
+                    handleCloseLanguageMenu();
+                    changeLanguage('bg');
+                    i18n.changeLanguage('bg');
+                  }}
                 >
                   <Avatar
                     className="w-7 h-7 shadow-sm shadow-black"
                     alt="Country flag"
-                    src={prefferedLanguageFlag}
+                    src={flagBG}
                   />
-                </Button>
-                <Menu
-                  anchorEl={anchorElLanguage}
-                  keepMounted
-                  open={Boolean(anchorElLanguage)}
-                  onClose={handleCloseLanguageMenu}
-                >
-                  <MenuItem
-                    className="flex gap-3"
-                    onClick={() => {
-                      handleCloseLanguageMenu();
-                      changeLanguage('bg');
-                      i18n.changeLanguage('bg');
-                    }}
-                  >
-                    <Avatar
-                      className="w-7 h-7 shadow-sm shadow-black"
-                      alt="Country flag"
-                      src={flagBG}
-                    />
-                    <div>{t('header_bg_lng')}</div>
-                  </MenuItem>
+                  <div>{t('header_bg_lng')}</div>
+                </MenuItem>
 
-                  <MenuItem
-                    className="flex gap-3"
-                    onClick={() => {
-                      handleCloseLanguageMenu();
-                      changeLanguage('en');
-                      i18n.changeLanguage('en');
-                    }}
-                  >
-                    <Avatar
-                      className="w-7 h-7 shadow-sm shadow-black"
-                      alt="Country flag"
-                      src={flagUK}
-                    />
-                    <div>{t('header_en_lng')}</div>
-                  </MenuItem>
-                </Menu>
-
-                <Button
-                  className="text-white font-bold hover:backdrop-contrast-150"
-                  onClick={handleOpenUserMenu}
+                <MenuItem
+                  className="flex gap-3"
+                  onClick={() => {
+                    handleCloseLanguageMenu();
+                    changeLanguage('en');
+                    i18n.changeLanguage('en');
+                  }}
                 >
-                  <div className="flex gap-3 items-center">
-                    <Avatar
-                      className="shadow-sm shadow-black"
-                      alt="User avatar"
-                      src={userDetails?.photoURL || ''}
-                    />
-                    <div className="flex flex-col text-right">
-                      <div>{userDetails?.displayName}</div>
-                      <div>
-                        {Boolean(anchorElUser) ? (
-                          <KeyboardArrowUpIcon />
-                        ) : (
-                          <KeyboardArrowDownIcon />
-                        )}
+                  <Avatar
+                    className="w-7 h-7 shadow-sm shadow-black"
+                    alt="Country flag"
+                    src={flagUK}
+                  />
+                  <div>{t('header_en_lng')}</div>
+                </MenuItem>
+              </Menu>
+              {currentUser ? (
+                <>
+                  <Button
+                    className="text-white font-bold hover:backdrop-contrast-150"
+                    onClick={handleOpenUserMenu}
+                  >
+                    <div className="flex gap-3 items-center">
+                      <Avatar
+                        className="shadow-sm shadow-black"
+                        alt="User avatar"
+                        src={userDetails?.photoURL || ''}
+                      />
+                      <div className="flex flex-col text-right">
+                        <div>{userDetails?.displayName}</div>
+                        <div>
+                          {Boolean(anchorElUser) ? (
+                            <KeyboardArrowUpIcon />
+                          ) : (
+                            <KeyboardArrowDownIcon />
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Button>
-                <Menu
-                  sx={{ mt: '60px' }}
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  <MenuItem
-                    className="flex gap-2"
-                    onClick={() => {
-                      navigate('/messages');
-                      handleCloseUserMenu();
+                  </Button>
+                  <Menu
+                    sx={{ mt: '60px' }}
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
                     }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'center',
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
                   >
-                    <ChatOutlinedIcon />
-                    <Typography textAlign="center">{t('header_account_messages')}</Typography>
-                  </MenuItem>
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        navigate('/messages');
+                        handleCloseUserMenu();
+                      }}
+                    >
+                      <ChatOutlinedIcon />
+                      <Typography textAlign="center">{t('header_account_messages')}</Typography>
+                    </MenuItem>
 
-                  <MenuItem
-                    className="flex gap-2"
-                    onClick={() => {
-                      navigate('/myVenues');
-                      handleCloseUserMenu();
-                    }}
-                  >
-                    <BallotOutlinedIcon />
-                    <Typography textAlign="center">{t('header_account_my_venues')}</Typography>
-                  </MenuItem>
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        navigate('/myVenues');
+                        handleCloseUserMenu();
+                      }}
+                    >
+                      <BallotOutlinedIcon />
+                      <Typography textAlign="center">{t('header_account_my_venues')}</Typography>
+                    </MenuItem>
 
-                  <MenuItem
-                    className="flex gap-2"
-                    onClick={() => {
-                      navigate('/addVenue');
-                      handleCloseUserMenu();
-                    }}
-                  >
-                    <AddBusinessOutlinedIcon />
-                    <Typography textAlign="center">{t('header_account_register_venue')}</Typography>
-                  </MenuItem>
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        navigate('/addVenue');
+                        handleCloseUserMenu();
+                      }}
+                    >
+                      <AddBusinessOutlinedIcon />
+                      <Typography textAlign="center">
+                        {t('header_account_register_venue')}
+                      </Typography>
+                    </MenuItem>
 
-                  <MenuItem
-                    className="flex gap-2"
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        navigate('/manageAccount');
+                        handleCloseUserMenu();
+                      }}
+                    >
+                      <SettingsIcon />
+                      <Typography textAlign="center">
+                        {t('header_account_manage_account')}
+                      </Typography>
+                    </MenuItem>
+                    <MenuItem
+                      className="flex gap-2"
+                      onClick={() => {
+                        handleCloseUserMenu();
+                        doSingOut();
+                      }}
+                    >
+                      <LogoutIcon />
+                      <Typography textAlign="center">{t('header_account_sign_out')}</Typography>
+                    </MenuItem>
+                  </Menu>
+                </>
+              ) : (
+                <>
+                  <Button
+                    className="text-white font-bold font-sans"
                     onClick={() => {
-                      navigate('/manageAccount');
-                      handleCloseUserMenu();
+                      navigate('/login');
                     }}
                   >
-                    <SettingsIcon />
-                    <Typography textAlign="center">{t('header_account_manage_account')}</Typography>
-                  </MenuItem>
-                  <MenuItem
-                    className="flex gap-2"
+                    {t('login')}
+                  </Button>
+                  <Button
+                    className="text-white font-bold font-sans"
                     onClick={() => {
-                      handleCloseUserMenu();
-                      doSingOut();
+                      navigate('/register');
                     }}
                   >
-                    <LogoutIcon />
-                    <Typography textAlign="center">{t('header_account_sign_out')}</Typography>
-                  </MenuItem>
-                </Menu>
-              </div>
-            ) : (
-              <>
-                <Button
-                  className="text-white font-bold font-sans"
-                  onClick={() => {
-                    navigate('/login');
-                  }}
-                >
-                  {t('login')}
-                </Button>
-                <Button
-                  className="text-white font-bold font-sans"
-                  onClick={() => {
-                    navigate('/register');
-                  }}
-                >
-                  {t('register')}
-                </Button>
-              </>
-            )}
+                    {t('register')}
+                  </Button>
+                </>
+              )}
+            </div>
           </div>
         </div>
         <Toolbar disableGutters>
